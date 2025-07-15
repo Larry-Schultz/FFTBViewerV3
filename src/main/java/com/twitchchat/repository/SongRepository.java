@@ -55,6 +55,12 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     long countAllSongs();
     
     /**
+     * Get all song titles for duplicate checking (more efficient than loading full objects)
+     */
+    @Query("SELECT s.title FROM Song s WHERE s.title IS NOT NULL")
+    List<String> findAllTitles();
+    
+    /**
      * Get recently added songs (for sync verification)
      */
     List<Song> findTop10ByOrderByCreatedAtDesc();

@@ -77,26 +77,22 @@ public class PlaylistSyncService {
             
             logger.info("Fetched {} songs from XML feed", xmlSongs.size());
 
-            // Get existing song titles from database
-            Set<String> existingTitles = new HashSet<>();
-            List<Song> existingSongs = songRepository.findAll();
-            logger.info("Found {} existing songs in database", existingSongs.size());
-            
-            for (Song dbSong : existingSongs) {
-                if (dbSong.getTitle() != null) {
-                    existingTitles.add(dbSong.getTitle());
-                }
-            }
+            // Get existing song titles from database (more efficient than loading all songs)
+            List<String> existingTitlesList = songRepository.findAllTitles();
+            Set<String> existingTitles = new HashSet<>(existingTitlesList);
+            logger.info("Found {} existing songs in database", existingTitles.size());
 
-            // Add new songs (keeping unique titles only)
+            // Add new songs (keeping unique titles only, prevent duplicates)
             List<Song> newSongs = new ArrayList<>();
             Set<String> processedTitles = new HashSet<>();
             
             for (Song xmlSong : xmlSongs) {
-                if (xmlSong.getTitle() != null && !processedTitles.contains(xmlSong.getTitle())) {
-                    processedTitles.add(xmlSong.getTitle());
+                String title = xmlSong.getTitle();
+                if (title != null && !title.trim().isEmpty() && !processedTitles.contains(title)) {
+                    processedTitles.add(title);
                     
-                    if (!existingTitles.contains(xmlSong.getTitle())) {
+                    // Only add if it doesn't exist in database
+                    if (!existingTitles.contains(title)) {
                         // Add new song with occurrence = 0 (will be tracked by SongPlayTracker)
                         xmlSong.setOccurrence(0);
                         newSongs.add(xmlSong);

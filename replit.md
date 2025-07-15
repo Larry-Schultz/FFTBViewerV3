@@ -126,6 +126,8 @@ Preferred communication style: Simple, everyday language.
 - **Implemented occurrence field**: Tracks actual song plays from live chat, not XML duplicates
 - **Created play statistics API**: Added endpoints for song stats and most-played songs
 - **Integrated SongPlayTracker service**: Automatically updates occurrence counts from chat messages
+- **Removed duplicate songs**: Deleted 3,502 duplicate entries, maintaining only unique songs (28,927 total)
+- **Enhanced duplicate prevention**: Updated sync service to prevent future duplicates with better title checking
 
 **January 15, 2025:**
 - Set up complete Java application for Twitch chat reading
