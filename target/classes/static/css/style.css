@@ -136,13 +136,7 @@ main {
     word-wrap: break-word;
 }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    color: #9ca3af;
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
+
 
 /* Scrollbar styling */
 .chat-messages::-webkit-scrollbar {
@@ -197,4 +191,22 @@ footer {
     .message {
         padding: 10px 0;
     }
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+footer a {
+    color: #9146ff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #a970ff;
+    text-decoration: underline;
 }

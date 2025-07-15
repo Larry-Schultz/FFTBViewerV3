@@ -82,7 +82,10 @@ class TwitchChatClient {
         const messages = chatMessages.querySelectorAll('.message');
         
         while (messages.length > this.maxMessages) {
-            chatMessages.removeChild(messages[0]);
+            const firstMessage = messages[0];
+            if (firstMessage && firstMessage.parentNode === chatMessages) {
+                chatMessages.removeChild(firstMessage);
+            }
         }
     }
 

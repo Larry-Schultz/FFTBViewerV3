@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFT Battleground Playlist</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/playlist.css}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 FFT Battleground Playlist</h1>
+            <p>Music tracks from <strong>fftbattleground.com</strong></p>
+            <div class="status">
+                <span class="message-count">Total Songs: <span th:text="${songCount}">0</span></span>
+            </div>
+        </header>
+
+        <nav class="navigation">
+            <a href="/" class="nav-link">Live Chat</a>
+            <a href="/playlist" class="nav-link active">Music Playlist</a>
+        </nav>
+
+        <main>
+            <div class="playlist-container">
+                <div class="search-controls">
+                    <input type="text" id="song-search" placeholder="Search songs, artists, or albums..." class="search-input">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All Songs</button>
+                        <button class="filter-btn" data-filter="title">Sort by Title</button>
+                        <button class="filter-btn" data-filter="creator">Sort by Artist</button>
+                        <button class="filter-btn" data-filter="album">Sort by Album</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="playlist-table" id="playlist-table">
+                        <thead>
+                            <tr>
+                                <th class="col-title">#</th>
+                                <th class="col-title">Song Title</th>
+                                <th class="col-artist">Artist</th>
+                                <th class="col-album">Album</th>
+                                <th class="col-duration">Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="song, iterStat : ${songs}" class="song-row" 
+                                th:data-title="${song.title}" 
+                                th:data-creator="${song.creator}" 
+                                th:data-album="${song.album}">
+                                <td class="track-number" th:text="${iterStat.count}">1</td>
+                                <td class="song-title" th:text="${song.title}">Song Title</td>
+                                <td class="song-artist" th:text="${song.creator ?: 'Unknown Artist'}">Artist</td>
+                                <td class="song-album" th:text="${song.album ?: 'Unknown Album'}">Album</td>
+                                <td class="song-duration" th:text="${song.duration ?: '--:--'}">Duration</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="playlist-stats">
+                    <div class="stat-card">
+                        <h3>Total Tracks</h3>
+                        <span class="stat-number" th:text="${songCount}">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Showing</h3>
+                        <span class="stat-number" id="showing-count" th:text="${songCount}">0</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Playlist data fetched from <a href="https://www.fftbattleground.com/fftbg/playlist.xml" target="_blank">FFT Battleground</a></p>
+        </footer>
+    </div>
+
+    <script th:src="@{/js/playlist.js}"></script>
+</body>
+</html>
