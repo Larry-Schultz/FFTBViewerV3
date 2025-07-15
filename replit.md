@@ -119,6 +119,8 @@ Preferred communication style: Simple, everyday language.
 - Successfully integrated real FFT Battleground playlist with 32,000+ songs via HTTP XML parsing
 - Built custom XML parser for proprietary playlist format with proper song name cleaning and duration formatting
 - Implemented robust search, filter, and sort functionality for massive song library
+- Simplified playlist table to display only song titles and durations for cleaner interface
+- Updated search and filtering to focus on song names with over 32,000 real tracks
 
 **January 15, 2025:**
 - Set up complete Java application for Twitch chat reading

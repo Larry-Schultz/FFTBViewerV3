@@ -25,12 +25,11 @@
         <main>
             <div class="playlist-container">
                 <div class="search-controls">
-                    <input type="text" id="song-search" placeholder="Search songs, artists, or albums..." class="search-input">
+                    <input type="text" id="song-search" placeholder="Search songs..." class="search-input">
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="all">All Songs</button>
                         <button class="filter-btn" data-filter="title">Sort by Title</button>
-                        <button class="filter-btn" data-filter="creator">Sort by Artist</button>
-                        <button class="filter-btn" data-filter="album">Sort by Album</button>
+                        <button class="filter-btn" data-filter="duration">Sort by Duration</button>
                     </div>
                 </div>
 
@@ -40,20 +39,14 @@
                             <tr>
                                 <th class="col-title">#</th>
                                 <th class="col-title">Song Title</th>
-                                <th class="col-artist">Artist</th>
-                                <th class="col-album">Album</th>
                                 <th class="col-duration">Duration</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="song, iterStat : ${songs}" class="song-row" 
-                                th:data-title="${song.title}" 
-                                th:data-creator="${song.creator}" 
-                                th:data-album="${song.album}">
+                                th:data-title="${song.title}">
                                 <td class="track-number" th:text="${iterStat.count}">1</td>
                                 <td class="song-title" th:text="${song.title}">Song Title</td>
-                                <td class="song-artist" th:text="${song.creator ?: 'Unknown Artist'}">Artist</td>
-                                <td class="song-album" th:text="${song.album ?: 'Unknown Album'}">Album</td>
                                 <td class="song-duration" th:text="${song.duration ?: '--:--'}">Duration</td>
                             </tr>
                         </tbody>

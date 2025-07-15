@@ -42,13 +42,8 @@ class PlaylistManager {
 
         rows.forEach(row => {
             const title = row.querySelector('.song-title').textContent.toLowerCase();
-            const artist = row.querySelector('.song-artist').textContent.toLowerCase();
-            const album = row.querySelector('.song-album').textContent.toLowerCase();
             
-            const matches = !term || 
-                          title.includes(term) || 
-                          artist.includes(term) || 
-                          album.includes(term);
+            const matches = !term || title.includes(term);
             
             if (matches) {
                 row.style.display = '';
@@ -89,13 +84,9 @@ class PlaylistManager {
                     aValue = a.querySelector('.song-title').textContent.trim();
                     bValue = b.querySelector('.song-title').textContent.trim();
                     break;
-                case 'creator':
-                    aValue = a.querySelector('.song-artist').textContent.trim();
-                    bValue = b.querySelector('.song-artist').textContent.trim();
-                    break;
-                case 'album':
-                    aValue = a.querySelector('.song-album').textContent.trim();
-                    bValue = b.querySelector('.song-album').textContent.trim();
+                case 'duration':
+                    aValue = a.querySelector('.song-duration').textContent.trim();
+                    bValue = b.querySelector('.song-duration').textContent.trim();
                     break;
                 default:
                     return 0;
