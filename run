@@ -1,11 +1,38 @@
 #!/bin/bash
 
 # Production run command for Spring Boot Twitch Chat Reader
-# This script is designed for Replit deployment
+# This script is designed for Replit Reserved VM deployment
+
+set -e  # Exit on any error
+
+echo "=== Starting Spring Boot Twitch Chat Reader ==="
 
 # Set up Java environment
 export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1)
 export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH
 
-# Build and run the Spring Boot application
-mvn clean package -DskipTests && java -jar -Dserver.port=5000 target/twitch-chat-reader-1.0.0.jar
+# Verify environment
+echo "Java Home: $JAVA_HOME"
+echo "Java version:"
+java -version
+
+echo "Maven version:"
+mvn -version
+
+# Clean and build the application
+echo "Building Spring Boot application..."
+mvn clean package -DskipTests -q
+
+# Check if JAR was built successfully
+JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ ! -f "$JAR_FILE" ]; then
+    echo "Error: JAR file not found at $JAR_FILE"
+    echo "Build may have failed."
+    exit 1
+fi
+
+echo "JAR file found: $JAR_FILE"
+
+# Start the Spring Boot application on port 5000
+echo "Starting Spring Boot application on port 5000..."
+exec java -jar -Dserver.port=5000 -Dspring.profiles.active=production "$JAR_FILE"
