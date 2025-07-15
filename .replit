@@ -13,12 +13,12 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Twitch Chat Reader Fixed"
+args = "Spring Boot Twitch Chat Reader"
 
 [[workflows.workflow]]
-name = "Twitch Chat Reader Fixed"
+name = "Spring Boot Twitch Chat Reader"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1) && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile exec:java -Dexec.mainClass=\"com.twitchchat.TwitchChatReader\""
+args = "export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1) && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile && mvn spring-boot:run"

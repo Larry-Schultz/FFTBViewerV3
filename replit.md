@@ -12,22 +12,27 @@ Preferred communication style: Simple, everyday language.
 
 **Technology Stack:**
 - Java 11 (OpenJDK)
+- Spring Boot 2.7.18 framework
 - Maven 3.9.4 for build management
 - twitch4j library for Twitch API integration
-- SLF4J with Logback for logging
+- Spring Boot integrated logging
 
 **Design Pattern:**
-- Event-driven architecture using twitch4j's event system
-- Configuration management through properties and environment variables
-- Graceful shutdown handling with cleanup procedures
+- Spring Boot application with dependency injection
+- Component-based architecture using Spring annotations
+- Event-driven chat handling using twitch4j's event system
+- Configuration management through Spring Boot properties
+- CommandLineRunner interface for application startup
+- Graceful shutdown handling with @PreDestroy annotation
 
 ## Key Components
 
 **Main Classes:**
-- `TwitchChatReader.java` - Main application entry point and chat client management
-- `ChatEventHandler.java` - Handles incoming chat events and formats display
-- `TwitchConfig.java` - Configuration loading from environment and properties files
-- `logback.xml` - Logging configuration with console and file output
+- `TwitchChatReaderApplication.java` - Spring Boot main application class
+- `TwitchChatReader.java` - Spring component implementing CommandLineRunner for chat client management
+- `ChatEventHandler.java` - Spring component handling incoming chat events and formatting display
+- `TwitchProperties.java` - Spring Boot configuration properties class for Twitch settings
+- `application.properties` - Spring Boot configuration file
 
 **Features:**
 - Real-time chat message display with timestamps
@@ -38,7 +43,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Data Flow
 
-1. Application starts and loads configuration from `config.properties` and environment variables
+1. Spring Boot application starts and loads configuration from `application.properties` and environment variables
 2. Creates OAuth2 credential (anonymous if no token provided)
 3. Initializes Twitch client and registers event handlers
 4. Connects to specified Twitch channel
@@ -49,29 +54,29 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 **Core Dependencies:**
+- `spring-boot-starter` (2.7.18) - Spring Boot core functionality
+- `spring-boot-configuration-processor` - Configuration properties support
 - `twitch4j-chat` (1.19.0) - Twitch chat integration
-- `slf4j-api` (1.7.36) - Logging interface
-- `logback-classic` (1.2.12) - Logging implementation
 
 **Build Tools:**
-- Maven with compiler and exec plugins
-- Java 21 runtime environment
+- Maven with Spring Boot plugin
+- Java 11 runtime environment
 
 ## Configuration
 
 **Required Settings:**
-- `TWITCH_CHANNEL` environment variable or `twitch.channel.name` in config.properties
+- `TWITCH_CHANNEL` environment variable or `twitch.channel-name` in application.properties
 
 **Optional Settings:**
-- `TWITCH_ACCESS_TOKEN` environment variable or `twitch.access.token` in config.properties (for authentication)
-- `TWITCH_USERNAME` environment variable or `twitch.username` in config.properties (for bot identification)
+- `TWITCH_ACCESS_TOKEN` environment variable or `twitch.access-token` in application.properties (for authentication)
+- `TWITCH_USERNAME` environment variable or `twitch.username` in application.properties (for bot identification)
 
 ## Deployment Strategy
 
 **Local Development:**
-- Run using `./run.sh` script which sets up Java and Maven environment
-- Configuration through `config.properties` file
-- Logs output to console and `logs/` directory
+- Run using Spring Boot with `mvn spring-boot:run` command
+- Configuration through `application.properties` file
+- Logs output to console using Spring Boot logging
 
 **Environment Setup:**
 - Java 11 installation required
@@ -87,6 +92,9 @@ Preferred communication style: Simple, everyday language.
 - Fixed OAuth credential handling for anonymous and authenticated connections
 - Added secure credential management using Replit Secrets for TWITCH_ACCESS_TOKEN
 - Added configurable username and channel properties for easy customization
+- Converted entire project to Spring Boot framework with dependency injection
+- Updated configuration system to use Spring Boot properties
+- Removed problematic logback configuration in favor of Spring Boot logging
 - Application now builds and runs successfully with full authentication
 - Enhanced functionality with authenticated Twitch access (whispers, private channels, better rate limits)
 

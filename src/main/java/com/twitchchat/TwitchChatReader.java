@@ -1,31 +1,45 @@
 package com.twitchchat;
 
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.TwitchChat;
-import com.twitchchat.config.TwitchConfig;
+import com.twitchchat.config.TwitchProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Main application class for reading Twitch chat messages in real-time
+ * Main Spring Boot component for reading Twitch chat messages in real-time
  */
-public class TwitchChatReader {
+@Component
+public class TwitchChatReader implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(TwitchChatReader.class);
-    private TwitchChat twitchChat;
+    
+    @Autowired
+    private TwitchProperties twitchProperties;
+    
+    @Autowired
     private ChatEventHandler eventHandler;
-    private TwitchConfig config;
+    
+    private TwitchChat twitchChat;
     private boolean isConnected = false;
     private ScheduledExecutorService reconnectService;
 
     public TwitchChatReader() {
-        this.config = new TwitchConfig();
-        this.eventHandler = new ChatEventHandler();
         this.reconnectService = Executors.newScheduledThreadPool(1);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        start();
     }
 
     /**
@@ -62,7 +76,7 @@ public class TwitchChatReader {
             // Build Twitch client with chat module
             twitchChat = TwitchClientBuilder.builder()
                     .withEnableChat(true)
-                    .withChatAccount(config.getCredential())
+                    .withChatAccount(getCredential())
                     .build()
                     .getChat();
 
@@ -93,10 +107,10 @@ public class TwitchChatReader {
      * Join the configured Twitch channel
      */
     private void joinChannel() {
-        String channelName = config.getChannelName();
+        String channelName = twitchProperties.getCleanChannelName();
         
         if (channelName == null || channelName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Channel name is required. Please set TWITCH_CHANNEL environment variable or update config.properties");
+            throw new IllegalArgumentException("Channel name is required. Please set twitch.channel-name property");
         }
 
         try {
@@ -155,9 +169,22 @@ public class TwitchChatReader {
     }
 
     /**
+     * Get OAuth2 credential for Twitch authentication
+     */
+    private OAuth2Credential getCredential() {
+        if (twitchProperties.hasAccessToken()) {
+            return new OAuth2Credential("twitch", twitchProperties.getAccessToken());
+        } else {
+            // Return null for anonymous connections to public chat
+            return null;
+        }
+    }
+
+    /**
      * Gracefully shutdown the application
      */
-    private void shutdown() {
+    @PreDestroy
+    public void shutdown() {
         try {
             if (twitchChat != null) {
                 twitchChat.close();
@@ -175,18 +202,5 @@ public class TwitchChatReader {
         }
     }
 
-    /**
-     * Main entry point
-     */
-    public static void main(String[] args) {
-        System.out.println("=== Twitch Chat Reader ===");
-        System.out.println("Starting application...\n");
-        
-        TwitchChatReader reader = new TwitchChatReader();
-        
-        // Add shutdown hook for graceful exit
-        Runtime.getRuntime().addShutdownHook(new Thread(reader::shutdown));
-        
-        reader.start();
-    }
+
 }

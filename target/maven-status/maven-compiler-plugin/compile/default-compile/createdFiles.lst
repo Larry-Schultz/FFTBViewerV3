@@ -1,3 +1,6 @@
 com/twitchchat/TwitchChatReader.class
+META-INF/spring-configuration-metadata.json
+com/twitchchat/TwitchChatReaderApplication.class
+com/twitchchat/config/TwitchProperties.class
 com/twitchchat/ChatEventHandler.class
 com/twitchchat/config/TwitchConfig.class

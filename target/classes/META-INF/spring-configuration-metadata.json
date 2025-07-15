@@ -1,0 +1,27 @@
+{
+  "groups": [
+    {
+      "name": "twitch",
+      "type": "com.twitchchat.config.TwitchProperties",
+      "sourceType": "com.twitchchat.config.TwitchProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "twitch.access-token",
+      "type": "java.lang.String",
+      "sourceType": "com.twitchchat.config.TwitchProperties"
+    },
+    {
+      "name": "twitch.channel-name",
+      "type": "java.lang.String",
+      "sourceType": "com.twitchchat.config.TwitchProperties"
+    },
+    {
+      "name": "twitch.username",
+      "type": "java.lang.String",
+      "sourceType": "com.twitchchat.config.TwitchProperties"
+    }
+  ],
+  "hints": []
+}

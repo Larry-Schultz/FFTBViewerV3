@@ -3,13 +3,15 @@ package com.twitchchat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Handles various Twitch chat events and formats them for console display
+ * Spring component that handles various Twitch chat events and formats them for console display
  */
+@Component
 public class ChatEventHandler {
     private static final Logger logger = LoggerFactory.getLogger(ChatEventHandler.class);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
