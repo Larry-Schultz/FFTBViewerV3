@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Java console application that reads Twitch chat messages in real-time using the twitch4j library. The application connects to Twitch IRC and displays chat messages, user joins, and leaves with timestamps. Built with Maven and designed for easy configuration through environment variables or properties files.
+A modern Spring Boot-powered Twitch chat reader application that monitors real-time chat messages from specific Twitch channels. Features both console output and a web interface with WebSocket support to display the last 50 chat messages in real-time. Built with Maven and designed for robust, authenticated Twitch integration with the 'fftbattleground' channel.
 
 ## User Preferences
 
@@ -12,10 +12,12 @@ Preferred communication style: Simple, everyday language.
 
 **Technology Stack:**
 - Java 11 (OpenJDK)
-- Spring Boot 2.7.18 framework
+- Spring Boot 2.7.18 framework (Web + WebSocket)
 - Maven 3.9.4 for build management
 - twitch4j library for Twitch API integration
 - Spring Boot integrated logging
+- Thymeleaf templating engine
+- SockJS + STOMP for WebSocket communication
 
 **Design Pattern:**
 - Spring Boot application with dependency injection
@@ -30,16 +32,23 @@ Preferred communication style: Simple, everyday language.
 **Main Classes:**
 - `TwitchChatReaderApplication.java` - Spring Boot main application class
 - `TwitchChatReader.java` - Spring component implementing CommandLineRunner for chat client management
-- `ChatEventHandler.java` - Spring component handling incoming chat events and formatting display
+- `ChatEventHandler.java` - Spring component handling incoming chat events and WebSocket broadcasting
 - `TwitchProperties.java` - Spring Boot configuration properties class for Twitch settings
+- `ChatMessage.java` - Model class for chat message data
+- `ChatMessageService.java` - Service managing the last 50 chat messages
+- `WebSocketConfig.java` - WebSocket configuration for real-time communication
+- `WebController.java` - Web controller serving the chat viewer interface
 - `application.properties` - Spring Boot configuration file
 
 **Features:**
-- Real-time chat message display with timestamps
-- User join/leave notifications
+- Real-time chat message display with timestamps (console + web)
+- Modern web interface with Twitch-inspired design
+- WebSocket-powered live message streaming
+- Last 50 messages storage and display
 - Auto-reconnection on connection loss
 - Graceful shutdown with 'q' command
-- Flexible configuration via environment variables or config file
+- Flexible configuration via environment variables or properties file
+- Responsive design for mobile and desktop viewing
 
 ## Data Flow
 
@@ -55,6 +64,9 @@ Preferred communication style: Simple, everyday language.
 
 **Core Dependencies:**
 - `spring-boot-starter` (2.7.18) - Spring Boot core functionality
+- `spring-boot-starter-web` - Web application support with embedded Tomcat
+- `spring-boot-starter-websocket` - WebSocket support for real-time communication
+- `spring-boot-starter-thymeleaf` - Templating engine for web pages
 - `spring-boot-configuration-processor` - Configuration properties support
 - `twitch4j-chat` (1.19.0) - Twitch chat integration
 
@@ -75,8 +87,10 @@ Preferred communication style: Simple, everyday language.
 
 **Local Development:**
 - Run using Spring Boot with `mvn spring-boot:run` command
+- Web interface available at http://localhost:5000
 - Configuration through `application.properties` file
 - Logs output to console using Spring Boot logging
+- WebSocket endpoint at /ws for real-time communication
 
 **Environment Setup:**
 - Java 11 installation required
@@ -97,6 +111,11 @@ Preferred communication style: Simple, everyday language.
 - Removed problematic logback configuration in favor of Spring Boot logging
 - Application now builds and runs successfully with full authentication
 - Enhanced functionality with authenticated Twitch access (whispers, private channels, better rate limits)
+- Added complete web interface with Spring Boot Web starter
+- Implemented WebSocket support for real-time message streaming
+- Created modern Twitch-inspired web design with responsive layout
+- Built ChatMessageService to manage last 50 messages display
+- Added SockJS + STOMP for reliable WebSocket communication with auto-reconnect
 
 **January 15, 2025:**
 - Set up complete Java application for Twitch chat reading
@@ -106,4 +125,4 @@ Preferred communication style: Simple, everyday language.
 
 ---
 
-**Current Status**: Application is running successfully with authenticated Twitch access, reading chat messages from "shroud" channel with full functionality enabled.
+**Current Status**: Complete Spring Boot application with web interface running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, and modern web UI displaying live chat messages from "fftbattleground" channel with full functionality enabled.
