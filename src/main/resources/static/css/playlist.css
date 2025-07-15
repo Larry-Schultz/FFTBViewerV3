@@ -189,6 +189,10 @@
     width: 120px;
 }
 
+.col-last-played {
+    width: 120px;
+}
+
 /* Sortable column headers */
 .sortable {
     cursor: pointer;
@@ -302,6 +306,16 @@
     color: #9ca3af;
     font-size: 0.9rem;
     text-align: center;
+}
+
+.song-last-played {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.song-last-played:not(:contains('Never')) {
+    color: #ffd700;
 }
 
 /* Pagination Controls */

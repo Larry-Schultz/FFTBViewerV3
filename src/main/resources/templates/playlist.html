@@ -45,6 +45,8 @@
                            class="filter-btn" th:classappend="${sortBy == 'occurrence' and sortDirection == 'desc'} ? 'active' : ''">Most Played</a>
                         <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='createdAt', sortDirection='desc', search=${searchTerm})}" 
                            class="filter-btn" th:classappend="${sortBy == 'createdAt' and sortDirection == 'desc'} ? 'active' : ''">Recently Added</a>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='updatedAt', sortDirection='desc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'updatedAt' and sortDirection == 'desc'} ? 'active' : ''">Recently Played</a>
                     </div>
                 </div>
 
@@ -69,6 +71,10 @@
                                     Added Date 
                                     <span class="sort-arrow" th:classappend="${sortBy == 'createdAt' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'createdAt' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
                                 </th>
+                                <th class="col-last-played sortable" data-sort="updatedAt">
+                                    Last Played 
+                                    <span class="sort-arrow" th:classappend="${sortBy == 'updatedAt' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'updatedAt' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,6 +85,7 @@
                                 <td class="song-duration" th:text="${song.duration ?: '--:--'}">Duration</td>
                                 <td class="song-plays" th:text="${song.occurrence ?: 0}">0</td>
                                 <td class="song-added" th:text="${#temporals.format(song.createdAt, 'MMM dd, yyyy')}">Added Date</td>
+                                <td class="song-last-played" th:text="${song.occurrence > 0 ? #temporals.format(song.updatedAt, 'MMM dd, yyyy') : 'Never'}">Last Played</td>
                             </tr>
                         </tbody>
                     </table>
