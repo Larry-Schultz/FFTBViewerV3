@@ -71,16 +71,21 @@ public class PlaylistSyncService {
                 logger.warn("No songs found in XML feed, skipping sync");
                 return;
             }
+            
+            logger.info("Fetched {} songs from XML feed", xmlSongs.size());
 
             // Get existing song titles from database
             Set<String> existingTitles = new HashSet<>();
-            for (Song dbSong : songRepository.findAll()) {
+            List<Song> existingSongs = songRepository.findAll();
+            logger.info("Found {} existing songs in database", existingSongs.size());
+            
+            for (Song dbSong : existingSongs) {
                 if (dbSong.getTitle() != null) {
                     existingTitles.add(dbSong.getTitle());
                 }
             }
 
-            // Add new songs
+            // Add new songs in batches to avoid memory issues
             List<Song> newSongs = new ArrayList<>();
             for (Song xmlSong : xmlSongs) {
                 if (xmlSong.getTitle() != null && !existingTitles.contains(xmlSong.getTitle())) {
@@ -89,8 +94,29 @@ public class PlaylistSyncService {
             }
 
             if (!newSongs.isEmpty()) {
-                songRepository.saveAll(newSongs);
-                logger.info("Added {} new songs to database", newSongs.size());
+                logger.info("Processing {} new songs for database insertion", newSongs.size());
+                
+                // Process in smaller batches for better performance with large datasets
+                int batchSize = 500;
+                int totalBatches = (int) Math.ceil((double) newSongs.size() / batchSize);
+                logger.info("Processing {} songs in {} batches", newSongs.size(), totalBatches);
+                
+                for (int i = 0; i < newSongs.size(); i += batchSize) {
+                    int endIndex = Math.min(i + batchSize, newSongs.size());
+                    List<Song> batch = newSongs.subList(i, endIndex);
+                    int currentBatch = (i / batchSize) + 1;
+                    
+                    try {
+                        songRepository.saveAll(batch);
+                        logger.info("Batch {}/{} completed: Saved {} songs (Total: {}/{})", 
+                                  currentBatch, totalBatches, batch.size(), endIndex, newSongs.size());
+                    } catch (Exception e) {
+                        logger.error("Error saving batch {}/{}", currentBatch, totalBatches, e);
+                        throw e; // Re-throw to trigger transaction rollback
+                    }
+                }
+                
+                logger.info("Successfully added {} new songs to database", newSongs.size());
             } else {
                 logger.info("No new songs to add, database is up to date");
             }
