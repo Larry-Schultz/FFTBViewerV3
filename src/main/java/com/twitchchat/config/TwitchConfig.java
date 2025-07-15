@@ -16,6 +16,7 @@ public class TwitchConfig {
     private static final String CONFIG_FILE = "config.properties";
     
     private String accessToken;
+    private String username;
     private String channelName;
     private Properties properties;
 
@@ -64,14 +65,20 @@ public class TwitchConfig {
             accessToken = properties.getProperty("twitch.access.token", "");
         }
 
+        // Get username from environment or properties
+        username = System.getenv("TWITCH_USERNAME");
+        if (username == null || username.trim().isEmpty()) {
+            username = properties.getProperty("twitch.username", "");
+        }
+
         // Get channel name from environment or properties
         channelName = System.getenv("TWITCH_CHANNEL");
         if (channelName == null || channelName.trim().isEmpty()) {
             channelName = properties.getProperty("twitch.channel.name", "");
         }
 
-        logger.info("Configuration loaded - Channel: {}, Token configured: {}", 
-            channelName, !accessToken.isEmpty());
+        logger.info("Configuration loaded - Username: {}, Channel: {}, Token configured: {}", 
+            username.isEmpty() ? "anonymous" : username, channelName, !accessToken.isEmpty());
     }
 
     /**
@@ -123,6 +130,20 @@ public class TwitchConfig {
      */
     public String getAccessToken() {
         return accessToken;
+    }
+
+    /**
+     * Get the configured username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Check if username is configured
+     */
+    public boolean hasUsername() {
+        return username != null && !username.trim().isEmpty();
     }
 
     /**

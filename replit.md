@@ -63,7 +63,8 @@ Preferred communication style: Simple, everyday language.
 - `TWITCH_CHANNEL` environment variable or `twitch.channel.name` in config.properties
 
 **Optional Settings:**
-- `TWITCH_ACCESS_TOKEN` environment variable or `twitch.access.token` in config.properties (for private channels)
+- `TWITCH_ACCESS_TOKEN` environment variable or `twitch.access.token` in config.properties (for authentication)
+- `TWITCH_USERNAME` environment variable or `twitch.username` in config.properties (for bot identification)
 
 ## Deployment Strategy
 
@@ -85,6 +86,7 @@ Preferred communication style: Simple, everyday language.
 - Fixed workflow configuration to properly set JAVA_HOME and PATH
 - Fixed OAuth credential handling for anonymous and authenticated connections
 - Added secure credential management using Replit Secrets for TWITCH_ACCESS_TOKEN
+- Added configurable username and channel properties for easy customization
 - Application now builds and runs successfully with full authentication
 - Enhanced functionality with authenticated Twitch access (whispers, private channels, better rate limits)
 
