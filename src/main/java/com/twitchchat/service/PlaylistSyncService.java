@@ -88,40 +88,17 @@ public class PlaylistSyncService {
                 }
             }
 
-            // Process songs and handle duplicates/occurrences
+            // Add new songs (keeping unique titles only)
             List<Song> newSongs = new ArrayList<>();
-            Map<String, Integer> xmlSongCounts = new HashMap<>();
-            
-            // Count occurrences of each song title in XML
-            for (Song xmlSong : xmlSongs) {
-                if (xmlSong.getTitle() != null) {
-                    xmlSongCounts.put(xmlSong.getTitle(), xmlSongCounts.getOrDefault(xmlSong.getTitle(), 0) + 1);
-                }
-            }
-            
-            // Update occurrence counts for existing songs and track processed titles
             Set<String> processedTitles = new HashSet<>();
             
             for (Song xmlSong : xmlSongs) {
                 if (xmlSong.getTitle() != null && !processedTitles.contains(xmlSong.getTitle())) {
                     processedTitles.add(xmlSong.getTitle());
                     
-                    if (existingTitles.contains(xmlSong.getTitle())) {
-                        // Update occurrence count for existing song
-                        Optional<Song> existingSong = songRepository.findByTitle(xmlSong.getTitle());
-                        if (existingSong.isPresent()) {
-                            Song song = existingSong.get();
-                            int newOccurrence = xmlSongCounts.get(xmlSong.getTitle());
-                            if (song.getOccurrence() == null || !song.getOccurrence().equals(newOccurrence)) {
-                                song.setOccurrence(newOccurrence);
-                                song.setUpdatedAt(LocalDateTime.now());
-                                songRepository.save(song);
-                                logger.debug("Updated occurrence for '{}': {}", xmlSong.getTitle(), newOccurrence);
-                            }
-                        }
-                    } else {
-                        // Add new song with occurrence count
-                        xmlSong.setOccurrence(xmlSongCounts.get(xmlSong.getTitle()));
+                    if (!existingTitles.contains(xmlSong.getTitle())) {
+                        // Add new song with occurrence = 0 (will be tracked by SongPlayTracker)
+                        xmlSong.setOccurrence(0);
                         newSongs.add(xmlSong);
                     }
                 }
