@@ -18,8 +18,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -85,11 +88,42 @@ public class PlaylistSyncService {
                 }
             }
 
-            // Add new songs in batches to avoid memory issues
+            // Process songs and handle duplicates/occurrences
             List<Song> newSongs = new ArrayList<>();
+            Map<String, Integer> xmlSongCounts = new HashMap<>();
+            
+            // Count occurrences of each song title in XML
             for (Song xmlSong : xmlSongs) {
-                if (xmlSong.getTitle() != null && !existingTitles.contains(xmlSong.getTitle())) {
-                    newSongs.add(xmlSong);
+                if (xmlSong.getTitle() != null) {
+                    xmlSongCounts.put(xmlSong.getTitle(), xmlSongCounts.getOrDefault(xmlSong.getTitle(), 0) + 1);
+                }
+            }
+            
+            // Update occurrence counts for existing songs and track processed titles
+            Set<String> processedTitles = new HashSet<>();
+            
+            for (Song xmlSong : xmlSongs) {
+                if (xmlSong.getTitle() != null && !processedTitles.contains(xmlSong.getTitle())) {
+                    processedTitles.add(xmlSong.getTitle());
+                    
+                    if (existingTitles.contains(xmlSong.getTitle())) {
+                        // Update occurrence count for existing song
+                        Optional<Song> existingSong = songRepository.findByTitle(xmlSong.getTitle());
+                        if (existingSong.isPresent()) {
+                            Song song = existingSong.get();
+                            int newOccurrence = xmlSongCounts.get(xmlSong.getTitle());
+                            if (song.getOccurrence() == null || !song.getOccurrence().equals(newOccurrence)) {
+                                song.setOccurrence(newOccurrence);
+                                song.setUpdatedAt(LocalDateTime.now());
+                                songRepository.save(song);
+                                logger.debug("Updated occurrence for '{}': {}", xmlSong.getTitle(), newOccurrence);
+                            }
+                        }
+                    } else {
+                        // Add new song with occurrence count
+                        xmlSong.setOccurrence(xmlSongCounts.get(xmlSong.getTitle()));
+                        newSongs.add(xmlSong);
+                    }
                 }
             }
 

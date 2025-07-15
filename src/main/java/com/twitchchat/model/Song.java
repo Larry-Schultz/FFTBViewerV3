@@ -46,8 +46,12 @@ public class Song {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "occurrence", nullable = false)
+    private Integer occurrence = 1;
+
     public Song() {
         this.createdAt = LocalDateTime.now();
+        this.occurrence = 1;
     }
 
     public Song(String title, String creator, String album, String duration) {
@@ -126,6 +130,14 @@ public class Song {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getOccurrence() {
+        return occurrence;
+    }
+
+    public void setOccurrence(Integer occurrence) {
+        this.occurrence = occurrence;
     }
 
     @Override
