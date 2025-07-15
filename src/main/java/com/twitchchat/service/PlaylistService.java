@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class PlaylistService {
     private static final Logger logger = LoggerFactory.getLogger(PlaylistService.class);
-    private static final String PLAYLIST_URL = "https://www.fftbattleground.com/fftbg/playlist.xml";
+    private static final String PLAYLIST_URL = "http://www.fftbattleground.com/fftbg/playlist.xml";
     
     private final RestTemplate restTemplate;
     
@@ -90,21 +90,80 @@ public class PlaylistService {
     }
 
     private List<Song> parseAlternativeFormat(String xmlContent) {
-        // Simple regex-based parsing as fallback
+        // Parse the specific FFT Battleground XML format with <leaf> elements
         List<Song> songs = new ArrayList<>();
         
-        // Extract title patterns from XML
+        // Extract leaf elements with name attributes
         String[] lines = xmlContent.split("\n");
         for (String line : lines) {
-            if (line.contains("<title>") && !line.contains("FFT")) {
-                String title = extractTagValue(line, "title");
-                if (title != null && !title.trim().isEmpty()) {
-                    songs.add(new Song(title, "Unknown Artist", "Unknown Album", "Unknown"));
+            if (line.contains("<leaf") && line.contains("name=")) {
+                String songName = extractNameAttribute(line);
+                String duration = extractDurationAttribute(line);
+                
+                if (songName != null && !songName.trim().isEmpty() && 
+                    !songName.equals("Playlist") && !songName.contains("node")) {
+                    
+                    // Clean up the song name (remove .mp3, decode HTML entities)
+                    songName = cleanSongName(songName);
+                    songs.add(new Song(songName, "FFT Battleground", "Live Playlist", duration != null ? formatDuration(duration) : "Unknown"));
                 }
             }
         }
         
+        logger.info("Parsed {} songs using alternative XML format", songs.size());
         return songs;
+    }
+
+    private String extractNameAttribute(String line) {
+        // Extract value from name="..." attribute
+        int nameStart = line.indexOf("name=\"");
+        if (nameStart == -1) return null;
+        
+        nameStart += 6; // Skip 'name="'
+        int nameEnd = line.indexOf("\"", nameStart);
+        if (nameEnd == -1) return null;
+        
+        return line.substring(nameStart, nameEnd);
+    }
+
+    private String extractDurationAttribute(String line) {
+        // Extract value from duration="..." attribute
+        int durationStart = line.indexOf("duration=\"");
+        if (durationStart == -1) return null;
+        
+        durationStart += 10; // Skip 'duration="'
+        int durationEnd = line.indexOf("\"", durationStart);
+        if (durationEnd == -1) return null;
+        
+        return line.substring(durationStart, durationEnd);
+    }
+
+    private String cleanSongName(String songName) {
+        // Remove file extension
+        if (songName.endsWith(".mp3")) {
+            songName = songName.substring(0, songName.length() - 4);
+        }
+        
+        // Decode common HTML entities
+        songName = songName.replace("&#39;", "'")
+                          .replace("&amp;", "&")
+                          .replace("&lt;", "<")
+                          .replace("&gt;", ">")
+                          .replace("&quot;", "\"");
+        
+        // Trim whitespace
+        return songName.trim();
+    }
+
+    private String formatDuration(String durationSeconds) {
+        try {
+            int seconds = Integer.parseInt(durationSeconds);
+            int minutes = seconds / 60;
+            int remainingSeconds = seconds % 60;
+            return String.format("%d:%02d", minutes, remainingSeconds);
+        } catch (NumberFormatException e) {
+            return durationSeconds;
+        }
     }
 
     private String extractTagValue(String line, String tagName) {
