@@ -1,6 +1,8 @@
 package com.twitchchat.repository;
 
 import com.twitchchat.model.Song;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,6 +31,12 @@ public interface SongRepository extends JpaRepository<Song, Long> {
      */
     @Query("SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY s.title")
     List<Song> findByTitleContainingIgnoreCase(String searchTerm);
+    
+    /**
+     * Search songs by title containing search term (case insensitive) with pagination
+     */
+    @Query("SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    Page<Song> findByTitleContainingIgnoreCase(String searchTerm, Pageable pageable);
     
     /**
      * Get all songs ordered by title

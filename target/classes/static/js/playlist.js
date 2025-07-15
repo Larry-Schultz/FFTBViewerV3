@@ -8,6 +8,7 @@ class PlaylistManager {
     init() {
         this.cacheOriginalRows();
         this.setupEventListeners();
+        this.setupPaginationHandlers();
         this.updateShowingCount();
     }
 
@@ -138,6 +139,23 @@ class PlaylistManager {
             const finalCount = count !== undefined ? count : this.originalRows.length;
             showingElement.textContent = finalCount;
         }
+    }
+
+    setupPaginationHandlers() {
+        // Handle page size changes
+        const pageSizeSelect = document.getElementById('page-size');
+        if (pageSizeSelect) {
+            pageSizeSelect.addEventListener('change', (e) => {
+                this.changePageSize(e.target.value);
+            });
+        }
+    }
+
+    changePageSize(newSize) {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('size', newSize);
+        currentUrl.searchParams.set('page', '0'); // Reset to first page
+        window.location.href = currentUrl.toString();
     }
 }
 

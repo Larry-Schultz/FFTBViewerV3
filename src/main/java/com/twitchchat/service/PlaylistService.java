@@ -5,6 +5,10 @@ import com.twitchchat.repository.SongRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -72,6 +76,48 @@ public class PlaylistService {
      */
     public long getTotalSongCount() {
         return songRepository.countAllSongs();
+    }
+
+    /**
+     * Get paginated songs with occurrence and creation date
+     */
+    public Page<Song> fetchSongsPaginated(int page, int size, String sortBy, String sortDirection) {
+        try {
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Sort sort = Sort.by(direction, sortBy);
+            Pageable pageable = PageRequest.of(page, size, sort);
+            
+            Page<Song> songs = songRepository.findAll(pageable);
+            logger.info("Retrieved page {} of {} songs (size: {}, sort: {} {})", 
+                       page + 1, songs.getTotalPages(), size, sortBy, sortDirection);
+            return songs;
+        } catch (Exception e) {
+            logger.error("Error retrieving paginated songs", e);
+            return Page.empty();
+        }
+    }
+
+    /**
+     * Search songs with pagination
+     */
+    public Page<Song> searchSongsPaginated(String searchTerm, int page, int size, String sortBy, String sortDirection) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return fetchSongsPaginated(page, size, sortBy, sortDirection);
+        }
+        
+        try {
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Sort sort = Sort.by(direction, sortBy);
+            Pageable pageable = PageRequest.of(page, size, sort);
+            
+            Page<Song> songs = songRepository.findByTitleContainingIgnoreCase(searchTerm.trim(), pageable);
+            logger.info("Found page {} of {} songs matching search term: '{}' (size: {}, sort: {} {})", 
+                       page + 1, songs.getTotalPages(), searchTerm, size, sortBy, sortDirection);
+            return songs;
+        } catch (Exception e) {
+            logger.error("Error searching songs with term: '{}'", searchTerm, e);
+            return Page.empty();
+        }
     }
 
     /**

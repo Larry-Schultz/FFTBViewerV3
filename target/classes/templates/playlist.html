@@ -25,11 +25,26 @@
         <main>
             <div class="playlist-container">
                 <div class="search-controls">
-                    <input type="text" id="song-search" placeholder="Search songs..." class="search-input">
+                    <form method="GET" action="/playlist" class="search-form">
+                        <input type="text" name="search" id="song-search" placeholder="Search songs..." 
+                               class="search-input" th:value="${searchTerm}">
+                        <input type="hidden" name="page" value="0">
+                        <input type="hidden" name="size" th:value="${pageSize}">
+                        <input type="hidden" name="sortBy" th:value="${sortBy}">
+                        <input type="hidden" name="sortDirection" th:value="${sortDirection}">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
                     <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">All Songs</button>
-                        <button class="filter-btn" data-filter="title">Sort by Title</button>
-                        <button class="filter-btn" data-filter="duration">Sort by Duration</button>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='title', sortDirection='asc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'title' and sortDirection == 'asc'} ? 'active' : ''">Title A-Z</a>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='title', sortDirection='desc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'title' and sortDirection == 'desc'} ? 'active' : ''">Title Z-A</a>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='duration', sortDirection='asc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'duration' and sortDirection == 'asc'} ? 'active' : ''">Duration ↑</a>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='occurrence', sortDirection='desc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'occurrence' and sortDirection == 'desc'} ? 'active' : ''">Most Played</a>
+                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='createdAt', sortDirection='desc', search=${searchTerm})}" 
+                           class="filter-btn" th:classappend="${sortBy == 'createdAt' and sortDirection == 'desc'} ? 'active' : ''">Recently Added</a>
                     </div>
                 </div>
 
@@ -37,30 +52,66 @@
                     <table class="playlist-table" id="playlist-table">
                         <thead>
                             <tr>
-                                <th class="col-title">#</th>
+                                <th class="col-number">#</th>
                                 <th class="col-title">Song Title</th>
                                 <th class="col-duration">Duration</th>
+                                <th class="col-plays">Plays</th>
+                                <th class="col-added">Added Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="song, iterStat : ${songs}" class="song-row" 
                                 th:data-title="${song.title}">
-                                <td class="track-number" th:text="${iterStat.count}">1</td>
+                                <td class="track-number" th:text="${(currentPage * pageSize) + iterStat.count}">1</td>
                                 <td class="song-title" th:text="${song.title}">Song Title</td>
                                 <td class="song-duration" th:text="${song.duration ?: '--:--'}">Duration</td>
+                                <td class="song-plays" th:text="${song.occurrence ?: 0}">0</td>
+                                <td class="song-added" th:text="${#temporals.format(song.createdAt, 'MMM dd, yyyy')}">Added Date</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
+                <!-- Pagination Controls -->
+                <div class="pagination-controls">
+                    <div class="pagination-info">
+                        <span>Showing <strong th:text="${showingSongs}">0</strong> of <strong th:text="${totalSongs}">0</strong> songs</span>
+                        <span>Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+                    </div>
+                    
+                    <div class="pagination-settings">
+                        <label for="page-size">Page Size:</label>
+                        <select id="page-size" th:value="${pageSize}">
+                            <option value="10" th:selected="${pageSize == 10}">10</option>
+                            <option value="25" th:selected="${pageSize == 25}">25</option>
+                            <option value="50" th:selected="${pageSize == 50}">50</option>
+                            <option value="100" th:selected="${pageSize == 100}">100</option>
+                            <option value="250" th:selected="${pageSize == 250}">250</option>
+                            <option value="500" th:selected="${pageSize == 500}">500</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pagination-buttons">
+                        <a th:if="${hasPrevious}" 
+                           th:href="@{/playlist(page=${currentPage - 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
+                           class="btn btn-secondary">Previous</a>
+                        <span th:unless="${hasPrevious}" class="btn btn-disabled">Previous</span>
+                        
+                        <a th:if="${hasNext}" 
+                           th:href="@{/playlist(page=${currentPage + 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
+                           class="btn btn-secondary">Next</a>
+                        <span th:unless="${hasNext}" class="btn btn-disabled">Next</span>
+                    </div>
+                </div>
+
                 <div class="playlist-stats">
                     <div class="stat-card">
                         <h3>Total Tracks</h3>
-                        <span class="stat-number" th:text="${songCount}">0</span>
+                        <span class="stat-number" th:text="${totalSongs}">0</span>
                     </div>
                     <div class="stat-card">
                         <h3>Showing</h3>
-                        <span class="stat-number" id="showing-count" th:text="${songCount}">0</span>
+                        <span class="stat-number" id="showing-count" th:text="${showingSongs}">0</span>
                     </div>
                 </div>
             </div>
