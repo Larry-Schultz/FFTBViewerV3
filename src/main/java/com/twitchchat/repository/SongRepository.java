@@ -1,0 +1,53 @@
+package com.twitchchat.repository;
+
+import com.twitchchat.model.Song;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Repository for Song entities with custom queries for playlist management
+ */
+@Repository
+public interface SongRepository extends JpaRepository<Song, Long> {
+    
+    /**
+     * Find song by exact title match
+     */
+    Optional<Song> findByTitle(String title);
+    
+    /**
+     * Check if a song exists by title
+     */
+    boolean existsByTitle(String title);
+    
+    /**
+     * Search songs by title containing search term (case insensitive)
+     */
+    @Query("SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY s.title")
+    List<Song> findByTitleContainingIgnoreCase(String searchTerm);
+    
+    /**
+     * Get all songs ordered by title
+     */
+    List<Song> findAllByOrderByTitleAsc();
+    
+    /**
+     * Get all songs ordered by duration
+     */
+    List<Song> findAllByOrderByDurationAsc();
+    
+    /**
+     * Count total songs in database
+     */
+    @Query("SELECT COUNT(s) FROM Song s")
+    long countAllSongs();
+    
+    /**
+     * Get recently added songs (for sync verification)
+     */
+    List<Song> findTop10ByOrderByCreatedAtDesc();
+}
