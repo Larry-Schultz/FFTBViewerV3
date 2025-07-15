@@ -189,6 +189,52 @@
     width: 120px;
 }
 
+/* Sortable column headers */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sort-arrow {
+    margin-left: 8px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.2s ease;
+}
+
+.sort-arrow.asc {
+    color: #00f593;
+}
+
+.sort-arrow.asc::before {
+    content: "↑";
+}
+
+.sort-arrow.desc {
+    color: #00f593;
+}
+
+.sort-arrow.desc::before {
+    content: "↓";
+}
+
+/* Hide default arrow text when showing directional arrows */
+.sort-arrow.asc,
+.sort-arrow.desc {
+    font-size: 0;
+}
+
+.sort-arrow.asc::before,
+.sort-arrow.desc::before {
+    font-size: 0.8rem;
+}
+
 .playlist-table td {
     padding: 15px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);

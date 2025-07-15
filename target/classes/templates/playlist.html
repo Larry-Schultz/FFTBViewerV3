@@ -53,10 +53,22 @@
                         <thead>
                             <tr>
                                 <th class="col-number">#</th>
-                                <th class="col-title">Song Title</th>
-                                <th class="col-duration">Duration</th>
-                                <th class="col-plays">Plays</th>
-                                <th class="col-added">Added Date</th>
+                                <th class="col-title sortable" data-sort="title">
+                                    Song Title 
+                                    <span class="sort-arrow" th:classappend="${sortBy == 'title' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'title' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
+                                </th>
+                                <th class="col-duration sortable" data-sort="duration">
+                                    Duration 
+                                    <span class="sort-arrow" th:classappend="${sortBy == 'duration' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'duration' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
+                                </th>
+                                <th class="col-plays sortable" data-sort="occurrence">
+                                    Plays 
+                                    <span class="sort-arrow" th:classappend="${sortBy == 'occurrence' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'occurrence' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
+                                </th>
+                                <th class="col-added sortable" data-sort="createdAt">
+                                    Added Date 
+                                    <span class="sort-arrow" th:classappend="${sortBy == 'createdAt' and sortDirection == 'asc'} ? 'asc' : (${sortBy == 'createdAt' and sortDirection == 'desc'} ? 'desc' : '')">↕</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
