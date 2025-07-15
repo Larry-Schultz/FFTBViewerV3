@@ -3,24 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFT Battleground Playlist</title>
+    <title>FFTBG Viewer - Music Playlist</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/playlist.css}">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎵 FFT Battleground Playlist</h1>
-            <p>Music tracks from <strong>fftbattleground.com</strong></p>
-            <div class="status">
-                <span class="message-count">Total Songs: <span th:text="${songCount}">0</span></span>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-top">
+                <div class="logo-section">
+                    <div class="logo-icon">🎮</div>
+                    <div class="logo-text">
+                        <h1 class="logo-title">FFTBG Viewer</h1>
+                        <p class="logo-subtitle">Music tracks from fftbattleground.com</p>
+                    </div>
+                </div>
+                <div class="header-status">
+                    <div class="status-indicator">
+                        <span>🎵</span>
+                        <span>Total Songs: <span th:text="${songCount}">0</span></span>
+                    </div>
+                    <div class="status-indicator">
+                        <span>📊</span>
+                        <span>Showing: <span th:text="${currentPage * pageSize + 1}">1</span>-<span th:text="${currentPage * pageSize + playlist.size()}">50</span></span>
+                    </div>
+                </div>
             </div>
-        </header>
+            <nav class="header-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">
+                            <span class="nav-icon">💬</span>
+                            <span>Live Chat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/playlist" class="nav-link active">
+                            <span class="nav-icon">🎵</span>
+                            <span>Music Playlist</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <nav class="navigation">
-            <a href="/" class="nav-link">Live Chat</a>
-            <a href="/playlist" class="nav-link active">Music Playlist</a>
-        </nav>
+    <div class="container">
 
         <main>
             <div class="playlist-container">

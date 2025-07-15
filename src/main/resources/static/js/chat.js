@@ -96,12 +96,15 @@ class TwitchChatClient {
 
     updateConnectionStatus(connected) {
         const statusElement = document.getElementById('connection-status');
-        if (connected) {
-            statusElement.textContent = 'Connected';
-            statusElement.className = 'status-connected';
-        } else {
-            statusElement.textContent = 'Disconnected';
-            statusElement.className = 'status-disconnected';
+        if (statusElement) {
+            const statusText = statusElement.querySelector('span:last-child');
+            if (connected) {
+                if (statusText) statusText.textContent = 'Connected';
+                statusElement.className = 'status-indicator status-connected';
+            } else {
+                if (statusText) statusText.textContent = 'Disconnected';
+                statusElement.className = 'status-indicator status-disconnected';
+            }
         }
     }
 
