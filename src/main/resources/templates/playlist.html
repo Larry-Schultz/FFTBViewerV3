@@ -22,11 +22,11 @@
                 <div class="header-status">
                     <div class="status-indicator">
                         <span>🎵</span>
-                        <span>Total Songs: <span th:text="${songCount}">0</span></span>
+                        <span>Total Songs: <span th:text="${totalSongs ?: 0}">0</span></span>
                     </div>
                     <div class="status-indicator">
                         <span>📊</span>
-                        <span>Showing: <span th:text="${currentPage * pageSize + 1}">1</span>-<span th:text="${currentPage * pageSize + playlist.size()}">50</span></span>
+                        <span>Showing: <span th:text="${showingSongs ?: 0}">0</span> songs</span>
                     </div>
                 </div>
             </div>
@@ -107,8 +107,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="song, iterStat : ${songs}" class="song-row" 
-                                th:data-title="${song.title}">
+                            <tr th:each="song, iterStat : ${songs}" class="song-row" th:data-title="${song.title}">
                                 <td class="track-number" th:text="${(currentPage * pageSize) + iterStat.count}">1</td>
                                 <td class="song-title" th:text="${song.title}">Song Title</td>
                                 <td class="song-duration" th:text="${song.duration ?: '--:--'}">Duration</td>
