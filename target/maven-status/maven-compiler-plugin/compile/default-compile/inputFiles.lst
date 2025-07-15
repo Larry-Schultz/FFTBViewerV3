@@ -1,5 +1,9 @@
 /home/runner/workspace/src/main/java/com/twitchchat/TwitchChatReaderApplication.java
 /home/runner/workspace/src/main/java/com/twitchchat/TwitchChatReader.java
+/home/runner/workspace/src/main/java/com/twitchchat/service/ChatMessageService.java
 /home/runner/workspace/src/main/java/com/twitchchat/ChatEventHandler.java
+/home/runner/workspace/src/main/java/com/twitchchat/controller/WebController.java
+/home/runner/workspace/src/main/java/com/twitchchat/model/ChatMessage.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TwitchConfig.java
+/home/runner/workspace/src/main/java/com/twitchchat/config/WebSocketConfig.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TwitchProperties.java

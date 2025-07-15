@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Chat Reader - FFTBattleGround</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Twitch Chat Reader</h1>
+            <p>Live chat from <strong>fftbattleground</strong> channel</p>
+            <div class="status">
+                <span id="connection-status" class="status-disconnected">Connecting...</span>
+                <span class="message-count">Messages: <span id="message-count" th:text="${messageCount}">0</span></span>
+            </div>
+        </header>
+
+        <main>
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Pre-load existing messages -->
+                    <div th:each="message : ${messages}" class="message">
+                        <span class="timestamp" th:text="${message.timestamp}">00:00:00</span>
+                        <span class="username" th:text="${message.username}">user</span>:
+                        <span class="content" th:text="${message.message}">message content</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Real-time Twitch chat powered by Spring Boot & WebSocket</p>
+        </footer>
+    </div>
+
+    <script th:src="@{/js/chat.js}"></script>
+</body>
+</html>

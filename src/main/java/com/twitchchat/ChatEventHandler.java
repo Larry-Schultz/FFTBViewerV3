@@ -1,8 +1,12 @@
 package com.twitchchat;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.twitchchat.model.ChatMessage;
+import com.twitchchat.service.ChatMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,6 +20,12 @@ public class ChatEventHandler {
     private static final Logger logger = LoggerFactory.getLogger(ChatEventHandler.class);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    @Autowired
+    private ChatMessageService chatMessageService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     /**
      * Handle incoming chat messages
      */
@@ -25,6 +35,15 @@ public class ChatEventHandler {
             String username = event.getUser().getName();
             String message = event.getMessage();
             String channel = event.getChannel().getName();
+
+            // Create chat message object
+            ChatMessage chatMessage = new ChatMessage(username, message, channel);
+            
+            // Store message in service
+            chatMessageService.addMessage(chatMessage);
+            
+            // Broadcast message via WebSocket
+            messagingTemplate.convertAndSend("/topic/messages", chatMessage);
 
             // Format and display the message
             String formattedMessage = String.format("[%s] %s: %s", 

@@ -22,3 +22,8 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1) && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile && mvn spring-boot:run"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
