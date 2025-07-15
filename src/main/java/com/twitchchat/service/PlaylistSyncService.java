@@ -148,6 +148,7 @@ public class PlaylistSyncService {
             for (int i = 0; i < leafNodes.getLength(); i++) {
                 Element leafElement = (Element) leafNodes.item(i);
                 String rawTitle = leafElement.getAttribute("name");
+                String durationStr = leafElement.getAttribute("duration");
 
                 if (rawTitle != null && !rawTitle.trim().isEmpty()) {
                     Song song = new Song();
@@ -155,6 +156,20 @@ public class PlaylistSyncService {
                     // Clean up the song title
                     String cleanTitle = cleanSongTitle(rawTitle);
                     song.setTitle(cleanTitle);
+                    
+                    // Parse and format duration from seconds to MM:SS format
+                    if (durationStr != null && !durationStr.trim().isEmpty()) {
+                        try {
+                            int totalSeconds = Integer.parseInt(durationStr.trim());
+                            String formattedDuration = formatDuration(totalSeconds);
+                            song.setDuration(formattedDuration);
+                            logger.debug("Parsed duration for '{}': {} seconds -> {}", cleanTitle, totalSeconds, formattedDuration);
+                        } catch (NumberFormatException e) {
+                            logger.warn("Could not parse duration '{}' for song '{}'", durationStr, cleanTitle);
+                        }
+                    } else {
+                        logger.debug("No duration found for song '{}'", cleanTitle);
+                    }
                     
                     // Set creation timestamp
                     song.setCreatedAt(LocalDateTime.now());
@@ -188,6 +203,21 @@ public class PlaylistSyncService {
         cleaned = cleaned.trim().replaceAll("\\s+", " ");
         
         return cleaned;
+    }
+
+    /**
+     * Format duration from seconds to MM:SS or H:MM:SS format
+     */
+    private String formatDuration(int totalSeconds) {
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int seconds = totalSeconds % 60;
+        
+        if (hours > 0) {
+            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%d:%02d", minutes, seconds);
+        }
     }
 
     /**
