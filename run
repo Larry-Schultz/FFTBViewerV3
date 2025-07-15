@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Production run command for Spring Boot Twitch Chat Reader
+# This script is designed for Replit deployment
+
+# Set up Java environment
+export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1)
+export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH
+
+# Build and run the Spring Boot application
+mvn clean package -DskipTests && java -jar -Dserver.port=5000 target/twitch-chat-reader-1.0.0.jar
