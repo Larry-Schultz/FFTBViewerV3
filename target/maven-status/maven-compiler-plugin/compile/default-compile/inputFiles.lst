@@ -12,4 +12,5 @@
 /home/runner/workspace/src/main/java/com/twitchchat/model/Song.java
 /home/runner/workspace/src/main/java/com/twitchchat/ChatEventHandler.java
 /home/runner/workspace/src/main/java/com/twitchchat/service/PlaylistSyncService.java
+/home/runner/workspace/src/main/java/com/twitchchat/service/SongPlayTracker.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TwitchProperties.java

@@ -121,6 +121,11 @@ Preferred communication style: Simple, everyday language.
 - Implemented robust search, filter, and sort functionality for massive song library
 - Simplified playlist table to display only song titles and durations for cleaner interface
 - Updated search and filtering to focus on song names with over 32,000 real tracks
+- **Added real-time song play tracking system**: Monitors Twitch chat for "The track is now:" announcements
+- **Removed duplicate songs**: Consolidated 60,500 records to 28,927 unique songs
+- **Implemented occurrence field**: Tracks actual song plays from live chat, not XML duplicates
+- **Created play statistics API**: Added endpoints for song stats and most-played songs
+- **Integrated SongPlayTracker service**: Automatically updates occurrence counts from chat messages
 
 **January 15, 2025:**
 - Set up complete Java application for Twitch chat reading
@@ -130,4 +135,4 @@ Preferred communication style: Simple, everyday language.
 
 ---
 
-**Current Status**: Complete Spring Boot application with PostgreSQL database caching system running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, modern web UI displaying live chat messages from "fftbattleground" channel, and database-powered playlist system with scheduled XML sync, search functionality, and performance optimizations for 32,000+ songs from FFT Battleground's live music playlist.
+**Current Status**: Complete Spring Boot application with PostgreSQL database caching system running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, modern web UI displaying live chat messages from "fftbattleground" channel, and database-powered playlist system with scheduled XML sync, search functionality, and performance optimizations for 32,000+ songs from FFT Battleground's live music playlist. **NEW**: Real-time song play tracking system monitors chat for track announcements and maintains occurrence counts - currently tracking 506 total plays across 82 different songs with "Title Screen" being the most popular at 274 plays.

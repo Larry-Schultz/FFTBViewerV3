@@ -3,6 +3,7 @@ package com.twitchchat;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.twitchchat.model.ChatMessage;
 import com.twitchchat.service.ChatMessageService;
+import com.twitchchat.service.SongPlayTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ChatEventHandler {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    
+    @Autowired
+    private SongPlayTracker songPlayTracker;
 
     /**
      * Handle incoming chat messages
@@ -41,6 +45,12 @@ public class ChatEventHandler {
             
             // Store message in service
             chatMessageService.addMessage(chatMessage);
+            
+            // Track song plays from bot messages
+            boolean trackDetected = songPlayTracker.processMessage(username, message);
+            if (trackDetected) {
+                logger.info("Song play tracked from message: {}", message);
+            }
             
             // Broadcast message via WebSocket
             messagingTemplate.convertAndSend("/topic/messages", chatMessage);

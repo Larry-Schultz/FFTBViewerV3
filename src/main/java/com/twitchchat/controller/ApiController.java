@@ -1,7 +1,10 @@
 package com.twitchchat.controller;
 
+import com.twitchchat.model.Song;
+import com.twitchchat.repository.SongRepository;
 import com.twitchchat.service.PlaylistSyncService;
 import com.twitchchat.service.PlaylistService;
+import com.twitchchat.service.SongPlayTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +28,12 @@ public class ApiController {
 
     @Autowired
     private PlaylistSyncService playlistSyncService;
+    
+    @Autowired
+    private SongPlayTracker songPlayTracker;
+    
+    @Autowired
+    private SongRepository songRepository;
 
     /**
      * Get playlist status and statistics
@@ -34,10 +44,14 @@ public class ApiController {
         
         long totalSongs = playlistService.getTotalSongCount();
         boolean isAvailable = playlistService.isPlaylistAvailable();
+        long totalPlays = songPlayTracker.getTotalPlays();
+        long playedSongs = songPlayTracker.getPlayedSongsCount();
         
         status.put("totalSongs", totalSongs);
         status.put("isAvailable", isAvailable);
         status.put("status", isAvailable ? "ready" : "syncing");
+        status.put("totalPlays", totalPlays);
+        status.put("playedSongs", playedSongs);
         
         return ResponseEntity.ok(status);
     }
@@ -62,5 +76,28 @@ public class ApiController {
             
             return ResponseEntity.status(500).body(response);
         }
+    }
+    
+    /**
+     * Get song play statistics
+     */
+    @GetMapping("/songs/stats")
+    public ResponseEntity<Map<String, Object>> getSongStats() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        stats.put("totalPlays", songPlayTracker.getTotalPlays());
+        stats.put("playedSongs", songPlayTracker.getPlayedSongsCount());
+        stats.put("totalSongs", playlistService.getTotalSongCount());
+        
+        return ResponseEntity.ok(stats);
+    }
+    
+    /**
+     * Get most played songs
+     */
+    @GetMapping("/songs/most-played")
+    public ResponseEntity<List<Song>> getMostPlayedSongs() {
+        List<Song> mostPlayed = songRepository.findTop20ByOrderByOccurrenceDesc();
+        return ResponseEntity.ok(mostPlayed);
     }
 }

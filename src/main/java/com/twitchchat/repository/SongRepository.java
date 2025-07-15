@@ -50,4 +50,14 @@ public interface SongRepository extends JpaRepository<Song, Long> {
      * Get recently added songs (for sync verification)
      */
     List<Song> findTop10ByOrderByCreatedAtDesc();
+    
+    /**
+     * Get most played songs by occurrence count
+     */
+    List<Song> findTop20ByOrderByOccurrenceDesc();
+    
+    /**
+     * Get songs that have been played at least once
+     */
+    List<Song> findByOccurrenceGreaterThanOrderByOccurrenceDesc(int occurrence);
 }
