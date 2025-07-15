@@ -13,24 +13,12 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Twitch Chat Reader"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "maven_build_and_run"
+args = "Twitch Chat Reader Fixed"
 
 [[workflows.workflow]]
-name = "Twitch Chat Reader"
+name = "Twitch Chat Reader Fixed"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1) && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile exec:java -Dexec.mainClass=\"com.twitchchat.TwitchChatReader\""
-
-[[workflows.workflow]]
-name = "maven_build_and_run"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "mvn clean compile exec:java -Dexec.mainClass=\"com.twitchchat.TwitchChatReader\""

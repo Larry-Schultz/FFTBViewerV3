@@ -106,8 +106,8 @@ public class TwitchConfig {
         if (accessToken != null && !accessToken.trim().isEmpty()) {
             return new OAuth2Credential("twitch", accessToken);
         } else {
-            // Return anonymous credential for public chat
-            return new OAuth2Credential("twitch", null);
+            // Return null for anonymous connections to public chat
+            return null;
         }
     }
 

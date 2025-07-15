@@ -11,7 +11,7 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 **Technology Stack:**
-- Java 21 (OpenJDK)
+- Java 11 (OpenJDK)
 - Maven 3.9.4 for build management
 - twitch4j library for Twitch API integration
 - SLF4J with Logback for logging
@@ -73,11 +73,18 @@ Preferred communication style: Simple, everyday language.
 - Logs output to console and `logs/` directory
 
 **Environment Setup:**
-- Java 21 installation required
+- Java 11 installation required
 - Maven 3.9.4 for dependency management
 - No external database or web server needed
 
 ## Recent Changes
+
+**July 15, 2025:**
+- Fixed Java version compatibility issue (changed from Java 21 to Java 11)
+- Resolved Maven build failures by updating Java environment setup
+- Fixed workflow configuration to properly set JAVA_HOME and PATH
+- Application now builds and runs successfully
+- Ready to connect to Twitch channels and read chat messages
 
 **January 15, 2025:**
 - Set up complete Java application for Twitch chat reading
@@ -87,4 +94,4 @@ Preferred communication style: Simple, everyday language.
 
 ---
 
-**Current Status**: Application is running and ready for channel configuration to start reading Twitch chat messages.
+**Current Status**: Application is running successfully and ready to read Twitch chat messages from the configured channel (currently set to "shroud").
