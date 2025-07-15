@@ -1,8 +1,6 @@
 package com.twitchchat;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.chat.events.channel.UserJoinEvent;
-import com.github.twitch4j.chat.events.channel.UserLeaveEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,21 +39,18 @@ public class ChatEventHandler {
     }
 
     /**
-     * Handle user join events
+     * Handle user join events (simplified version without specific join events)
      */
-    public void onUserJoin(UserJoinEvent event) {
+    public void onUserJoin(Object event) {
         try {
             String timestamp = LocalDateTime.now().format(TIME_FORMATTER);
-            String username = event.getUser().getName();
-            String channel = event.getChannel().getName();
-
+            
             // Format and display the join message
-            String joinMessage = String.format("[%s] --> %s joined the chat", 
-                timestamp, username);
+            String joinMessage = String.format("[%s] --> User joined the chat", timestamp);
             
             System.out.println(joinMessage);
             
-            logger.debug("User joined {}: {}", channel, username);
+            logger.debug("User joined event received");
             
         } catch (Exception e) {
             logger.error("Error processing user join event: {}", e.getMessage(), e);
@@ -63,21 +58,18 @@ public class ChatEventHandler {
     }
 
     /**
-     * Handle user leave events
+     * Handle user leave events (simplified version without specific leave events)
      */
-    public void onUserLeave(UserLeaveEvent event) {
+    public void onUserLeave(Object event) {
         try {
             String timestamp = LocalDateTime.now().format(TIME_FORMATTER);
-            String username = event.getUser().getName();
-            String channel = event.getChannel().getName();
 
             // Format and display the leave message
-            String leaveMessage = String.format("[%s] <-- %s left the chat", 
-                timestamp, username);
+            String leaveMessage = String.format("[%s] <-- User left the chat", timestamp);
             
             System.out.println(leaveMessage);
             
-            logger.debug("User left {}: {}", channel, username);
+            logger.debug("User left event received");
             
         } catch (Exception e) {
             logger.error("Error processing user leave event: {}", e.getMessage(), e);

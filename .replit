@@ -1,4 +1,4 @@
-modules = ["java", "java-21"]
+modules = ["java", "java-21", "maven"]
 
 [nix]
 channel = "stable-24_05"
@@ -25,7 +25,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "./run.sh"
+args = "export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1) && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile exec:java -Dexec.mainClass=\"com.twitchchat.TwitchChatReader\""
 
 [[workflows.workflow]]
 name = "maven_build_and_run"

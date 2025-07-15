@@ -86,34 +86,6 @@ public class TwitchChatReader {
             eventHandler::onChannelMessage
         );
 
-        // Handle user joins
-        twitchChat.getEventManager().onEvent(
-            com.github.twitch4j.chat.events.channel.UserJoinEvent.class,
-            eventHandler::onUserJoin
-        );
-
-        // Handle user leaves
-        twitchChat.getEventManager().onEvent(
-            com.github.twitch4j.chat.events.channel.UserLeaveEvent.class,
-            eventHandler::onUserLeave
-        );
-
-        // Handle connection events
-        twitchChat.getEventManager().onEvent(
-            com.github.twitch4j.common.events.domain.EventSocket.class,
-            event -> {
-                if (event.getType().equals("CONNECTED")) {
-                    isConnected = true;
-                    logger.info("Connected to Twitch IRC");
-                    System.out.println("✓ Connected to Twitch chat");
-                } else if (event.getType().equals("DISCONNECTED")) {
-                    isConnected = false;
-                    logger.warn("Disconnected from Twitch IRC");
-                    System.out.println("✗ Disconnected from Twitch chat");
-                }
-            }
-        );
-
         logger.info("Event handlers registered");
     }
 
