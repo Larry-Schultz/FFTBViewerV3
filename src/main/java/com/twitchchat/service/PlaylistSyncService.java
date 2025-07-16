@@ -242,13 +242,17 @@ public class PlaylistSyncService {
                 // Extract the filename part between prefix and suffix
                 String encodedFilename = uri.substring(prefix.length(), uri.length() - suffix.length());
                 
+                // Add debug logging to trace the extraction process
+                logger.debug("URI parsing - Original: '{}', Encoded filename: '{}'", uri, encodedFilename);
+                
                 // URL decode the filename
                 String decodedFilename = URLDecoder.decode(encodedFilename, StandardCharsets.UTF_8);
+                logger.debug("URI parsing - Decoded filename: '{}'", decodedFilename);
                 
                 // Clean up the title
                 String cleanTitle = cleanSongTitle(decodedFilename);
                 
-                logger.debug("Extracted title from URI '{}': '{}'", uri, cleanTitle);
+                logger.debug("URI parsing - Final clean title: '{}'", cleanTitle);
                 return cleanTitle;
             } else {
                 logger.warn("URI does not match expected pattern: {}", uri);
