@@ -67,6 +67,14 @@ All deployment scripts now include comprehensive logging with `[DEPLOYMENT]` pre
 
 When deployment fails, check the logs for `[DEPLOYMENT]` entries to see exactly where the process breaks.
 
+**Shell Compatibility Fix:**
+The deployment script has been updated to resolve the syntax error:
+- **Original error**: `Syntax error: "(" unexpected (expecting "}")` on line 34
+- **Root cause**: Bash-specific array syntax not supported in deployment shell environment
+- **Solution**: Replaced array syntax with individual conditional checks for POSIX compatibility
+- **Verification**: Script passes both `bash -n` and `sh -n` syntax validation
+- **Result**: Compatible with bash, dash, and other POSIX-compliant shells
+
 The application now successfully:
 - Finds and executes the run script via `sh -c run`
 - Sets up Java and Maven environments correctly
