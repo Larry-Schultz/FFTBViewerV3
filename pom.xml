@@ -17,7 +17,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-<name>Twitch Chat Reader</name>
+    <name>Twitch Chat Reader</name>
     <description>A Spring Boot application for reading Twitch chat messages with PostgreSQL integration</description>
 
     <properties>
