@@ -155,11 +155,9 @@ Preferred communication style: Simple, everyday language.
 - **Maven auto-download**: Automatic Maven 3.9.4 download if not present in project directory
 - **Build error diagnosis**: Detailed error reporting for failed Maven builds with troubleshooting info
 - **JAR verification**: Enhanced checking for successful JAR file creation with size reporting
-- **Created start-deployment.sh**: Alternative deployment script with advanced error handling and logging
 - **FIXED PATH ISSUE**: Resolved "run command not found" by creating deployment-runner.sh in ~/.local/bin/run
 - **PATH integration**: Both `sh -c run` and `sh -c "run "` deployment commands now work correctly
 - **Smart project detection**: Deployment runner automatically finds project directory and executes start.sh
-- **Multiple deployment options**: Created run-wrapper.sh and deployment-troubleshooting.md for comprehensive coverage
 - **Enhanced error handling**: All deployment scenarios covered with fallback paths and detailed diagnostics
 - **Executable permissions**: Ensured all deployment scripts have proper execution permissions
 - **DEPLOYMENT VERIFIED**: Application successfully starts, connects to database, and joins Twitch channel ✅
@@ -184,3 +182,6 @@ Preferred communication style: Simple, everyday language.
 - **Improved song titles**: Song titles now display correctly (e.g., "'Splosion Man - Donuts, Go Nuts!" instead of encoded text)
 - **Database refresh**: Cleared existing songs and repopulating with correctly parsed titles from URI field
 - **Processing 32,732 songs**: Complete refresh in progress with new URI-based parsing method
+- **DEPLOYMENT SCRIPTS CLEANUP**: Removed 10 redundant deployment scripts, kept only 3 essential ones
+- **Simplified deployment**: Consolidated all functionality into `run`, `start.sh`, and `bin/run` scripts
+- **Removed redundant files**: Cleaned up deployment documentation and kept only essential guides
