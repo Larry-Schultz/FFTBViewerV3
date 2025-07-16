@@ -139,6 +139,14 @@ Preferred communication style: Simple, everyday language.
 
 **Current Status**: Complete Spring Boot application with PostgreSQL database caching system running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, modern web UI displaying live chat messages from "fftbattleground" channel, and database-powered playlist system with scheduled XML sync, search functionality, and performance optimizations for 32,000+ songs from FFT Battleground's live music playlist. **NEW**: Real-time song play tracking system monitors chat for track announcements and maintains occurrence counts - currently tracking 506 total plays across 82 different songs with "Title Screen" being the most popular at 274 plays.
 
+**July 16, 2025 - Deployment Permission Fixes:**
+- **RESOLVED DEPLOYMENT PERMISSION ISSUES**: Fixed Java compiler license file permission errors
+- **Removed portable Java**: Deleted problematic portable-java directory causing deployment failures
+- **System Java implementation**: Updated all build scripts to use only Replit's built-in Java from Nix store
+- **Created deployment-ready scripts**: build-replit.sh and run-replit.sh for clean deployment
+- **Permission-safe workflow**: Streamlined Maven build process avoiding file permission conflicts
+- **Build process optimization**: Eliminated timeout issues and portable Java dependency problems
+
 **July 15, 2025 - Deployment Configuration:**
 - **FIXED AUTOSCALE DEPLOYMENT**: Resolved deployment issues by switching from Reserved VM to Autoscale
 - **Updated run script**: Optimized for Autoscale with dynamic PORT binding and JVM tuning
