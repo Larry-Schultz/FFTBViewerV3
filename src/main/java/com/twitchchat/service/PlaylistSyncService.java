@@ -16,6 +16,8 @@ import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -179,15 +181,16 @@ public class PlaylistSyncService {
 
             for (int i = 0; i < leafNodes.getLength(); i++) {
                 Element leafElement = (Element) leafNodes.item(i);
-                String rawTitle = leafElement.getAttribute("name");
+                String uriStr = leafElement.getAttribute("uri");
                 String durationStr = leafElement.getAttribute("duration");
 
-                if (rawTitle != null && !rawTitle.trim().isEmpty()) {
+                if (uriStr != null && !uriStr.trim().isEmpty()) {
                     Song song = new Song();
                     
-                    // Clean up the song title
-                    String cleanTitle = cleanSongTitle(rawTitle);
-                    song.setTitle(cleanTitle);
+                    // Extract and clean song title from URI
+                    String cleanTitle = extractTitleFromUri(uriStr);
+                    if (cleanTitle != null && !cleanTitle.trim().isEmpty()) {
+                        song.setTitle(cleanTitle);
                     
                     // Parse and format duration from seconds to MM:SS format
                     if (durationStr != null && !durationStr.trim().isEmpty()) {
@@ -206,7 +209,10 @@ public class PlaylistSyncService {
                     // Set creation timestamp
                     song.setCreatedAt(LocalDateTime.now());
                     
-                    songs.add(song);
+                        songs.add(song);
+                    } else {
+                        logger.debug("Could not extract valid title from URI: {}", uriStr);
+                    }
                 }
             }
 
@@ -218,23 +224,59 @@ public class PlaylistSyncService {
     }
 
     /**
-     * Clean up song title by removing file extensions and extra characters
+     * Extract song title from URI field using proper URL decoding
+     * Example: file:///C:/sharec/FFTBattleground-battle/4%20Elements%20II%20-%20World%20of%20Magic.mp3
+     * Returns: 4 Elements II - World of Magic
+     */
+    private String extractTitleFromUri(String uri) {
+        if (uri == null || uri.trim().isEmpty()) {
+            return null;
+        }
+        
+        try {
+            // Expected pattern: file:///C:/sharec/FFTBattleground-battle/FILENAME.mp3
+            String prefix = "file:///C:/sharec/FFTBattleground-battle/";
+            String suffix = ".mp3";
+            
+            if (uri.startsWith(prefix) && uri.endsWith(suffix)) {
+                // Extract the filename part between prefix and suffix
+                String encodedFilename = uri.substring(prefix.length(), uri.length() - suffix.length());
+                
+                // URL decode the filename
+                String decodedFilename = URLDecoder.decode(encodedFilename, StandardCharsets.UTF_8);
+                
+                // Clean up the title
+                String cleanTitle = cleanSongTitle(decodedFilename);
+                
+                logger.debug("Extracted title from URI '{}': '{}'", uri, cleanTitle);
+                return cleanTitle;
+            } else {
+                logger.warn("URI does not match expected pattern: {}", uri);
+                return null;
+            }
+        } catch (Exception e) {
+            logger.error("Error extracting title from URI: {}", uri, e);
+            return null;
+        }
+    }
+
+    /**
+     * Clean up song title by removing unwanted characters and formatting
      */
     private String cleanSongTitle(String rawTitle) {
-        if (rawTitle == null) return null;
+        if (rawTitle == null || rawTitle.trim().isEmpty()) {
+            return rawTitle;
+        }
         
-        String cleaned = rawTitle;
+        String cleanTitle = rawTitle.trim();
         
-        // Remove common audio file extensions
-        cleaned = cleaned.replaceAll("\\.(mp3|wav|flac|m4a|ogg|wma)$", "");
+        // Replace underscores with spaces
+        cleanTitle = cleanTitle.replace("_", " ");
         
-        // Remove leading numbers and dashes (track numbers)
-        cleaned = cleaned.replaceAll("^\\d+[-\\s]*", "");
+        // Remove multiple spaces and trim
+        cleanTitle = cleanTitle.replaceAll("\\s+", " ").trim();
         
-        // Clean up extra whitespace
-        cleaned = cleaned.trim().replaceAll("\\s+", " ");
-        
-        return cleaned;
+        return cleanTitle;
     }
 
     /**
