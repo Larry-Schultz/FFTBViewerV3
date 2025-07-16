@@ -10,18 +10,41 @@ echo "[DEPLOY] Timestamp: $(date)"
 
 # Function to find Java
 find_java() {
-    # Check various Java locations
-    for java_candidate in \
-        ~/.nix-profile/bin/java \
-        /nix/store/*/bin/java \
-        /usr/lib/jvm/*/bin/java \
-        $(which java 2>/dev/null); do
-        
-        if [[ -x "$java_candidate" ]]; then
-            echo "$java_candidate"
+    echo "[DEPLOY] Searching for Java installations..."
+    
+    # First check Nix profile
+    if [[ -f ~/.nix-profile/bin/java ]]; then
+        echo "[DEPLOY] Found Java in Nix profile"
+        echo ~/.nix-profile/bin/java
+        return 0
+    fi
+    
+    # Search Nix store more thoroughly
+    local nix_java=$(find /nix/store -maxdepth 2 -name "java" -type f -executable 2>/dev/null | head -1)
+    if [[ -n "$nix_java" && -x "$nix_java" ]]; then
+        echo "[DEPLOY] Found Java in Nix store: $nix_java"
+        echo "$nix_java"
+        return 0
+    fi
+    
+    # Check PATH
+    if command -v java >/dev/null 2>&1; then
+        local java_path=$(which java)
+        echo "[DEPLOY] Found Java in PATH: $java_path"
+        echo "$java_path"
+        return 0
+    fi
+    
+    # Try system locations
+    for java_path in /usr/lib/jvm/*/bin/java /usr/bin/java; do
+        if [[ -x "$java_path" ]]; then
+            echo "[DEPLOY] Found Java in system: $java_path"
+            echo "$java_path"
             return 0
         fi
     done
+    
+    echo "[DEPLOY] No Java found"
     return 1
 }
 
