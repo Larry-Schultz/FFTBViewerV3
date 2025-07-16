@@ -56,6 +56,17 @@ which run
 - ✅ WebSocket connections functioning
 - ✅ Playlist sync service operational
 
+**Enhanced Deployment Logging:**
+All deployment scripts now include comprehensive logging with `[DEPLOYMENT]` prefix that shows:
+- Timestamp and process information 
+- Environment variables (PATH, HOME, PWD, PORT, JAVA_HOME)
+- Script execution details and command line arguments
+- Project directory search process with detailed path checking
+- Java and Maven setup steps with error diagnostics
+- Build process logging and JAR verification
+
+When deployment fails, check the logs for `[DEPLOYMENT]` entries to see exactly where the process breaks.
+
 The application now successfully:
 - Finds and executes the run script via `sh -c run`
 - Sets up Java and Maven environments correctly
