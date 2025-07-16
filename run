@@ -30,35 +30,35 @@ echo "$LOG_PREFIX   Command line args: $*"
 
 # Function to find project directory (using portable syntax)
 find_project_directory() {
-    echo "$LOG_PREFIX Searching for project directory with pom.xml..."
+    echo "$LOG_PREFIX Searching for project directory with pom.xml..." >&2
     
     # Check each path individually (more portable than arrays)
     if [ -f "/home/runner/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: /home/runner/workspace"
+        echo "$LOG_PREFIX   ✓ Found pom.xml at: /home/runner/workspace" >&2
         echo "/home/runner/workspace"
         return 0
     fi
     
     if [ -f "$CURRENT_DIR/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $CURRENT_DIR"
+        echo "$LOG_PREFIX   ✓ Found pom.xml at: $CURRENT_DIR" >&2
         echo "$CURRENT_DIR"
         return 0
     fi
     
     if [ -f "$SCRIPT_DIR/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $SCRIPT_DIR"
+        echo "$LOG_PREFIX   ✓ Found pom.xml at: $SCRIPT_DIR" >&2
         echo "$SCRIPT_DIR"
         return 0
     fi
     
     if [ -f "/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: /workspace"
+        echo "$LOG_PREFIX   ✓ Found pom.xml at: /workspace" >&2
         echo "/workspace"
         return 0
     fi
     
     if [ -f "$HOME/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $HOME/workspace"
+        echo "$LOG_PREFIX   ✓ Found pom.xml at: $HOME/workspace" >&2
         echo "$HOME/workspace"
         return 0
     fi

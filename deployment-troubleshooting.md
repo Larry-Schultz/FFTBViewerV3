@@ -75,6 +75,13 @@ The deployment script has been updated to resolve the syntax error:
 - **Verification**: Script passes both `bash -n` and `sh -n` syntax validation
 - **Result**: Compatible with bash, dash, and other POSIX-compliant shells
 
+**Function Output Fix:**
+Additional fix for directory change issue:
+- **Error**: `cd: can't cd to [DEPLOYMENT] Searching for project directory with pom.xml...`
+- **Cause**: Function logging mixed with return value in command substitution
+- **Solution**: Redirected logging messages to stderr (`>&2`) to separate from function output
+- **Result**: Clean function return values for proper directory navigation
+
 The application now successfully:
 - Finds and executes the run script via `sh -c run`
 - Sets up Java and Maven environments correctly
