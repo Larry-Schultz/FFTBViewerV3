@@ -11,7 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.util.Scanner;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,8 +58,7 @@ public class TwitchChatReader implements CommandLineRunner {
             // Start monitoring connection
             startConnectionMonitoring();
             
-            // Keep the application running
-            waitForUserInput();
+            // Application will continue running as a Spring Boot service
             
         } catch (Exception e) {
             logger.error("Failed to start Twitch Chat Reader: {}", e.getMessage(), e);
@@ -119,7 +118,7 @@ public class TwitchChatReader implements CommandLineRunner {
             
             logger.info("Joined channel: {}", channelName);
             System.out.println("Joined channel: " + channelName);
-            System.out.println("Listening for chat messages... (Press 'q' and Enter to quit)\n");
+            System.out.println("Listening for chat messages...");
             
         } catch (Exception e) {
             throw new RuntimeException("Failed to join channel: " + channelName, e);
@@ -148,79 +147,7 @@ public class TwitchChatReader implements CommandLineRunner {
         }, 30, 30, TimeUnit.SECONDS);
     }
 
-    /**
-     * Wait for user input to keep application running (deployment-friendly)
-     */
-    private void waitForUserInput() {
-        // Check if we're in a deployment environment (no interactive console)
-        if (!isInteractiveEnvironment()) {
-            logger.info("Running in deployment mode - keeping application alive without console input");
-            // Keep the application running indefinitely in deployment
-            keepAliveForDeployment();
-            return;
-        }
-        
-        // Interactive mode for local development
-        logger.info("Running in interactive mode - waiting for 'q' to quit");
-        Scanner scanner = new Scanner(System.in);
-        String input;
-        
-        try {
-            while (true) {
-                if (System.in.available() > 0) {
-                    input = scanner.nextLine();
-                    
-                    if ("q".equalsIgnoreCase(input.trim())) {
-                        System.out.println("Shutting down Twitch Chat Reader...");
-                        shutdown();
-                        break;
-                    }
-                } else {
-                    // Sleep briefly to avoid busy waiting
-                    Thread.sleep(100);
-                }
-            }
-        } catch (Exception e) {
-            logger.info("Console input not available, switching to deployment mode");
-            keepAliveForDeployment();
-        } finally {
-            scanner.close();
-        }
-    }
-    
-    /**
-     * Check if we're running in an interactive environment
-     */
-    private boolean isInteractiveEnvironment() {
-        try {
-            // Check if System.in is available and connected to a terminal
-            return System.console() != null && System.in.available() >= 0;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Keep the application alive in deployment mode
-     */
-    private void keepAliveForDeployment() {
-        try {
-            // Register shutdown hook for graceful shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                logger.info("Shutdown hook triggered - gracefully stopping Twitch Chat Reader");
-                shutdown();
-            }));
-            
-            // Keep the main thread alive
-            while (!Thread.currentThread().isInterrupted()) {
-                Thread.sleep(5000); // Sleep for 5 seconds between checks
-            }
-        } catch (InterruptedException e) {
-            logger.info("Application interrupted - shutting down");
-            Thread.currentThread().interrupt();
-            shutdown();
-        }
-    }
+
 
     /**
      * Get OAuth2 credential for Twitch authentication
