@@ -189,3 +189,7 @@ Preferred communication style: Simple, everyday language.
 - **Build/Runtime separation**: Build script handles Java/Maven setup and compilation, runtime scripts focus only on JAR execution
 - **Optimized for Replit**: Architecture now supports Replit's separate build and run phases for better deployment efficiency
 - **Lightweight runtime**: Runtime scripts now have minimal Java detection and faster startup times
+- **ENHANCED JAVA DETECTION**: Fixed deployment Java detection issues with improved Nix store scanning
+- **Robust path discovery**: Using `find` instead of `ls` for reliable Java installation detection
+- **Better version selection**: Implemented version sorting to select most recent Java installations
+- **Comprehensive debugging**: Added detailed logging for deployment troubleshooting
