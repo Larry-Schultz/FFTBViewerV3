@@ -193,6 +193,8 @@ Preferred communication style: Simple, everyday language.
 - **Robust path discovery**: Using `find` instead of `ls` for reliable Java installation detection
 - **Better version selection**: Implemented version sorting to select most recent Java installations
 - **Comprehensive debugging**: Added detailed logging for deployment troubleshooting
-- **DEPLOYMENT BUILD OPTIMIZATION**: Created `build-deploy.sh` to mirror workflow environment and avoid timeouts
-- **Fast deployment builds**: Build script uses same Java/Maven setup as running workflow for consistency
-- **Timeout prevention**: Eliminated Java detection delays by using known working environment configuration
+- **DEPLOYMENT BUILD OPTIMIZATION**: Created multiple optimized build scripts to handle deployment timeouts
+- **Hybrid build strategy**: `build.sh` uses fast Java detection with fallback to portable downloads
+- **Self-contained builds**: Build script can download its own Java if environment detection fails
+- **Timeout prevention**: Eliminated lengthy Java searches by using direct path detection and portable runtimes
+- **DEPLOYMENT TIMEOUT SOLUTION**: Resolved deployment timeouts with hybrid Java detection and portable JRE fallbacks
