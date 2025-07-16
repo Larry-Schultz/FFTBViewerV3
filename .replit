@@ -1,4 +1,4 @@
-modules = ["java", "java-21", "maven", "postgresql-16"]
+modules = ["java", "java-21", "maven", "postgresql-16", "java-11"]
 
 [nix]
 channel = "stable-24_05"
