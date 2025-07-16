@@ -59,18 +59,19 @@ setup_java() {
         fi
     done
     
-    # If no Java found, try to install it
-    echo "[DEPLOY] Installing Java..."
-    if command -v apt-get >/dev/null 2>&1; then
-        apt-get update -qq
-        apt-get install -y openjdk-11-jdk
-        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-        export PATH="$JAVA_HOME/bin:$PATH"
-        echo "[DEPLOY] ✓ Java installed successfully"
-    else
-        echo "[DEPLOY] ERROR: Cannot install Java - no package manager found"
-        exit 1
+    # If no Java found, try using system-provided Java
+    echo "[DEPLOY] Trying to find any available Java..."
+    if command -v java >/dev/null 2>&1; then
+        echo "[DEPLOY] ✓ Found Java in PATH"
+        return 0
     fi
+    
+    echo "[DEPLOY] ERROR: No Java installation found"
+    echo "[DEPLOY] Available locations checked:"
+    echo "[DEPLOY] - Nix store: /nix/store/*jdk*"
+    echo "[DEPLOY] - Standard locations: /usr/lib/jvm/*"
+    echo "[DEPLOY] - System PATH"
+    exit 1
 }
 
 # Set up Maven
