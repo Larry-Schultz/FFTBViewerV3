@@ -20,15 +20,22 @@ else
     
     # Check Nix store (Replit environment)
     if [ -d "/nix/store" ]; then
+        echo "Checking Nix store for Java installations..."
         NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null || echo "")
         if [ -n "$NIX_JDK_PATHS" ]; then
+            echo "Found potential Java installations:"
             for path in $NIX_JDK_PATHS; do
+                echo "  Checking: $path"
                 if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
                     JAVA_HOME="$path"
-                    echo "✓ Found Java at: $JAVA_HOME"
+                    echo "✓ Selected Java at: $JAVA_HOME"
                     break
+                elif [ -d "$path" ]; then
+                    echo "  Directory exists but no java binary found"
                 fi
             done
+        else
+            echo "No JDK directories found in Nix store"
         fi
     fi
     

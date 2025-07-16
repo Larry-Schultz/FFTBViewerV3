@@ -104,15 +104,24 @@ else
     # Check Nix store (Replit environment)
     if [ -d "/nix/store" ]; then
         echo "$LOG_PREFIX Checking Nix store..." >&2
+        # Search for JDK installations in Nix store
         NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null || echo "")
         if [ -n "$NIX_JDK_PATHS" ]; then
+            echo "$LOG_PREFIX Found potential Java installations:" >&2
+            # Try each path and verify java executable exists
             for path in $NIX_JDK_PATHS; do
+                echo "$LOG_PREFIX   Checking: $path" >&2
                 if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
                     JAVA_HOME="$path"
-                    echo "$LOG_PREFIX ✓ Found Java at: $JAVA_HOME" >&2
+                    echo "$LOG_PREFIX ✓ Selected Java at: $JAVA_HOME" >&2
                     break
+                elif [ -d "$path" ]; then
+                    echo "$LOG_PREFIX   Directory exists but no java binary found" >&2
+                    ls -la "$path/bin/" 2>/dev/null | head -3 >&2 || echo "$LOG_PREFIX   No bin directory" >&2
                 fi
             done
+        else
+            echo "$LOG_PREFIX No JDK directories found in Nix store" >&2
         fi
     fi
     
