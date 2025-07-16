@@ -41,19 +41,13 @@ public class PlaylistSyncService {
     private SongRepository songRepository;
 
     /**
-     * Initial sync when application starts (async to avoid blocking startup)
+     * Initial sync when application starts (temporarily disabled for debugging)
      */
     @PostConstruct
     public void initialSync() {
-        logger.info("Starting initial playlist synchronization...");
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000); // Wait 5 seconds for app to fully start
-                syncPlaylist();
-            } catch (Exception e) {
-                logger.error("Initial sync failed", e);
-            }
-        }).start();
+        logger.info("Initial playlist synchronization temporarily disabled for debugging URI parsing");
+        // Temporarily disabled to debug URI parsing issues
+        // syncPlaylist();
     }
 
     /**
