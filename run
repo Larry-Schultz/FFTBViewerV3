@@ -8,5 +8,8 @@ set -e
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
-# Use the simple deployment script (no package installation)
-exec ./run-simple.sh
+# Ensure script permissions and use direct execution
+chmod +x deployment/start-app.sh 2>/dev/null || true
+
+# Use direct start script to avoid permission issues
+exec bash deployment/start-app.sh

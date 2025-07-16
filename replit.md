@@ -152,6 +152,7 @@ Preferred communication style: Simple, everyday language.
 - **FIXED DEPLOYMENT PERMISSION ERRORS**: Resolved apt package permission issues by removing package installation
 - **Created run-simple.sh**: Simple deployment script that uses existing environment without installing packages
 - **DEPLOYMENT SUCCESS**: Application now starts successfully without permission conflicts
+- **ORGANIZED DEPLOYMENT SCRIPTS**: Moved all deployment scripts to dedicated `/deployment` folder for cleaner project structure
 
 **July 15, 2025 - Deployment Configuration:**
 - **FIXED AUTOSCALE DEPLOYMENT**: Resolved deployment issues by switching from Reserved VM to Autoscale
