@@ -179,3 +179,8 @@ Preferred communication style: Simple, everyday language.
 - **Added database constraints**: Unique index on song titles prevents duplicates at schema level
 - **Thread synchronization**: Prevents race conditions between initial and scheduled sync operations
 - **Enhanced error handling**: Graceful handling of duplicate key violations with individual song fallback
+- **UPDATED XML PARSING METHOD**: Changed from 'name' field to 'uri' field for proper song title extraction
+- **URL decoding implementation**: Added proper URL decoding to handle encoded characters like %20 (spaces) and %23 (#)
+- **Improved song titles**: Song titles now display correctly (e.g., "'Splosion Man - Donuts, Go Nuts!" instead of encoded text)
+- **Database refresh**: Cleared existing songs and repopulating with correctly parsed titles from URI field
+- **Processing 32,732 songs**: Complete refresh in progress with new URI-based parsing method
