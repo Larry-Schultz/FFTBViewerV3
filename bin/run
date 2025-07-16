@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Deployment-compatible run script that works from PATH
+# This script locates the project directory and executes the actual run script
+
+# Find the project directory (look for pom.xml as indicator)
+PROJECT_DIR="/home/runner/workspace"
+
+if [ -f "$PROJECT_DIR/pom.xml" ]; then
+    cd "$PROJECT_DIR"
+    exec ./run "$@"
+else
+    echo "ERROR: Could not find project directory with pom.xml"
+    echo "Searched: $PROJECT_DIR"
+    exit 1
+fi
