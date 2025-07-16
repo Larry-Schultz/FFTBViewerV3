@@ -21,6 +21,11 @@ This folder contains various deployment scripts for the Twitch Chat Reader appli
 
 - **`replit_deps.txt`** - Replit dependencies specification
 
+## Documentation
+
+- **`DEPLOYMENT-FIXES-SUMMARY.md`** - Comprehensive summary of all deployment fixes applied
+- **`README-DEPLOYMENT.md`** - Additional deployment documentation
+
 ## Usage
 
 The main application uses `deployment/start-app.sh` via the root `run` script. Other scripts are available for specific deployment scenarios or troubleshooting.
