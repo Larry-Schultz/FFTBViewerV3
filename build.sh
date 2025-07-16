@@ -26,31 +26,22 @@ if command -v java >/dev/null 2>&1; then
 else
     log "Java command not found in PATH, searching for installations..."
     
-    # Check Nix store first - improved detection
+    # Check Nix store first - fast deployment-optimized detection
     JAVA_HOME=""
     if [ -d "/nix/store" ]; then
         log "Checking Nix store for Java installations..."
-        NIX_JDK_PATHS=$(find /nix/store -maxdepth 1 -name "*jdk*" -o -name "*adoptopenjdk*" -o -name "*openjdk*" 2>/dev/null | sort -V | tail -5)
-        if [ -n "$NIX_JDK_PATHS" ]; then
-            log "Found potential Java installations:"
-            for path in $NIX_JDK_PATHS; do
-                log "  Checking: $path"
-                if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
-                    JAVA_HOME="$path"
-                    log "✓ Selected Java at: $JAVA_HOME"
-                    break
-                elif [ -d "$path" ]; then
-                    log "  Directory exists, checking contents..."
-                    if [ -d "$path/bin" ]; then
-                        log "  Bin directory found, checking for java executable..."
-                        ls -la "$path/bin/java*" 2>/dev/null | head -3
-                    else
-                        log "  No bin directory found"
-                    fi
-                fi
-            done
-        else
-            log "No JDK directories found in Nix store"
+        # Fast check - look for most common Java patterns first
+        for pattern in "*openjdk-11*" "*jdk-11*" "*adoptopenjdk-11*" "*openjdk*" "*jdk*"; do
+            JAVA_PATH=$(find /nix/store -maxdepth 1 -name "$pattern" -type d 2>/dev/null | head -1)
+            if [ -n "$JAVA_PATH" ] && [ -f "$JAVA_PATH/bin/java" ]; then
+                JAVA_HOME="$JAVA_PATH"
+                log "✓ Selected Java at: $JAVA_HOME"
+                break
+            fi
+        done
+        
+        if [ -z "$JAVA_HOME" ]; then
+            log "No suitable Java installation found in Nix store"
         fi
     fi
     
