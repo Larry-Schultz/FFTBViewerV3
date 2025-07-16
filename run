@@ -91,45 +91,137 @@ ls -la | head -10
 # Set up Java environment
 echo "$LOG_PREFIX Setting up Java environment..."
 
-# Find Java installation (check common locations)
-JAVA_HOME=""
-if [ -d "/nix/store" ]; then
-    JAVA_PATH=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
-    if [ -n "$JAVA_PATH" ] && [ -d "$JAVA_PATH" ]; then
-        JAVA_HOME="$JAVA_PATH"
-        echo "$LOG_PREFIX   ✓ Found Java at: $JAVA_HOME"
+# Enhanced Java detection with comprehensive logging
+echo "$LOG_PREFIX Searching for Java installations..." >&2
+
+# Check if java command is already available in PATH
+if command -v java >/dev/null 2>&1; then
+    JAVA_COMMAND_PATH=$(command -v java)
+    JAVA_HOME=$(dirname $(dirname "$JAVA_COMMAND_PATH"))
+    echo "$LOG_PREFIX   ✓ Found Java command in PATH: $JAVA_COMMAND_PATH" >&2
+    echo "$LOG_PREFIX   ✓ Derived JAVA_HOME: $JAVA_HOME" >&2
+else
+    echo "$LOG_PREFIX   ✗ Java command not found in PATH" >&2
+    
+    # Comprehensive Java location search
+    JAVA_HOME=""
+    
+    # Check Nix store
+    echo "$LOG_PREFIX   Checking Nix store..." >&2
+    if [ -d "/nix/store" ]; then
+        echo "$LOG_PREFIX     /nix/store directory exists" >&2
+        NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null || echo "")
+        if [ -n "$NIX_JDK_PATHS" ]; then
+            echo "$LOG_PREFIX     Found JDK paths in Nix store:" >&2
+            for path in $NIX_JDK_PATHS; do
+                echo "$LOG_PREFIX       - $path" >&2
+            done
+            # Select the first available JDK
+            for path in $NIX_JDK_PATHS; do
+                if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
+                    JAVA_HOME="$path"
+                    echo "$LOG_PREFIX     ✓ Selected Java at: $JAVA_HOME" >&2
+                    break
+                elif [ -d "$path" ] && [ -d "$path/bin" ]; then
+                    JAVA_HOME="$path"
+                    echo "$LOG_PREFIX     ✓ Selected Java at: $JAVA_HOME (assuming valid)" >&2
+                    break
+                fi
+            done
+        else
+            echo "$LOG_PREFIX     ✗ No JDK directories found in Nix store" >&2
+        fi
+    else
+        echo "$LOG_PREFIX     ✗ /nix/store directory does not exist" >&2
+    fi
+    
+    # Check standard locations if Nix didn't work
+    if [ -z "$JAVA_HOME" ]; then
+        echo "$LOG_PREFIX   Checking standard Java locations..." >&2
+        STANDARD_PATHS="/usr/lib/jvm/java-11-openjdk /usr/lib/jvm/default-java /opt/java/openjdk /usr/lib/jvm/java-8-openjdk /usr/lib/jvm/java-17-openjdk"
+        
+        for path in $STANDARD_PATHS; do
+            echo "$LOG_PREFIX     Checking: $path" >&2
+            if [ -d "$path" ]; then
+                JAVA_HOME="$path"
+                echo "$LOG_PREFIX     ✓ Found Java at: $JAVA_HOME" >&2
+                break
+            else
+                echo "$LOG_PREFIX     ✗ Not found: $path" >&2
+            fi
+        done
+    fi
+    
+    # Check JAVA_HOME environment variable as fallback
+    if [ -z "$JAVA_HOME" ] && [ -n "$JAVA_HOME_ENV" ] && [ -d "$JAVA_HOME_ENV" ]; then
+        JAVA_HOME="$JAVA_HOME_ENV"
+        echo "$LOG_PREFIX   ✓ Using existing JAVA_HOME: $JAVA_HOME" >&2
     fi
 fi
 
-if [ -z "$JAVA_HOME" ] && [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
-    JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
-    echo "$LOG_PREFIX   ✓ Found Java at: $JAVA_HOME"
-fi
-
-if [ -z "$JAVA_HOME" ] && [ -d "/usr/lib/jvm/default-java" ]; then
-    JAVA_HOME="/usr/lib/jvm/default-java"
-    echo "$LOG_PREFIX   ✓ Found Java at: $JAVA_HOME"
-fi
-
+# Final Java validation - if no Java found, download portable JDK
 if [ -z "$JAVA_HOME" ] || [ ! -d "$JAVA_HOME" ]; then
-    echo "$LOG_PREFIX ERROR: No Java installation found" >&2
-    exit 1
+    echo "$LOG_PREFIX No Java installation found - downloading portable OpenJDK..." >&2
+    
+    # Create Java directory
+    PORTABLE_JAVA_DIR="$PWD/java"
+    mkdir -p "$PORTABLE_JAVA_DIR"
+    
+    # Download portable OpenJDK 11
+    OPENJDK_URL="https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz"
+    echo "$LOG_PREFIX Downloading OpenJDK 11 from: $OPENJDK_URL" >&2
+    
+    if command -v wget >/dev/null 2>&1; then
+        echo "$LOG_PREFIX Using wget to download OpenJDK..." >&2
+        wget -q "$OPENJDK_URL" -O openjdk.tar.gz
+    elif command -v curl >/dev/null 2>&1; then
+        echo "$LOG_PREFIX Using curl to download OpenJDK..." >&2
+        curl -sL "$OPENJDK_URL" -o openjdk.tar.gz
+    else
+        echo "$LOG_PREFIX ERROR: Neither wget nor curl available for Java download" >&2
+        echo "$LOG_PREFIX System information for debugging:" >&2
+        echo "$LOG_PREFIX   Current PATH: $PATH" >&2
+        echo "$LOG_PREFIX   Available commands:" >&2
+        echo "$LOG_PREFIX     which java: $(which java 2>/dev/null || echo 'not found')" >&2
+        echo "$LOG_PREFIX     whereis java: $(whereis java 2>/dev/null || echo 'not found')" >&2
+        echo "$LOG_PREFIX   Directory listings:" >&2
+        echo "$LOG_PREFIX     /usr/lib/jvm/: $(ls -la /usr/lib/jvm/ 2>/dev/null || echo 'directory not found')" >&2
+        echo "$LOG_PREFIX     /nix/store/*jdk*: $(ls -d /nix/store/*jdk* 2>/dev/null || echo 'no jdk directories')" >&2
+        exit 1
+    fi
+    
+    echo "$LOG_PREFIX Extracting OpenJDK..." >&2
+    tar -xzf openjdk.tar.gz --strip-components=1 -C "$PORTABLE_JAVA_DIR"
+    rm openjdk.tar.gz
+    
+    # Set JAVA_HOME to portable installation
+    JAVA_HOME="$PORTABLE_JAVA_DIR"
+    echo "$LOG_PREFIX ✓ Portable Java installed at: $JAVA_HOME" >&2
 fi
 
-echo "$LOG_PREFIX Setting JAVA_HOME to: $JAVA_HOME"
+echo "$LOG_PREFIX Setting JAVA_HOME to: $JAVA_HOME" >&2
 export JAVA_HOME
 export PATH="$JAVA_HOME/bin:$PATH"
-echo "$LOG_PREFIX Updated PATH: $PATH"
+echo "$LOG_PREFIX Updated PATH: $PATH" >&2
 
-# Verify Java
-echo "$LOG_PREFIX Verifying Java installation..."
+# Verify Java installation
+echo "$LOG_PREFIX Verifying Java installation..." >&2
+echo "$LOG_PREFIX   JAVA_HOME contents:" >&2
+ls -la "$JAVA_HOME" | head -5 >&2 || echo "$LOG_PREFIX   Cannot list JAVA_HOME directory" >&2
+echo "$LOG_PREFIX   JAVA_HOME/bin contents:" >&2
+ls -la "$JAVA_HOME/bin/" | head -5 >&2 || echo "$LOG_PREFIX   Cannot list JAVA_HOME/bin directory" >&2
+
 if ! command -v java >/dev/null 2>&1; then
     echo "$LOG_PREFIX ERROR: Java command not available after PATH update" >&2
+    echo "$LOG_PREFIX Debugging information:" >&2
+    echo "$LOG_PREFIX   command -v java: $(command -v java 2>&1 || echo 'failed')" >&2
+    echo "$LOG_PREFIX   which java: $(which java 2>&1 || echo 'failed')" >&2
+    echo "$LOG_PREFIX   Current PATH: $PATH" >&2
     exit 1
 fi
 
 JAVA_VERSION=$(java -version 2>&1 | head -1)
-echo "$LOG_PREFIX ✓ Java verified: $JAVA_VERSION"
+echo "$LOG_PREFIX ✓ Java verified: $JAVA_VERSION" >&2
 
 # Set up Maven
 echo "$LOG_PREFIX Setting up Maven..."
