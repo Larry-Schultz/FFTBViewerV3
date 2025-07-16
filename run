@@ -88,7 +88,7 @@ echo "$LOG_PREFIX Current working directory: $(pwd)"
 echo "$LOG_PREFIX Project directory contents:"
 ls -la | head -10
 
-# Set up Java environment (minimal - just for running JAR)
+# Set up Java environment (runtime detection)
 echo "$LOG_PREFIX Setting up Java runtime environment..."
 
 # Check if java command is already available
@@ -97,27 +97,51 @@ if command -v java >/dev/null 2>&1; then
     JAVA_HOME=$(dirname $(dirname "$JAVA_COMMAND_PATH"))
     echo "$LOG_PREFIX ✓ Found Java command in PATH: $JAVA_COMMAND_PATH" >&2
 else
-    # Quick Java detection for runtime
+    # Comprehensive Java detection for runtime
     JAVA_HOME=""
+    echo "$LOG_PREFIX Searching for Java installations..." >&2
+    
+    # Check Nix store (Replit environment)
     if [ -d "/nix/store" ]; then
-        NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null | head -1)
-        if [ -n "$NIX_JDK_PATHS" ] && [ -d "$NIX_JDK_PATHS" ]; then
-            JAVA_HOME="$NIX_JDK_PATHS"
+        echo "$LOG_PREFIX Checking Nix store..." >&2
+        NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null || echo "")
+        if [ -n "$NIX_JDK_PATHS" ]; then
+            for path in $NIX_JDK_PATHS; do
+                if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
+                    JAVA_HOME="$path"
+                    echo "$LOG_PREFIX ✓ Found Java at: $JAVA_HOME" >&2
+                    break
+                fi
+            done
         fi
     fi
     
     # Check standard locations
     if [ -z "$JAVA_HOME" ]; then
-        for path in "/usr/lib/jvm/java-11-openjdk" "/usr/lib/jvm/default-java" "/opt/java/openjdk"; do
-            if [ -d "$path" ]; then
+        echo "$LOG_PREFIX Checking standard Java locations..." >&2
+        STANDARD_PATHS="/usr/lib/jvm/java-11-openjdk /usr/lib/jvm/default-java /opt/java/openjdk /usr/lib/jvm/java-8-openjdk"
+        for path in $STANDARD_PATHS; do
+            if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
                 JAVA_HOME="$path"
+                echo "$LOG_PREFIX ✓ Found Java at: $JAVA_HOME" >&2
                 break
             fi
         done
     fi
     
+    # Check if we have a portable Java from build script
+    if [ -z "$JAVA_HOME" ] && [ -d "$PWD/java" ] && [ -f "$PWD/java/bin/java" ]; then
+        JAVA_HOME="$PWD/java"
+        echo "$LOG_PREFIX ✓ Found portable Java at: $JAVA_HOME" >&2
+    fi
+    
     if [ -z "$JAVA_HOME" ]; then
-        echo "$LOG_PREFIX ERROR: Java runtime not found. Please ensure Java is installed." >&2
+        echo "$LOG_PREFIX ERROR: Java runtime not found." >&2
+        echo "$LOG_PREFIX Please ensure Java is installed or run the build script first." >&2
+        echo "$LOG_PREFIX Searched locations:" >&2
+        echo "$LOG_PREFIX   - Nix store (/nix/store/*jdk*)" >&2
+        echo "$LOG_PREFIX   - Standard paths (/usr/lib/jvm/java-11-openjdk, etc.)" >&2
+        echo "$LOG_PREFIX   - Portable Java (./java)" >&2
         exit 1
     fi
     
@@ -127,7 +151,9 @@ fi
 
 # Verify Java is available
 if ! command -v java >/dev/null 2>&1; then
-    echo "$LOG_PREFIX ERROR: Java command not available" >&2
+    echo "$LOG_PREFIX ERROR: Java command not available after setup" >&2
+    echo "$LOG_PREFIX JAVA_HOME: $JAVA_HOME" >&2
+    echo "$LOG_PREFIX PATH: $PATH" >&2
     exit 1
 fi
 
