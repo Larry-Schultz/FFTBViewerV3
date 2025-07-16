@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Hybrid build script - tries environment first, falls back to minimal setup
-# Optimized for deployment speed
+# Optimized build script for deployment - uses direct Java path detection
+# Fixes deployment timeouts and build failures
 
 set -e
 
@@ -10,58 +10,99 @@ log() {
     echo "$LOG_PREFIX $1" >&2
 }
 
-log "=== Hybrid Spring Boot Build ==="
+log "=== Spring Boot Deployment Build ==="
 log "Timestamp: $(date)"
 
-# Strategy 1: Try to use existing Nix Java quickly
+# FIX 1: Use direct Java path instead of complex detection
+log "Setting up Java environment..."
 if [ -d "/nix/store" ]; then
-    EXISTING_JAVA=$(ls /nix/store/*jdk*/bin/java 2>/dev/null | head -1)
-    if [ -n "$EXISTING_JAVA" ]; then
-        JAVA_HOME=$(dirname $(dirname "$EXISTING_JAVA"))
+    # Use direct Nix store path pattern - much faster than complex searches
+    JAVA_HOME=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
+    if [ -n "$JAVA_HOME" ] && [ -f "$JAVA_HOME/bin/java" ]; then
         export JAVA_HOME
-        export PATH="$JAVA_HOME/bin:$PWD/maven/bin:$PATH"
-        log "✓ Using existing Java: $JAVA_HOME"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        log "✓ Java found at: $JAVA_HOME"
+    else
+        log "ERROR: No Java installation found in Nix store"
+        exit 1
     fi
-fi
-
-# Strategy 2: If no Java found, use a minimal portable version
-if ! command -v java >/dev/null 2>&1; then
-    log "No Java found, using minimal setup..."
-    
-    # Try to use any available Java in the system
-    for java_path in /usr/bin/java /usr/local/bin/java; do
-        if [ -f "$java_path" ]; then
-            export PATH="$(dirname $java_path):$PWD/maven/bin:$PATH"
-            log "✓ Using system Java: $java_path"
-            break
-        fi
-    done
-    
-    # If still no Java, quick minimal download
-    if ! command -v java >/dev/null 2>&1; then
-        log "Downloading minimal Java runtime..."
-        mkdir -p portable-jre
-        
-        # Use a smaller JRE instead of full JDK
-        JRE_URL="https://download.bell-sw.com/java/11.0.19+7/bellsoft-jre11.0.19+7-linux-amd64.tar.gz"
-        curl -sL "$JRE_URL" | tar -xz --strip-components=1 -C portable-jre
-        
-        export JAVA_HOME="$PWD/portable-jre"
-        export PATH="$JAVA_HOME/bin:$PWD/maven/bin:$PATH"
-        log "✓ Portable JRE ready"
-    fi
-fi
-
-# Quick build
-log "Building..."
-mvn package -DskipTests -q
-
-# Verify
-if [ -f "target/twitch-chat-reader-1.0.jar" ]; then
-    log "✓ Build successful"
 else
-    log "ERROR: Build failed"
+    # Fallback for non-Nix environments
+    if command -v java >/dev/null 2>&1; then
+        JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+        export JAVA_HOME
+        log "✓ Using system Java: $JAVA_HOME"
+    else
+        log "ERROR: No Java installation found"
+        exit 1
+    fi
+fi
+
+# Verify Java installation
+java -version || {
+    log "ERROR: Java verification failed"
+    exit 1
+}
+
+# FIX 2: Add Maven installation check and setup
+log "Setting up Maven..."
+if [ -d "$PWD/maven" ]; then
+    export MAVEN_HOME="$PWD/maven"
+    export PATH="$MAVEN_HOME/bin:$PATH"
+    log "✓ Using project Maven: $MAVEN_HOME"
+elif command -v mvn >/dev/null 2>&1; then
+    log "✓ Using system Maven: $(which mvn)"
+else
+    log "Downloading Maven 3.9.4..."
+    mkdir -p maven
+    MAVEN_URL="https://archive.apache.org/dist/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+    curl -sL "$MAVEN_URL" | tar -xz --strip-components=1 -C maven
+    export MAVEN_HOME="$PWD/maven"
+    export PATH="$MAVEN_HOME/bin:$PATH"
+    log "✓ Maven downloaded and configured"
+fi
+
+# Verify Maven installation
+mvn -version || {
+    log "ERROR: Maven verification failed"
+    exit 1
+}
+
+# FIX 3: Complete build script with proper Maven build commands
+log "Starting Maven clean and compile..."
+mvn clean compile || {
+    log "ERROR: Maven compilation failed"
+    log "Check for syntax errors in Java source files"
+    exit 1
+}
+
+log "Starting Spring Boot packaging..."
+mvn package -DskipTests || {
+    log "ERROR: Maven packaging failed"
+    log "Check dependencies and build configuration"
+    exit 1
+}
+
+# FIX 4: Update JAR filename to match actual Maven output
+JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ -f "$JAR_FILE" ]; then
+    JAR_SIZE=$(stat -c%s "$JAR_FILE" 2>/dev/null || echo "unknown")
+    log "✓ Build successful: $JAR_FILE (${JAR_SIZE} bytes)"
+else
+    # FIX 5: Add error handling for incomplete build
+    log "ERROR: Expected JAR file not found: $JAR_FILE"
+    log "Contents of target directory:"
+    ls -la target/ 2>/dev/null || log "Target directory does not exist"
+    
+    # Check for alternative JAR names
+    FOUND_JARS=$(find target/ -name "*.jar" 2>/dev/null || true)
+    if [ -n "$FOUND_JARS" ]; then
+        log "Found JAR files:"
+        echo "$FOUND_JARS"
+    else
+        log "No JAR files found in target directory"
+    fi
     exit 1
 fi
 
-log "=== Complete ==="
+log "=== Build Complete - Ready for Deployment ==="

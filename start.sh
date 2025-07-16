@@ -98,8 +98,12 @@ echo ""
 # Check for pre-built JAR (build should be done separately)
 echo "Checking for pre-built JAR file..."
 
-# Check if JAR was built successfully
+# Check if JAR was built successfully - try both possible filenames
 JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ ! -f "$JAR_FILE" ]; then
+    # Try alternative JAR filename that might be created by Maven
+    JAR_FILE="target/twitch-chat-reader-1.0.jar"
+fi
 if [ ! -f "$JAR_FILE" ]; then
     echo "ERROR: JAR file not found at $JAR_FILE"
     echo "Target directory contents:"
