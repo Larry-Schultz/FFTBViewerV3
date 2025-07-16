@@ -33,6 +33,7 @@ public class PlaylistSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(PlaylistSyncService.class);
     private static final String PLAYLIST_URL = "http://www.fftbattleground.com/fftbg/playlist.xml";
+    private final Object syncLock = new Object(); // Prevent concurrent sync operations
 
     @Autowired
     private SongRepository songRepository;
@@ -63,10 +64,19 @@ public class PlaylistSyncService {
     }
 
     /**
-     * Synchronize playlist data from XML feed
+     * Synchronize playlist data from XML feed (synchronized to prevent race conditions)
      */
     @Transactional
     public void syncPlaylist() {
+        synchronized (syncLock) {
+            doSyncPlaylist();
+        }
+    }
+    
+    /**
+     * Internal sync method (called within synchronized block)
+     */
+    private void doSyncPlaylist() {
         try {
             List<Song> xmlSongs = fetchSongsFromXml();
             
@@ -114,12 +124,27 @@ public class PlaylistSyncService {
                     int currentBatch = (i / batchSize) + 1;
                     
                     try {
+                        // Use saveAll with exception handling for potential duplicate key violations
                         songRepository.saveAll(batch);
                         logger.info("Batch {}/{} completed: Saved {} songs (Total: {}/{})", 
                                   currentBatch, totalBatches, batch.size(), endIndex, newSongs.size());
                     } catch (Exception e) {
-                        logger.error("Error saving batch {}/{}", currentBatch, totalBatches, e);
-                        throw e; // Re-throw to trigger transaction rollback
+                        // Handle potential duplicate key violations gracefully
+                        if (e.getMessage() != null && e.getMessage().contains("duplicate key")) {
+                            logger.warn("Duplicate key violation in batch {}/{} - some songs may already exist, continuing", 
+                                      currentBatch, totalBatches);
+                            // Try saving songs individually to identify which ones are duplicates
+                            for (Song song : batch) {
+                                try {
+                                    songRepository.save(song);
+                                } catch (Exception singleSaveError) {
+                                    logger.debug("Skipped duplicate song: {}", song.getTitle());
+                                }
+                            }
+                        } else {
+                            logger.error("Error saving batch {}/{}", currentBatch, totalBatches, e);
+                            throw e; // Re-throw for other types of errors
+                        }
                     }
                 }
                 
