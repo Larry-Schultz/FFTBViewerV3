@@ -1,63 +1,85 @@
 # Deployment Guide
 
-This project uses a simplified deployment setup with only essential scripts.
+This project uses separate build and run scripts for optimal deployment.
 
-## Deployment Scripts
+## Scripts Overview
 
-### Production Deployment
+### Build Script
+- `build.sh` - Handles compilation, dependency management, and JAR creation
 
-**For Replit Deployments:**
-- `run` - Main deployment script that works in all environments
-- `bin/run` - PATH-compatible version for deployment systems
-- `start.sh` - Alternative startup script with enhanced error handling
+### Runtime Scripts  
+- `run` - Main runtime script for production deployment
+- `bin/run` - PATH-compatible version for deployment systems  
+- `start.sh` - Alternative runtime script with enhanced error handling
 
-### Key Features
+## Deployment Architecture
 
-All deployment scripts include:
-- ✅ **Automatic Java detection** with multiple fallback paths
-- ✅ **Maven auto-download** if not present
-- ✅ **Comprehensive error handling** with detailed diagnostics
-- ✅ **Environment variable configuration** for PORT and profiles
-- ✅ **JVM optimization** for 512MB memory limit
-- ✅ **Project directory detection** from any location
+**Build Phase (build.sh):**
+- ✅ **Java environment setup** with automatic JDK detection/download
+- ✅ **Maven installation** with auto-download if needed
+- ✅ **Project compilation** and JAR packaging
+- ✅ **Build verification** with comprehensive error reporting
+
+**Runtime Phase (run/start.sh):**
+- ✅ **Minimal Java runtime** detection for running JAR
+- ✅ **Environment configuration** for PORT and Spring profiles
+- ✅ **JAR execution** with optimized JVM settings
+- ✅ **Error handling** for missing build artifacts
 
 ### Usage
 
 **For Replit Deployments:**
-1. The deployment system will automatically use `run` or `bin/run`
-2. No manual configuration needed - scripts handle all environment setup
-3. Supports both Autoscale and Reserved VM deployment types
+1. **Build Phase**: Replit will automatically execute `build.sh`
+2. **Runtime Phase**: Replit will then execute `run` or `bin/run` 
+3. No manual configuration needed - scripts handle all environment setup
+4. Supports both Autoscale and Reserved VM deployment types
 
 **For manual execution:**
 ```bash
-# Option 1: Use the main run script
-./run
+# Step 1: Build the application
+./build.sh
 
-# Option 2: Use the enhanced start script
+# Step 2: Run the application  
+./run
+# OR alternatively:
 ./start.sh
 ```
 
 ### Environment Variables
 
-The scripts automatically configure:
+**Build Phase:**
+- `JAVA_HOME` - Auto-detected/downloaded for compilation
+- `MAVEN_HOME` - Set to `./maven` with auto-download
+
+**Runtime Phase:**
 - `SERVER_PORT` - Uses `PORT` environment variable or defaults to 5000
 - `SPRING_PROFILES_ACTIVE` - Set to "production" for deployments
-- `JAVA_HOME` - Auto-detected from multiple locations
-- `MAVEN_HOME` - Set to `./maven` with auto-download
+- `JAVA_HOME` - Minimal detection for JAR execution
 
 ### Troubleshooting
 
-All scripts include comprehensive logging with `[DEPLOYMENT]` prefix for easy debugging. They will:
-1. Show detailed environment information
-2. Report Java and Maven versions
-3. Provide build diagnostics on failure
-4. Verify JAR file creation and size
+**Build Script (`build.sh`):**
+- Uses `[BUILD]` prefix for logging
+- Shows Java/Maven setup and versions
+- Provides detailed build diagnostics on failure
+- Verifies JAR file creation and size
 
-### Files Removed
+**Runtime Scripts (`run`/`start.sh`):**
+- Use `[DEPLOYMENT]` prefix for logging  
+- Show runtime environment information
+- Verify JAR file exists before attempting to run
+- Provide clear error messages if build artifacts missing
 
-The following redundant scripts were removed to simplify maintenance:
-- `deploy.sh`, `run.sh`, `start-autoscale.sh`, `start-deployment.sh`
-- `start-universal.sh`, `run-wrapper.sh`, `deployment-runner.sh`
-- `deployment-debug.sh`, `verify-deployment.sh`, `verify-deployment-fixes.sh`
+### Architecture Benefits
 
-All functionality has been consolidated into the remaining essential scripts.
+**Separation of Concerns:**
+- Build complexity isolated from runtime
+- Runtime scripts are lightweight and fast
+- Build failures don't affect runtime environment
+- Easier debugging and maintenance
+
+**Replit Integration:**
+- Optimized for Replit's build/run separation
+- Build script handles heavy setup once
+- Runtime script focuses only on execution
+- Supports both local development and deployment

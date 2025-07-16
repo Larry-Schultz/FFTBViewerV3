@@ -185,3 +185,7 @@ Preferred communication style: Simple, everyday language.
 - **DEPLOYMENT SCRIPTS CLEANUP**: Removed 10 redundant deployment scripts, kept only 3 essential ones
 - **Simplified deployment**: Consolidated all functionality into `run`, `start.sh`, and `bin/run` scripts
 - **Removed redundant files**: Cleaned up deployment documentation and kept only essential guides
+- **SEPARATED BUILD AND RUN SCRIPTS**: Created dedicated `build.sh` for compilation and optimized runtime scripts
+- **Build/Runtime separation**: Build script handles Java/Maven setup and compilation, runtime scripts focus only on JAR execution
+- **Optimized for Replit**: Architecture now supports Replit's separate build and run phases for better deployment efficiency
+- **Lightweight runtime**: Runtime scripts now have minimal Java detection and faster startup times
