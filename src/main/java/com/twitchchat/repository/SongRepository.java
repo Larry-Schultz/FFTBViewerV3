@@ -4,8 +4,10 @@ import com.twitchchat.model.Song;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,4 +76,12 @@ public interface SongRepository extends JpaRepository<Song, Long> {
      * Get songs that have been played at least once
      */
     List<Song> findByOccurrenceGreaterThanOrderByOccurrenceDesc(int occurrence);
+    
+    /**
+     * Update duration for a song by title if it currently has the old duration
+     */
+    @Modifying
+    @Transactional
+    @Query("UPDATE Song s SET s.duration = :newDuration WHERE s.title = :title AND s.duration = :oldDuration")
+    int updateDurationByTitle(String title, String newDuration, String oldDuration);
 }

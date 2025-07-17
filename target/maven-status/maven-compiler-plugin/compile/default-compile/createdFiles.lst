@@ -14,6 +14,7 @@ com/twitchchat/event/detector/TrackPlayDetector.class
 com/twitchchat/TwitchChatReader.class
 META-INF/spring-configuration-metadata.json
 com/twitchchat/model/ChatMessage.class
+com/twitchchat/util/DurationSyncUtil.class
 com/twitchchat/service/ChatMessageService.class
 com/twitchchat/repository/SongRepository.class
 com/twitchchat/service/PlaylistService.class

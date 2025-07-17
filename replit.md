@@ -10,14 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 17, 2025 - Duration Parsing Bug Fix & Unit Testing:**
+**July 17, 2025 - Duration Parsing Bug Fix & Database Correction:**
 - **FIXED CRITICAL BUG**: Resolved -1 duration parsing issue where negative durations created "0:-1" format in database
 - **ENHANCED DURATION PARSING**: Updated `formatDuration` method to handle negative durations by converting them to "0:00"
-- **DATABASE CLEANUP**: Fixed 18 existing songs with "0:-1" duration format in database
+- **DATABASE CLEANUP**: Fixed 18 existing songs with "0:-1" duration format in database, corrected to "0:00"
 - **COMPREHENSIVE UNIT TESTS**: Created `PlaylistSyncServiceTest` with extensive duration parsing validation
 - **NEGATIVE DURATION PREVENTION**: Added validation in XML parsing to prevent negative durations from being stored
 - **IMPROVED ERROR HANDLING**: Enhanced duration parsing with default "0:00" for invalid or missing duration values
-- **ROOT CAUSE ANALYSIS**: Identified that -1 durations can occur when media player backend cannot determine song duration
+- **ROOT CAUSE INVESTIGATION**: Discovered discrepancy between XML source (duration="169") and database ("0:00") for some songs
+- **SPECIFIC FIX**: Corrected "Pigeon Blood - Carnelian" duration from "0:00" to "2:49" (169 seconds) matching XML source
+- **CREATED SYNC UTILITY**: Built DurationSyncUtil and DurationFixController for systematic duration correction
 - **PARSING ROBUSTNESS**: Added comprehensive test coverage for edge cases including null, empty, and invalid duration strings
 
 **July 17, 2025 - Profile Configuration System & Track Play Control:**

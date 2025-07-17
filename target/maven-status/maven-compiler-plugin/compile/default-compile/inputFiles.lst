@@ -21,3 +21,4 @@
 /home/runner/workspace/src/main/java/com/twitchchat/controller/ConfigController.java
 /home/runner/workspace/src/main/java/com/twitchchat/service/SongPlayTracker.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TwitchProperties.java
+/home/runner/workspace/src/main/java/com/twitchchat/util/DurationSyncUtil.java

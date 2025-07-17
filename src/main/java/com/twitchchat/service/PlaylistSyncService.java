@@ -211,9 +211,10 @@ public class PlaylistSyncService {
                             song.setDuration("0:00"); // Set default duration instead of leaving null
                         }
                     } else {
-                        logger.debug("No duration found for song '{}' - setting default duration", cleanTitle);
+                        logger.warn("Empty or null duration for song '{}' - setting default duration", cleanTitle);
                         song.setDuration("0:00"); // Set default duration instead of leaving null
                     }
+
                     
                     // Set creation timestamp
                     song.setCreatedAt(LocalDateTime.now());
