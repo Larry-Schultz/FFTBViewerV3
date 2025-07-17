@@ -10,6 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 17, 2025 - Duration Parsing Bug Fix & Unit Testing:**
+- **FIXED CRITICAL BUG**: Resolved -1 duration parsing issue where negative durations created "0:-1" format in database
+- **ENHANCED DURATION PARSING**: Updated `formatDuration` method to handle negative durations by converting them to "0:00"
+- **DATABASE CLEANUP**: Fixed 18 existing songs with "0:-1" duration format in database
+- **COMPREHENSIVE UNIT TESTS**: Created `PlaylistSyncServiceTest` with extensive duration parsing validation
+- **NEGATIVE DURATION PREVENTION**: Added validation in XML parsing to prevent negative durations from being stored
+- **IMPROVED ERROR HANDLING**: Enhanced duration parsing with default "0:00" for invalid or missing duration values
+- **ROOT CAUSE ANALYSIS**: Identified that -1 durations can occur when media player backend cannot determine song duration
+- **PARSING ROBUSTNESS**: Added comprehensive test coverage for edge cases including null, empty, and invalid duration strings
+
 **July 17, 2025 - Profile Configuration System & Track Play Control:**
 - **IMPLEMENTED PROFILE-BASED CONFIGURATION**: Added comprehensive Spring Boot profile system for environment-specific track play settings
 - **NEW**: Created `TrackPlayProperties` configuration class with enabled/logOnly/shouldUpdateDatabase flags
@@ -171,7 +181,7 @@ Preferred communication style: Simple, everyday language.
 
 ---
 
-**Current Status**: Complete Spring Boot application with PostgreSQL database caching system running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, modern web UI displaying live chat messages from "fftbattleground" channel, and database-powered playlist system with scheduled XML sync, search functionality, and performance optimizations for 32,000+ songs from FFT Battleground's live music playlist. **NEW**: Real-time song play tracking system monitors chat for track announcements and maintains occurrence counts. **DEPLOYMENT READY**: All permission issues resolved, application successfully starts without errors and is ready for production deployment.
+**Current Status**: Complete Spring Boot application with PostgreSQL database caching system running successfully on port 5000. Features authenticated Twitch access, real-time WebSocket communication, modern web UI displaying live chat messages from "fftbattleground" channel, and database-powered playlist system with scheduled XML sync, search functionality, and performance optimizations for 32,000+ songs from FFT Battleground's live music playlist. **NEW**: Real-time song play tracking system monitors chat for track announcements and maintains occurrence counts. **DEPLOYMENT READY**: All permission issues resolved, application successfully starts without errors and is ready for production deployment. **ENHANCED RELIABILITY**: Fixed critical -1 duration parsing bug with comprehensive unit testing to prevent future parsing issues.
 
 **July 16, 2025 - Deployment Permission Fixes:**
 - **RESOLVED DEPLOYMENT PERMISSION ISSUES**: Fixed Java compiler license file permission errors

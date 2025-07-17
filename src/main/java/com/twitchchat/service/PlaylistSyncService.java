@@ -196,14 +196,23 @@ public class PlaylistSyncService {
                     if (durationStr != null && !durationStr.trim().isEmpty()) {
                         try {
                             int totalSeconds = Integer.parseInt(durationStr.trim());
+                            
+                            // Validate duration is positive - this prevents -1 duration issues
+                            if (totalSeconds < 0) {
+                                logger.warn("Invalid negative duration '{}' for song '{}' - setting to 0", durationStr, cleanTitle);
+                                totalSeconds = 0;
+                            }
+                            
                             String formattedDuration = formatDuration(totalSeconds);
                             song.setDuration(formattedDuration);
                             logger.debug("Parsed duration for '{}': {} seconds -> {}", cleanTitle, totalSeconds, formattedDuration);
                         } catch (NumberFormatException e) {
-                            logger.warn("Could not parse duration '{}' for song '{}'", durationStr, cleanTitle);
+                            logger.warn("Could not parse duration '{}' for song '{}' - setting default duration", durationStr, cleanTitle);
+                            song.setDuration("0:00"); // Set default duration instead of leaving null
                         }
                     } else {
-                        logger.debug("No duration found for song '{}'", cleanTitle);
+                        logger.debug("No duration found for song '{}' - setting default duration", cleanTitle);
+                        song.setDuration("0:00"); // Set default duration instead of leaving null
                     }
                     
                     // Set creation timestamp
@@ -285,8 +294,15 @@ public class PlaylistSyncService {
 
     /**
      * Format duration from seconds to MM:SS or H:MM:SS format
+     * Handles negative durations by converting them to 0:00
      */
     private String formatDuration(int totalSeconds) {
+        // Critical fix: Handle negative durations to prevent "0:-1" format
+        if (totalSeconds < 0) {
+            logger.warn("Negative duration detected: {} seconds - converting to 0:00", totalSeconds);
+            totalSeconds = 0;
+        }
+        
         int hours = totalSeconds / 3600;
         int minutes = (totalSeconds % 3600) / 60;
         int seconds = totalSeconds % 60;
