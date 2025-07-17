@@ -21,3 +21,5 @@ com/twitchchat/model/Song.class
 com/twitchchat/controller/ApiController.class
 com/twitchchat/TwitchChatReaderApplication.class
 com/twitchchat/config/TwitchProperties.class
+com/twitchchat/controller/ConfigController.class
+com/twitchchat/config/TrackPlayProperties.class

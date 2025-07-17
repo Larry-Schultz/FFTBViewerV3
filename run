@@ -161,4 +161,12 @@ echo "[RUN] ✓ JAR file found: $JAR_FILE"
 
 # Start the application
 echo "[RUN] Starting Spring Boot application..."
-java -jar "$JAR_FILE" --server.port=5000
+
+# Check for SPRING_PROFILES_ACTIVE environment variable
+if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
+    echo "[RUN] Using profile: $SPRING_PROFILES_ACTIVE"
+    java -jar "$JAR_FILE" --server.port=5000 --spring.profiles.active="$SPRING_PROFILES_ACTIVE"
+else
+    echo "[RUN] Using default profile"
+    java -jar "$JAR_FILE" --server.port=5000
+fi

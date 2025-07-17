@@ -10,6 +10,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 17, 2025 - Profile Configuration System & Track Play Control:**
+- **IMPLEMENTED PROFILE-BASED CONFIGURATION**: Added comprehensive Spring Boot profile system for environment-specific track play settings
+- **NEW**: Created `TrackPlayProperties` configuration class with enabled/logOnly/shouldUpdateDatabase flags
+- **NEW**: Added `application-dev.properties` and `application-prod.properties` for environment-specific settings
+- **ENHANCED**: Updated `SongPlayTracker` to respect profile settings before database updates
+- **ENHANCED**: Modified `run` script to automatically detect and use `SPRING_PROFILES_ACTIVE` environment variable
+- **NEW**: Added `/api/config/track-play` endpoint to expose current configuration for debugging
+- **NEW**: Created `README-PROFILES.md` with comprehensive profile usage documentation
+- **DEPLOYMENT CONTROL**: Development mode disables database updates (log-only), production mode enables full database updates
+- **FLEXIBLE CONFIGURATION**: Multiple ways to switch profiles - environment variables, Maven arguments, workflow commands
+
 **July 17, 2025 - Event System Refactoring & Deployment Improvements:**
 - Fixed bash syntax errors by replacing double brackets `[[]]` with single brackets `[]` in deployment scripts
 - Added proper Java environment setup with JAVA_HOME configuration in run scripts

@@ -1,5 +1,6 @@
 package com.twitchchat.service;
 
+import com.twitchchat.config.TrackPlayProperties;
 import com.twitchchat.event.TrackPlayEvent;
 import com.twitchchat.model.Song;
 import com.twitchchat.repository.SongRepository;
@@ -23,6 +24,9 @@ public class SongPlayTracker {
     @Autowired
     private SongRepository songRepository;
     
+    @Autowired
+    private TrackPlayProperties trackPlayProperties;
+    
     /**
      * Asynchronously track a song play and update its occurrence count
      * @param event The TrackPlayEvent containing song information
@@ -31,6 +35,20 @@ public class SongPlayTracker {
     @Async
     public CompletableFuture<Boolean> trackSongPlayAsync(TrackPlayEvent event) {
         try {
+            // Check if track play updates are enabled
+            if (!trackPlayProperties.isEnabled()) {
+                logger.info("Track play updates are disabled, skipping database update for: {}", event.getSongTitle());
+                return CompletableFuture.completedFuture(false);
+            }
+            
+            // Check if we're in log-only mode
+            if (trackPlayProperties.isLogOnly()) {
+                logger.info("LOG-ONLY MODE: Would track play for '{}' ({}s)", 
+                           event.getSongTitle(), event.getDurationSeconds());
+                return CompletableFuture.completedFuture(true);
+            }
+            
+            // Full database update mode
             boolean result = trackSongPlay(event.getSongTitle(), event.getDurationSeconds());
             return CompletableFuture.completedFuture(result);
         } catch (Exception e) {
