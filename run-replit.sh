@@ -8,9 +8,7 @@ set -e
 echo "[RUN-REPLIT] === Starting Twitch Chat Reader ==="
 echo "[RUN-REPLIT] Timestamp: $(date)"
 
-# Use only Replit's built-in Java from Nix store
-export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1)
-export PATH="$JAVA_HOME/bin:$PATH"
+
 
 echo "[RUN-REPLIT] Using Java: $JAVA_HOME"
 
