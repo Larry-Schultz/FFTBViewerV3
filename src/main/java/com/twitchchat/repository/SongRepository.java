@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,4 +85,12 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Transactional
     @Query("UPDATE Song s SET s.duration = :newDuration WHERE s.title = :title AND s.duration = :oldDuration")
     int updateDurationByTitle(String title, String newDuration, String oldDuration);
+    
+    /**
+     * Delete songs by title list (batch deletion for removed tracks)
+     */
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Song s WHERE s.title IN :titles")
+    int deleteByTitleIn(@Param("titles") List<String> titles);
 }

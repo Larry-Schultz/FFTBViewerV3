@@ -94,6 +94,45 @@ public class PlaylistSyncService {
             Set<String> existingTitles = new HashSet<>(existingTitlesList);
             logger.info("Found {} existing songs in database", existingTitles.size());
 
+            // Build set of current XML song titles for comparison
+            Set<String> xmlTitles = new HashSet<>();
+            for (Song xmlSong : xmlSongs) {
+                String title = xmlSong.getTitle();
+                if (title != null && !title.trim().isEmpty()) {
+                    xmlTitles.add(title);
+                }
+            }
+            
+            // Find songs that exist in database but not in XML (removed/renamed tracks)
+            Set<String> removedTitles = new HashSet<>(existingTitles);
+            removedTitles.removeAll(xmlTitles);
+            
+            // Remove songs that are no longer in the XML feed
+            if (!removedTitles.isEmpty()) {
+                logger.info("Found {} songs in database that are missing from XML feed", removedTitles.size());
+                
+                // Process removals in batches to avoid memory issues
+                List<String> removedTitlesList = new ArrayList<>(removedTitles);
+                int batchSize = 100;
+                int totalBatches = (int) Math.ceil((double) removedTitlesList.size() / batchSize);
+                
+                for (int i = 0; i < removedTitlesList.size(); i += batchSize) {
+                    int endIndex = Math.min(i + batchSize, removedTitlesList.size());
+                    List<String> batch = removedTitlesList.subList(i, endIndex);
+                    int currentBatch = (i / batchSize) + 1;
+                    
+                    try {
+                        int deletedCount = songRepository.deleteByTitleIn(batch);
+                        logger.info("Removal batch {}/{} completed: Deleted {} songs", 
+                                  currentBatch, totalBatches, deletedCount);
+                    } catch (Exception e) {
+                        logger.error("Error removing songs in batch {}/{}", currentBatch, totalBatches, e);
+                    }
+                }
+                
+                logger.info("Successfully removed {} songs that were missing from XML feed", removedTitles.size());
+            }
+
             // Add new songs (keeping unique titles only, prevent duplicates)
             List<Song> newSongs = new ArrayList<>();
             Set<String> processedTitles = new HashSet<>();
