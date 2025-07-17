@@ -10,6 +10,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 17, 2025 - Sync Job Simplification & Profile-Based Configuration:**
+- **SIMPLIFIED SYNC JOB ARCHITECTURE**: Created comprehensive SimplifiedPlaylistSyncService for improved maintainability
+- **PROFILE-BASED SYNC SCHEDULING**: Scheduled sync now only runs automatically in production environment (@Profile("prod"))
+- **ENHANCED DURATION DISCREPANCY DETECTION**: Integrated automatic duration fixing during sync operations
+- **IMPROVED TEST COVERAGE**: Fixed compilation issues with test files and created comprehensive unit tests
+- **BATCH PROCESSING OPTIMIZATION**: Implemented efficient batch processing for both additions and removals
+- **SIMPLIFIED ERROR HANDLING**: Streamlined error handling throughout sync operations for better reliability
+- **TESTABLE SYNC OPERATIONS**: Manual sync remains available in all environments for testing purposes
+- **EMPTY TITLE VALIDATION**: Added validation to skip empty song titles during track play detection
+- **PRODUCTION-READY DEPLOYMENT**: Application successfully running with all components operational
+
 **July 17, 2025 - Duration Parsing Bug Fix & Database Correction:**
 - **FIXED CRITICAL BUG**: Resolved -1 duration parsing issue where negative durations created "0:-1" format in database
 - **ENHANCED DURATION PARSING**: Updated `formatDuration` method to handle negative durations by converting them to "0:00"

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Profile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,9 +58,10 @@ public class PlaylistSyncService {
     }
 
     /**
-     * Scheduled sync every 30 minutes
+     * Scheduled sync every 30 minutes (only in production)
      */
     @Scheduled(fixedRate = 30 * 60 * 1000) // 30 minutes in milliseconds
+    @Profile("prod")
     public void scheduledSync() {
         logger.info("Starting scheduled playlist synchronization...");
         syncPlaylist();
@@ -132,6 +134,9 @@ public class PlaylistSyncService {
                 
                 logger.info("Successfully removed {} songs that were missing from XML feed", removedTitles.size());
             }
+
+            // Check for duration discrepancies between XML and database
+            checkDurationDiscrepancies(xmlSongs, existingTitles);
 
             // Add new songs (keeping unique titles only, prevent duplicates)
             List<Song> newSongs = new ArrayList<>();
@@ -270,6 +275,55 @@ public class PlaylistSyncService {
         }
 
         return songs;
+    }
+
+    /**
+     * Check for duration discrepancies between XML source and database
+     */
+    private void checkDurationDiscrepancies(List<Song> xmlSongs, Set<String> existingTitles) {
+        logger.info("Checking for duration discrepancies...");
+        
+        int discrepancyCount = 0;
+        int fixedCount = 0;
+        
+        for (Song xmlSong : xmlSongs) {
+            String title = xmlSong.getTitle();
+            if (title != null && !title.trim().isEmpty() && existingTitles.contains(title)) {
+                try {
+                    // Find the existing song in database
+                    Optional<Song> existingSong = songRepository.findByTitle(title);
+                    if (existingSong.isPresent()) {
+                        String dbDuration = existingSong.get().getDuration();
+                        String xmlDuration = xmlSong.getDuration();
+                        
+                        // Check for problematic durations
+                        if (dbDuration != null && (dbDuration.equals("0:00") || dbDuration.contains("-1"))) {
+                            discrepancyCount++;
+                            logger.warn("Duration discrepancy found for '{}': DB='{}', XML='{}'", 
+                                      title, dbDuration, xmlDuration);
+                            
+                            // Fix the duration if XML has valid duration
+                            if (xmlDuration != null && !xmlDuration.equals("0:00") && !xmlDuration.contains("-1")) {
+                                int updated = songRepository.updateDurationByTitle(title, xmlDuration, dbDuration);
+                                if (updated > 0) {
+                                    fixedCount++;
+                                    logger.info("Fixed duration for '{}': '{}' -> '{}'", title, dbDuration, xmlDuration);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Error checking duration for song: {}", title, e);
+                }
+            }
+        }
+        
+        if (discrepancyCount > 0) {
+            logger.info("Duration discrepancy check completed: {} discrepancies found, {} fixed", 
+                      discrepancyCount, fixedCount);
+        } else {
+            logger.info("No duration discrepancies found");
+        }
     }
 
     /**
