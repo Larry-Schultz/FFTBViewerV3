@@ -147,6 +147,10 @@
                         <h3>Showing</h3>
                         <span class="stat-number" id="showing-count" th:text="${showingSongs}">0</span>
                     </div>
+                    <div class="stat-card" th:if="${latestSongAddedTime}">
+                        <h3>Last Updated</h3>
+                        <span class="stat-text" id="latest-song-time" th:data-timestamp="${latestSongAddedTime}">Loading...</span>
+                    </div>
                 </div>
             </div>
         </main>

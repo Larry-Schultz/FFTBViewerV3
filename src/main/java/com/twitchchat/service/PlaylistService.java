@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,6 +147,18 @@ public class PlaylistService {
         } catch (Exception e) {
             logger.error("Error checking playlist availability", e);
             return false;
+        }
+    }
+    
+    /**
+     * Get the timestamp when the latest song was added to the playlist
+     */
+    public LocalDateTime getLatestSongAddedTime() {
+        try {
+            return songRepository.findLatestSongAddedTime();
+        } catch (Exception e) {
+            logger.error("Error retrieving latest song added time", e);
+            return null;
         }
     }
 }

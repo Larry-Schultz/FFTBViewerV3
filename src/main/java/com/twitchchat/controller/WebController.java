@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,6 +76,13 @@ public class WebController {
             model.addAttribute("hasPrevious", songPage.hasPrevious());
             model.addAttribute("sortBy", sortBy);
             model.addAttribute("sortDirection", sortDirection);
+            
+            // Add latest song added timestamp
+            LocalDateTime latestSongTime = playlistService.getLatestSongAddedTime();
+            if (latestSongTime != null) {
+                // Format as ISO string for JavaScript conversion to user's timezone
+                model.addAttribute("latestSongAddedTime", latestSongTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            }
             
             return "playlist";
         } catch (Exception e) {

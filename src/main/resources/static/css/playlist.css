@@ -422,6 +422,15 @@
     display: block;
 }
 
+.stat-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    display: block;
+    line-height: 1.2;
+}
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .playlist-container {

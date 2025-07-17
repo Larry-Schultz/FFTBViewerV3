@@ -93,4 +93,10 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     @Transactional
     @Query("DELETE FROM Song s WHERE s.title IN :titles")
     int deleteByTitleIn(@Param("titles") List<String> titles);
+    
+    /**
+     * Get the timestamp of the most recently added song
+     */
+    @Query("SELECT MAX(s.createdAt) FROM Song s")
+    java.time.LocalDateTime findLatestSongAddedTime();
 }

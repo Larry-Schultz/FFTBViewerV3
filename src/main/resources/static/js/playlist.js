@@ -7,6 +7,7 @@ class PlaylistManager {
     init() {
         this.setupEventListeners();
         this.setupPaginationHandlers();
+        this.setupTimestampDisplay();
     }
 
     setupEventListeners() {
@@ -35,6 +36,40 @@ class PlaylistManager {
         currentUrl.searchParams.set('size', newSize);
         currentUrl.searchParams.set('page', '0'); // Reset to first page
         window.location.href = currentUrl.toString();
+    }
+
+    setupTimestampDisplay() {
+        const timestampElement = document.getElementById('latest-song-time');
+        if (timestampElement) {
+            const isoTimestamp = timestampElement.dataset.timestamp;
+            if (isoTimestamp) {
+                try {
+                    // Parse the ISO timestamp and convert to user's local timezone
+                    const date = new Date(isoTimestamp);
+                    
+                    // Format the date and time in user's locale
+                    const dateOptions = {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    };
+                    
+                    const timeOptions = {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    };
+                    
+                    const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+                    const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
+                    
+                    timestampElement.textContent = `${formattedDate} ${formattedTime}`;
+                } catch (error) {
+                    console.error('Error formatting timestamp:', error);
+                    timestampElement.textContent = 'Unknown';
+                }
+            }
+        }
     }
 
     handleColumnSort(header) {
