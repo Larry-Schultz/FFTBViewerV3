@@ -8,6 +8,16 @@ A modern Spring Boot-powered Twitch chat reader application that monitors real-t
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**July 17, 2025 - Deployment Fixes Applied:**
+- Fixed bash syntax errors by replacing double brackets `[[]]` with single brackets `[]` in deployment scripts
+- Added proper Java environment setup with JAVA_HOME configuration in run scripts
+- Simplified deployment scripts to use consistent Java detection across all environments
+- Updated workflow command to use direct Maven execution with proper Java path
+- Fixed syntax error in main run script that was causing "( unexpected" error
+- Application now starts successfully on port 5000 with all services running
+
 ## System Architecture
 
 **Technology Stack:**

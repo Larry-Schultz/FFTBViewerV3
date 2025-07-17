@@ -17,21 +17,26 @@ echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
 log "Setting up Java environment..."
-JAVA_CANDIDATES=(
-    "$(ls -d /nix/store/*jdk* | head -1 2>/dev/null || echo '')"
-    "/usr/lib/jvm/java-11-openjdk"
-    "/usr/lib/jvm/default-java"
-    "/opt/java/openjdk"
-)
 
-for java_path in "${JAVA_CANDIDATES[@]}"; do
-    if [ -n "$java_path" ] && [ -d "$java_path" ]; then
-        export JAVA_HOME="$java_path"
-        log "Trying Java at: $JAVA_HOME"
-        break
-    fi
-done
+# Find Java installation
+JAVA_HOME=""
+NIX_JAVA=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
+if [ -n "$NIX_JAVA" ] && [ -d "$NIX_JAVA" ]; then
+    JAVA_HOME="$NIX_JAVA"
+    log "Found Java in Nix store: $JAVA_HOME"
+elif [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
+    JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
+    log "Found Java in system: $JAVA_HOME"
+elif [ -d "/usr/lib/jvm/default-java" ]; then
+    JAVA_HOME="/usr/lib/jvm/default-java"
+    log "Found Java in system: $JAVA_HOME"
+else
+    log "ERROR: No Java installation found"
+    exit 1
+fi
 
+export JAVA_HOME
+export PATH="$JAVA_HOME/bin:$PWD/maven/bin:$PATH"
 echo "✓ Java environment set: $JAVA_HOME"
 
 
