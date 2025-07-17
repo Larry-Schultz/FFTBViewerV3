@@ -8,6 +8,15 @@ set -e
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
-# Use the complete deployment script that handles all scenarios
-chmod +x deployment/deploy-complete.sh 2>/dev/null || true
-exec bash deployment/deploy-complete.sh
+# Check if we have a JAR file - if so, use emergency runner
+JAR_FILE=$(find target -name "*.jar" -not -name "*sources.jar" 2>/dev/null | head -1)
+
+if [[ -n "$JAR_FILE" && -f "$JAR_FILE" ]]; then
+    echo "JAR found, using emergency direct execution..."
+    chmod +x deployment/emergency-run.sh 2>/dev/null || true
+    exec bash deployment/emergency-run.sh
+else
+    echo "No JAR found, using complete deployment with build..."
+    chmod +x deployment/deploy-complete.sh 2>/dev/null || true
+    exec bash deployment/deploy-complete.sh
+fi
