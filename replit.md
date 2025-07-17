@@ -10,7 +10,9 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 17, 2025 - UI Improvements & Filter Button Removal:**
+**July 17, 2025 - UI Improvements & URL Changes:**
+- **CHANGED PLAYLIST URL**: Updated route from `/playlist` to `/music` for better semantic naming
+- **UPDATED ALL REFERENCES**: Modified controller mapping, template links, and navigation to use new URL
 - **REMOVED FILTER BUTTONS**: Eliminated sorting filter buttons from playlist interface (Title A-Z, Title Z-A, Duration, Most Played, Recently Added, Recently Played)
 - **STREAMLINED INTERFACE**: Simplified playlist view with cleaner, more focused design
 - **MAINTAINED FUNCTIONALITY**: Column-based sorting still available through table headers

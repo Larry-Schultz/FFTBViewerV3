@@ -39,7 +39,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="/playlist" class="nav-link active">
+                        <a href="/music" class="nav-link active">
                             <span class="nav-icon">🎵</span>
                             <span>Music Playlist</span>
                         </a>
@@ -54,7 +54,7 @@
         <main>
             <div class="playlist-container">
                 <div class="search-controls">
-                    <form method="GET" action="/playlist" class="search-form">
+                    <form method="GET" action="/music" class="search-form">
                         <input type="text" name="search" id="song-search" placeholder="Search songs..." 
                                class="search-input" th:value="${searchTerm}">
                         <input type="hidden" name="page" value="0">
@@ -127,12 +127,12 @@
                     
                     <div class="pagination-buttons">
                         <a th:if="${hasPrevious}" 
-                           th:href="@{/playlist(page=${currentPage - 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
+                           th:href="@{/music(page=${currentPage - 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
                            class="btn btn-secondary">Previous</a>
                         <span th:unless="${hasPrevious}" class="btn btn-disabled">Previous</span>
                         
                         <a th:if="${hasNext}" 
-                           th:href="@{/playlist(page=${currentPage + 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
+                           th:href="@{/music(page=${currentPage + 1}, size=${pageSize}, sortBy=${sortBy}, sortDirection=${sortDirection}, search=${searchTerm})}" 
                            class="btn btn-secondary">Next</a>
                         <span th:unless="${hasNext}" class="btn btn-disabled">Next</span>
                     </div>

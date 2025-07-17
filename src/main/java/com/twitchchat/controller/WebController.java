@@ -40,7 +40,7 @@ public class WebController {
         return "chat";
     }
 
-    @GetMapping("/playlist")
+    @GetMapping("/music")
     public String playlist(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page", defaultValue = "0") int page,
