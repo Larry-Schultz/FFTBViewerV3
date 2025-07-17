@@ -1,4 +1,4 @@
-modules = ["java", "java-21", "maven", "postgresql-16", "java-11"]
+modules = ["java", "java-21", "maven", "postgresql-16", "java-11", "python-3.11"]
 
 [nix]
 channel = "stable-24_05"
@@ -30,5 +30,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "gce"
-run = ["sh", "-c", "sh run"]
+run = ["sh", "-c", "sh run-replit-auto.sh"]
 build = ["sh", "-c", "sh build.sh"]

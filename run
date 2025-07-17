@@ -18,6 +18,45 @@ echo "Timestamp: $(date)"
 
 log "Setting up Java environment..."
 
+# Function to download and install Java
+download_java() {
+    log "Downloading Java JDK 11..."
+    JAVA_DIR="$PWD/java"
+    
+    # Create java directory if it doesn't exist
+    mkdir -p "$JAVA_DIR"
+    
+    # Download OpenJDK 11 (Temurin distribution)
+    if command -v curl >/dev/null 2>&1; then
+        log "Using curl to download Java..."
+        curl -L -o "$JAVA_DIR/openjdk-11.tar.gz" \
+            "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    elif command -v wget >/dev/null 2>&1; then
+        log "Using wget to download Java..."
+        wget -O "$JAVA_DIR/openjdk-11.tar.gz" \
+            "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    else
+        log "ERROR: Neither curl nor wget available for downloading Java"
+        return 1
+    fi
+    
+    # Extract the downloaded archive
+    log "Extracting Java archive..."
+    cd "$JAVA_DIR"
+    tar -xzf openjdk-11.tar.gz --strip-components=1
+    rm -f openjdk-11.tar.gz
+    cd "$PWD"
+    
+    # Verify extraction
+    if [ -f "$JAVA_DIR/bin/java" ]; then
+        log "✓ Java downloaded and extracted successfully"
+        return 0
+    else
+        log "ERROR: Java extraction failed"
+        return 1
+    fi
+}
+
 # Find Java installation
 JAVA_HOME=""
 NIX_JAVA=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
@@ -30,9 +69,58 @@ elif [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
 elif [ -d "/usr/lib/jvm/default-java" ]; then
     JAVA_HOME="/usr/lib/jvm/default-java"
     log "Found Java in system: $JAVA_HOME"
+elif [ -d "$PWD/java" ] && [ -f "$PWD/java/bin/java" ]; then
+    JAVA_HOME="$PWD/java"
+    log "Found downloaded Java: $JAVA_HOME"
 else
-    log "ERROR: No Java installation found"
-    exit 1
+    log "No Java installation found. Attempting to download..."
+    if download_java; then
+        JAVA_HOME="$PWD/java"
+        log "Using downloaded Java: $JAVA_HOME"
+    else
+        log "Download failed. Trying system package manager..."
+        # Try to install Java using system package manager
+        if command -v apt-get >/dev/null 2>&1; then
+            log "Installing Java using apt-get..."
+            sudo apt-get update && sudo apt-get install -y openjdk-11-jdk
+            if [ -d "/usr/lib/jvm/java-11-openjdk-amd64" ]; then
+                JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+                log "Java installed via apt-get: $JAVA_HOME"
+            fi
+        elif command -v yum >/dev/null 2>&1; then
+            log "Installing Java using yum..."
+            sudo yum install -y java-11-openjdk-devel
+            if [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
+                JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
+                log "Java installed via yum: $JAVA_HOME"
+            fi
+        else
+            log "Trying Replit Nix package manager..."
+            # Try to install Java using Replit's Nix package manager
+            if command -v nix-env >/dev/null 2>&1; then
+                log "Installing Java using nix-env..."
+                nix-env -iA nixpkgs.openjdk11
+                # Check common Nix Java locations
+                for nix_path in ~/.nix-profile/lib/openjdk /nix/store/*openjdk*; do
+                    if [ -d "$nix_path" ] && [ -f "$nix_path/bin/java" ]; then
+                        JAVA_HOME="$nix_path"
+                        log "Java installed via nix-env: $JAVA_HOME"
+                        break
+                    fi
+                done
+            else
+                log "ERROR: No package manager available. Please install Java manually."
+                log "You can download Java from: https://adoptium.net/temurin/releases/"
+                exit 1
+            fi
+        fi
+        
+        # Final check after package manager installation
+        if [ -z "$JAVA_HOME" ] || [ ! -f "$JAVA_HOME/bin/java" ]; then
+            log "ERROR: Java installation via package manager failed."
+            exit 1
+        fi
+    fi
 fi
 
 export JAVA_HOME

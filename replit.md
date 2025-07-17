@@ -10,13 +10,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 17, 2025 - Deployment Fixes Applied:**
+**July 17, 2025 - Deployment Improvements & Auto-Installation:**
 - Fixed bash syntax errors by replacing double brackets `[[]]` with single brackets `[]` in deployment scripts
 - Added proper Java environment setup with JAVA_HOME configuration in run scripts
 - Simplified deployment scripts to use consistent Java detection across all environments
 - Updated workflow command to use direct Maven execution with proper Java path
 - Fixed syntax error in main run script that was causing "( unexpected" error
-- Application now starts successfully on port 5000 with all services running
+- **NEW**: Added automatic Java installation via package managers (apt, yum, nix-env) when Java not found
+- **NEW**: Created `run-replit-auto.sh` - optimized deployment script specifically for Replit environment
+- **NEW**: Added comprehensive Java download fallback using portable JDK if package managers fail
+- **NEW**: Enhanced Java detection to prioritize Nix store installations on Replit
+- **NEW**: Created detailed `DEPLOYMENT-GUIDE.md` with complete deployment instructions
+- **ENHANCED**: All deployment scripts now handle missing Java gracefully with automatic installation
+- Application now starts successfully on port 5000 with all services running and robust deployment options
 
 ## System Architecture
 
