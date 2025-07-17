@@ -27,25 +27,42 @@ echo "[EMERGENCY] JAR size: $(ls -lh "$JAR_FILE" | awk '{print $5}')"
 # Find any working Java executable
 echo "[EMERGENCY] Searching for Java..."
 
-# Direct search in Nix store
-JAVA_CANDIDATES=(
-    $(find /nix/store -name "java" -type f -executable 2>/dev/null)
-    $(which java 2>/dev/null || true)
-)
-
+# Multiple detection strategies for deployment environment
 WORKING_JAVA=""
-for java_candidate in "${JAVA_CANDIDATES[@]}"; do
-    if [ -n "$java_candidate" ] && [ -x "$java_candidate" ]; then
-        echo "[EMERGENCY] Testing Java: $java_candidate"
-        if "$java_candidate" -version >/dev/null 2>&1; then
-            WORKING_JAVA="$java_candidate"
-            echo "[EMERGENCY] ✓ Working Java found: $WORKING_JAVA"
-            break
-        else
-            echo "[EMERGENCY] ✗ Java test failed: $java_candidate"
+
+# Strategy 1: Use JAVA_HOME if set
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    echo "[EMERGENCY] Testing JAVA_HOME: $JAVA_HOME/bin/java"
+    if "$JAVA_HOME/bin/java" -version >/dev/null 2>&1; then
+        WORKING_JAVA="$JAVA_HOME/bin/java"
+        echo "[EMERGENCY] ✓ Working Java found via JAVA_HOME: $WORKING_JAVA"
+    fi
+fi
+
+# Strategy 2: Check PATH
+if [ -z "$WORKING_JAVA" ]; then
+    if command -v java >/dev/null 2>&1; then
+        JAVA_PATH=$(command -v java)
+        echo "[EMERGENCY] Testing PATH Java: $JAVA_PATH"
+        if "$JAVA_PATH" -version >/dev/null 2>&1; then
+            WORKING_JAVA="$JAVA_PATH"
+            echo "[EMERGENCY] ✓ Working Java found in PATH: $WORKING_JAVA"
         fi
     fi
-done
+fi
+
+# Strategy 3: Search Nix store (limited search to avoid timeouts)
+if [ -z "$WORKING_JAVA" ]; then
+    echo "[EMERGENCY] Searching Nix store..."
+    NIX_JAVA=$(find /nix/store -maxdepth 2 -name "java" -type f -executable 2>/dev/null | head -1)
+    if [ -n "$NIX_JAVA" ] && [ -x "$NIX_JAVA" ]; then
+        echo "[EMERGENCY] Testing Nix Java: $NIX_JAVA"
+        if "$NIX_JAVA" -version >/dev/null 2>&1; then
+            WORKING_JAVA="$NIX_JAVA"
+            echo "[EMERGENCY] ✓ Working Java found in Nix: $WORKING_JAVA"
+        fi
+    fi
+fi
 
 if [ -z "$WORKING_JAVA" ]; then
     echo "[EMERGENCY] FATAL: No working Java found"
