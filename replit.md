@@ -10,6 +10,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 17, 2025 - UI Improvements & Filter Button Removal:**
+- **REMOVED FILTER BUTTONS**: Eliminated sorting filter buttons from playlist interface (Title A-Z, Title Z-A, Duration, Most Played, Recently Added, Recently Played)
+- **STREAMLINED INTERFACE**: Simplified playlist view with cleaner, more focused design
+- **MAINTAINED FUNCTIONALITY**: Column-based sorting still available through table headers
+- **IMPROVED UX**: Reduced visual clutter for better user experience
+
 **July 17, 2025 - Sync Job Simplification & Profile-Based Configuration:**
 - **SIMPLIFIED SYNC JOB ARCHITECTURE**: Created comprehensive SimplifiedPlaylistSyncService for improved maintainability
 - **PROFILE-BASED SYNC SCHEDULING**: Scheduled sync now only runs automatically in production environment (@Profile("prod"))

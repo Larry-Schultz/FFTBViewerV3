@@ -63,20 +63,7 @@
                         <input type="hidden" name="sortDirection" th:value="${sortDirection}">
                         <button type="submit" class="btn btn-primary">Search</button>
                     </form>
-                    <div class="filter-buttons">
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='title', sortDirection='asc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'title' and sortDirection == 'asc'} ? 'active' : ''">Title A-Z</a>
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='title', sortDirection='desc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'title' and sortDirection == 'desc'} ? 'active' : ''">Title Z-A</a>
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='duration', sortDirection='asc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'duration' and sortDirection == 'asc'} ? 'active' : ''">Duration ↑</a>
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='occurrence', sortDirection='desc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'occurrence' and sortDirection == 'desc'} ? 'active' : ''">Most Played</a>
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='createdAt', sortDirection='desc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'createdAt' and sortDirection == 'desc'} ? 'active' : ''">Recently Added</a>
-                        <a th:href="@{/playlist(page=0, size=${pageSize}, sortBy='updatedAt', sortDirection='desc', search=${searchTerm})}" 
-                           class="filter-btn" th:classappend="${sortBy == 'updatedAt' and sortDirection == 'desc'} ? 'active' : ''">Recently Played</a>
-                    </div>
+
                 </div>
 
                 <div class="table-container">
