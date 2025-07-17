@@ -1,58 +1,42 @@
 package com.twitchchat.service;
 
+import com.twitchchat.event.TrackPlayEvent;
 import com.twitchchat.model.Song;
 import com.twitchchat.repository.SongRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Service to track song plays from Twitch chat messages and update occurrence counts
+ * Service to track song plays from TrackPlayEvent and update occurrence counts
  */
 @Service
 public class SongPlayTracker {
     private static final Logger logger = LoggerFactory.getLogger(SongPlayTracker.class);
     
-    // Pattern to match "The track is now: Song Title. It will play for X seconds."
-    private static final Pattern TRACK_PATTERN = Pattern.compile(
-        "The track is now: (.+?)\\. It will play for (\\d+) seconds\\."
-    );
-    
     @Autowired
     private SongRepository songRepository;
     
     /**
-     * Process a chat message to detect track announcements and update song occurrence
-     * @param username The username of the chat message sender
-     * @param message The chat message content
-     * @return true if a track was detected and processed, false otherwise
+     * Asynchronously track a song play and update its occurrence count
+     * @param event The TrackPlayEvent containing song information
+     * @return CompletableFuture<Boolean> indicating if the song was found and updated
      */
-    public boolean processMessage(String username, String message) {
-        // Only process messages from the bot account
-        if (!"fftbattleground".equalsIgnoreCase(username)) {
-            return false;
+    @Async
+    public CompletableFuture<Boolean> trackSongPlayAsync(TrackPlayEvent event) {
+        try {
+            boolean result = trackSongPlay(event.getSongTitle(), event.getDurationSeconds());
+            return CompletableFuture.completedFuture(result);
+        } catch (Exception e) {
+            logger.error("Error tracking song play asynchronously: {}", e.getMessage(), e);
+            return CompletableFuture.completedFuture(false);
         }
-        
-        Matcher matcher = TRACK_PATTERN.matcher(message);
-        if (matcher.matches()) {
-            String songTitle = matcher.group(1);
-            String durationStr = matcher.group(2);
-            
-            try {
-                int durationSeconds = Integer.parseInt(durationStr);
-                return trackSongPlay(songTitle, durationSeconds);
-            } catch (NumberFormatException e) {
-                logger.warn("Failed to parse duration '{}' for song '{}'", durationStr, songTitle);
-            }
-        }
-        
-        return false;
     }
     
     /**

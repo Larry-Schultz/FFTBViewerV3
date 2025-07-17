@@ -1,6 +1,8 @@
 package com.twitchchat;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.twitchchat.event.TrackPlayEvent;
+import com.twitchchat.event.detector.TrackPlayDetector;
 import com.twitchchat.model.ChatMessage;
 import com.twitchchat.service.ChatMessageService;
 import com.twitchchat.service.SongPlayTracker;
@@ -29,6 +31,9 @@ public class ChatEventHandler {
     
     @Autowired
     private SongPlayTracker songPlayTracker;
+    
+    @Autowired
+    private TrackPlayDetector trackPlayDetector;
 
     /**
      * Handle incoming chat messages
@@ -46,10 +51,20 @@ public class ChatEventHandler {
             // Store message in service
             chatMessageService.addMessage(chatMessage);
             
-            // Track song plays from bot messages
-            boolean trackDetected = songPlayTracker.processMessage(username, message);
-            if (trackDetected) {
-                logger.info("Song play tracked from message: {}", message);
+            // Detect track play events
+            TrackPlayEvent trackPlayEvent = trackPlayDetector.detect(chatMessage);
+            if (trackPlayEvent != null) {
+                logger.info("Track play event detected: {}", trackPlayEvent);
+                
+                // Asynchronously update the database
+                songPlayTracker.trackSongPlayAsync(trackPlayEvent)
+                    .thenAccept(success -> {
+                        if (success) {
+                            logger.info("Song play tracked from message: {}", message);
+                        } else {
+                            logger.warn("Failed to track song play for: {}", trackPlayEvent.getSongTitle());
+                        }
+                    });
             }
             
             // Broadcast message via WebSocket

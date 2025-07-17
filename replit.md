@@ -10,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 17, 2025 - Deployment Improvements & Auto-Installation:**
+**July 17, 2025 - Event System Refactoring & Deployment Improvements:**
 - Fixed bash syntax errors by replacing double brackets `[[]]` with single brackets `[]` in deployment scripts
 - Added proper Java environment setup with JAVA_HOME configuration in run scripts
 - Simplified deployment scripts to use consistent Java detection across all environments
@@ -22,6 +22,13 @@ Preferred communication style: Simple, everyday language.
 - **NEW**: Enhanced Java detection to prioritize Nix store installations on Replit
 - **NEW**: Created detailed `DEPLOYMENT-GUIDE.md` with complete deployment instructions
 - **ENHANCED**: All deployment scripts now handle missing Java gracefully with automatic installation
+- **REFACTORED EVENT SYSTEM**: Moved song tracking logic to event-driven architecture
+- **NEW**: Added `TRACK_PLAY` event type to `BattleGroundEventType` enum
+- **NEW**: Created `TrackPlayEvent` class extending `BattleGroundEvent` for song play data
+- **NEW**: Created `TrackPlayDetector` implementing `EventDetector` interface for pattern detection
+- **NEW**: Refactored `SongPlayTracker` to use async processing with `@Async` annotation
+- **NEW**: Updated `ChatEventHandler` to use new event detector system with async database updates
+- **NEW**: Enabled `@EnableAsync` in main application for asynchronous processing
 - Application now starts successfully on port 5000 with all services running and robust deployment options
 
 ## System Architecture

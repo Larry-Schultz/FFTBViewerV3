@@ -1,11 +1,16 @@
 com/twitchchat/model/Playlist.class
+com/twitchchat/event/EventDetector.class
 com/twitchchat/ChatEventHandler.class
 com/twitchchat/service/PlaylistSyncService.class
 com/twitchchat/config/TwitchConfig.class
 com/twitchchat/controller/WebController.class
 com/twitchchat/model/Playlist$TrackList.class
 com/twitchchat/config/WebSocketConfig.class
+com/twitchchat/event/BattleGroundEvent.class
+com/twitchchat/event/TrackPlayEvent.class
+com/twitchchat/event/BattleGroundEventType.class
 com/twitchchat/service/SongPlayTracker.class
+com/twitchchat/event/detector/TrackPlayDetector.class
 com/twitchchat/TwitchChatReader.class
 META-INF/spring-configuration-metadata.json
 com/twitchchat/model/ChatMessage.class
