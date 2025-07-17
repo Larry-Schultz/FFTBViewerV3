@@ -16,52 +16,21 @@ log "Timestamp: $(date)"
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
+log "Setting up Java environment..."
+JAVA_CANDIDATES=(
+    "$(ls -d /nix/store/*jdk* | head -1 2>/dev/null || echo '')"
+    "/usr/lib/jvm/java-11-openjdk"
+    "/usr/lib/jvm/default-java"
+    "/opt/java/openjdk"
+)
 
-# Check if JAVA_HOME is populated
-if [ -z "$JAVA_HOME" ]; then
-    log "ERROR: JAVA_HOME not set"
-    
-    log "Java not found, attempting to download"
-    if [ ! -d "jdk-11" ]; then
-        log "Downloading OpenJDK 11..."
-        
-        # Try to download Java
-        if curl -L -o openjdk-11.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11+28/OpenJDK11U-jdk_x64_linux_hotspot_11_28.tar.gz; then
-            log "Download completed, verifying file..."
-            
-            # Check if downloaded file is valid
-            if file openjdk-11.tar.gz | grep -q "gzip compressed"; then
-                log "Valid gzip file detected, extracting..."
-                
-                if tar -xzf openjdk-11.tar.gz; then
-                    mv jdk-11+28 jdk-11
-                    rm openjdk-11.tar.gz
-                    export JAVA_HOME="$PWD/jdk-11"
-                    export PATH="$JAVA_HOME/bin:$PATH"
-                    log "Java installed and JAVA_HOME set: $JAVA_HOME"
-                else
-                    log "ERROR: Failed to extract Java archive"
-                    rm -f openjdk-11.tar.gz
-                    exit 1
-                fi
-            else
-                log "ERROR: Downloaded file is not a valid gzip archive"
-                log "File type: $(file openjdk-11.tar.gz)"
-                rm -f openjdk-11.tar.gz
-                exit 1
-            fi
-        else
-            log "ERROR: Failed to download Java"
-            exit 1
-        fi
-    else
-        log "OpenJDK 11 already downloaded."
-        export JAVA_HOME="$PWD/jdk-11"
-        export PATH="$JAVA_HOME/bin:$PATH"
-        log "JAVA_HOME set: $JAVA_HOME"
+for java_path in "${JAVA_CANDIDATES[@]}"; do
+    if [ -n "$java_path" ] && [ -d "$java_path" ]; then
+        export JAVA_HOME="$java_path"
+        log "Trying Java at: $JAVA_HOME"
+        break
     fi
-fi
-
+done
 
 echo "✓ Java environment set: $JAVA_HOME"
 
