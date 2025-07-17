@@ -15,6 +15,10 @@ author = "agent"
 task = "workflow.run"
 args = "Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Quick Tests"
+
 [[workflows.workflow]]
 name = "Server"
 author = "agent"
@@ -23,6 +27,14 @@ author = "agent"
 task = "shell.exec"
 args = "export JAVA_HOME=/nix/store/023zqb5jvvjhv5l1b0fzdaqxy8c7ilcl-adoptopenjdk-openj9-bin-11.0.11 && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=5000"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Quick Tests"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && ./scripts/quick-test.sh"
 
 [[ports]]
 localPort = 5000
