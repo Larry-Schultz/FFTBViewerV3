@@ -30,5 +30,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "gce"
-run = ["sh", "-c", "sh run"]
+run = ["sh", "-c", "bash deployment/emergency-run.sh"]
 build = ["sh", "-c", "sh build.sh"]
