@@ -15,7 +15,7 @@ echo "[EMERGENCY] Target port: $SERVER_PORT"
 # Find JAR file
 JAR_FILE=$(find target -name "*.jar" -not -name "*sources.jar" 2>/dev/null | head -1)
 
-if [[ -z "$JAR_FILE" || ! -f "$JAR_FILE" ]]; then
+if [ -z "$JAR_FILE" ] || [ ! -f "$JAR_FILE" ]; then
     echo "[EMERGENCY] ERROR: No JAR file found"
     ls -la target/ 2>/dev/null || echo "No target directory"
     exit 1
@@ -35,7 +35,7 @@ JAVA_CANDIDATES=(
 
 WORKING_JAVA=""
 for java_candidate in "${JAVA_CANDIDATES[@]}"; do
-    if [[ -n "$java_candidate" && -x "$java_candidate" ]]; then
+    if [ -n "$java_candidate" ] && [ -x "$java_candidate" ]; then
         echo "[EMERGENCY] Testing Java: $java_candidate"
         if "$java_candidate" -version >/dev/null 2>&1; then
             WORKING_JAVA="$java_candidate"
@@ -47,7 +47,7 @@ for java_candidate in "${JAVA_CANDIDATES[@]}"; do
     fi
 done
 
-if [[ -z "$WORKING_JAVA" ]]; then
+if [ -z "$WORKING_JAVA" ]; then
     echo "[EMERGENCY] FATAL: No working Java found"
     echo "[EMERGENCY] Checked locations:"
     printf '  %s\n' "${JAVA_CANDIDATES[@]}"

@@ -13,7 +13,7 @@ find_java() {
     echo "[DEPLOY] Searching for Java installations..."
     
     # First check Nix profile
-    if [[ -f ~/.nix-profile/bin/java ]]; then
+    if [ -f ~/.nix-profile/bin/java ]; then
         echo "[DEPLOY] Found Java in Nix profile"
         echo ~/.nix-profile/bin/java
         return 0
@@ -21,7 +21,7 @@ find_java() {
     
     # Search Nix store more thoroughly
     local nix_java=$(find /nix/store -maxdepth 2 -name "java" -type f -executable 2>/dev/null | head -1)
-    if [[ -n "$nix_java" && -x "$nix_java" ]]; then
+    if [ -n "$nix_java" ] && [ -x "$nix_java" ]; then
         echo "[DEPLOY] Found Java in Nix store: $nix_java"
         echo "$nix_java"
         return 0
@@ -37,7 +37,7 @@ find_java() {
     
     # Try system locations
     for java_path in /usr/lib/jvm/*/bin/java /usr/bin/java; do
-        if [[ -x "$java_path" ]]; then
+        if [ -x "$java_path" ]; then
             echo "[DEPLOY] Found Java in system: $java_path"
             echo "$java_path"
             return 0
@@ -55,7 +55,7 @@ echo "[DEPLOY] Target port: $SERVER_PORT"
 # Check for existing JAR
 JAR_FILE=$(find target -name "*.jar" -not -name "*sources.jar" 2>/dev/null | head -1)
 
-if [[ -n "$JAR_FILE" && -f "$JAR_FILE" ]]; then
+if [ -n "$JAR_FILE" ] && [ -f "$JAR_FILE" ]; then
     echo "[DEPLOY] Found existing JAR: $JAR_FILE"
     JAR_SIZE=$(ls -lh "$JAR_FILE" | awk '{print $5}')
     echo "[DEPLOY] JAR size: $JAR_SIZE"

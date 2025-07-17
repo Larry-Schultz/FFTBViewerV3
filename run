@@ -8,10 +8,36 @@ set -e
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
+# Set up Java environment first
+echo "Setting up Java environment..."
+if [ -d "/nix/store" ]; then
+    # Find Java in Nix store
+    JAVA_HOME=$(find /nix/store -maxdepth 1 -name "*jdk*" -type d | head -1)
+    if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+        export JAVA_HOME
+        export PATH="$JAVA_HOME/bin:$PWD/maven/bin:$PATH"
+        echo "✓ Java environment set: $JAVA_HOME"
+    else
+        echo "ERROR: Java not found in Nix store"
+        exit 1
+    fi
+else
+    echo "ERROR: Nix store not available"
+    exit 1
+fi
+
+# Verify Java is working
+if ! command -v java >/dev/null 2>&1; then
+    echo "ERROR: Java command not available after setup"
+    exit 1
+fi
+
+echo "✓ Java version: $(java -version 2>&1 | head -1)"
+
 # Check if we have a JAR file - if so, use emergency runner
 JAR_FILE=$(find target -name "*.jar" -not -name "*sources.jar" 2>/dev/null | head -1)
 
-if [[ -n "$JAR_FILE" && -f "$JAR_FILE" ]]; then
+if [ -n "$JAR_FILE" ] && [ -f "$JAR_FILE" ]; then
     echo "JAR found, using emergency direct execution..."
     chmod +x deployment/emergency-run.sh 2>/dev/null || true
     exec bash deployment/emergency-run.sh
