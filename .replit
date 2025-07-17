@@ -30,5 +30,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "gce"
-run = ["sh", "-c", "bash deployment/emergency-run.sh"]
+run = ["sh", "-c", "java -jar target/twitch-chat-reader-1.0.0.jar --server.port=$PORT"]
 build = ["sh", "-c", "sh build.sh"]
