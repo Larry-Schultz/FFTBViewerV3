@@ -22,13 +22,21 @@ if [ -z "$JAVA_HOME" ]; then
     log "ERROR: JAVA_HOME not set"
     
     log "Java not found, attempting to download"
-    if command -v apt-get >/dev/null 2>&1; then
-        sudo apt-get update -y
-        sudo apt-get install openjdk-11-jdk -y
-        export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which javac))))"
+    if [ ! -d "jdk-11" ]; then
+        log "Downloading OpenJDK 11..."
+        curl -L -o openjdk-11.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11+28/OpenJDK11U-jdk_x64_linux_hotspot_11_28.tar.gz
+        tar -xzf openjdk-11.tar.gz
+        mv jdk-11+28 jdk-11
+        rm openjdk-11.tar.gz
+        export JAVA_HOME="$PWD/jdk-11"
+        export PATH="$JAVA_HOME/bin:$PATH"
         log "Java installed and JAVA_HOME set: $JAVA_HOME"
     else
-        log "ERROR: Could not detect package manager. Please set JAVA_HOME manually."
+        log "OpenJDK 11 already downloaded."
+        export JAVA_HOME="$PWD/jdk-11"
+        export PATH="$JAVA_HOME/bin:$PATH"
+        log "JAVA_HOME set: $JAVA_HOME"
+    fi
         exit 1
     fi
 fi
