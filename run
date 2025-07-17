@@ -24,20 +24,41 @@ if [ -z "$JAVA_HOME" ]; then
     log "Java not found, attempting to download"
     if [ ! -d "jdk-11" ]; then
         log "Downloading OpenJDK 11..."
-        curl -L -o openjdk-11.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11+28/OpenJDK11U-jdk_x64_linux_hotspot_11_28.tar.gz
-        tar -xzf openjdk-11.tar.gz
-        mv jdk-11+28 jdk-11
-        rm openjdk-11.tar.gz
-        export JAVA_HOME="$PWD/jdk-11"
-        export PATH="$JAVA_HOME/bin:$PATH"
-        log "Java installed and JAVA_HOME set: $JAVA_HOME"
+        
+        # Try to download Java
+        if curl -L -o openjdk-11.tar.gz https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11+28/OpenJDK11U-jdk_x64_linux_hotspot_11_28.tar.gz; then
+            log "Download completed, verifying file..."
+            
+            # Check if downloaded file is valid
+            if file openjdk-11.tar.gz | grep -q "gzip compressed"; then
+                log "Valid gzip file detected, extracting..."
+                
+                if tar -xzf openjdk-11.tar.gz; then
+                    mv jdk-11+28 jdk-11
+                    rm openjdk-11.tar.gz
+                    export JAVA_HOME="$PWD/jdk-11"
+                    export PATH="$JAVA_HOME/bin:$PATH"
+                    log "Java installed and JAVA_HOME set: $JAVA_HOME"
+                else
+                    log "ERROR: Failed to extract Java archive"
+                    rm -f openjdk-11.tar.gz
+                    exit 1
+                fi
+            else
+                log "ERROR: Downloaded file is not a valid gzip archive"
+                log "File type: $(file openjdk-11.tar.gz)"
+                rm -f openjdk-11.tar.gz
+                exit 1
+            fi
+        else
+            log "ERROR: Failed to download Java"
+            exit 1
+        fi
     else
         log "OpenJDK 11 already downloaded."
         export JAVA_HOME="$PWD/jdk-11"
         export PATH="$JAVA_HOME/bin:$PATH"
         log "JAVA_HOME set: $JAVA_HOME"
-    fi
-        exit 1
     fi
 fi
 
@@ -53,6 +74,29 @@ fi
 
 echo "✓ Java version: $(java -version 2>&1 | head -1)"
 
+# Find the JAR file
+JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ ! -f "$JAR_FILE" ]; then
+    JAR_FILE="target/twitch-chat-reader-1.0.jar"
+fi
+
+if [ ! -f "$JAR_FILE" ]; then
+    echo "[RUN] ERROR: JAR file not found. Building first..."
+    if [ -d "maven" ]; then
+        export PATH="$PWD/maven/bin:$PATH"
+        mvn clean package -DskipTests -q
+        if [ ! -f "$JAR_FILE" ]; then
+            echo "[RUN] ERROR: Build failed"
+            exit 1
+        fi
+    else
+        echo "[RUN] ERROR: No Maven found and no JAR file present"
+        exit 1
+    fi
+fi
+
+echo "[RUN] ✓ JAR file found: $JAR_FILE"
+
 # Start the application
-echo "[RUN-REPLIT] Starting Spring Boot application..."
+echo "[RUN] Starting Spring Boot application..."
 java -jar "$JAR_FILE" --server.port=5000
