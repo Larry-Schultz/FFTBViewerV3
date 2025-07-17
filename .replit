@@ -30,5 +30,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "gce"
-run = ["sh", "-c", "bash run-replit.sh"]
+run = ["sh", "-c", "sh run"]
 build = ["sh", "-c", "sh build.sh"]
