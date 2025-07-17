@@ -5,6 +5,13 @@
 
 set -e
 
+log() {
+    echo "$LOG_PREFIX $1" >&2
+}
+
+log "=== Spring Boot Deployment Build ==="
+log "Timestamp: $(date)"
+
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
