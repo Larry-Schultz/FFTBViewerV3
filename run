@@ -20,7 +20,17 @@ echo "Timestamp: $(date)"
 # Check if JAVA_HOME is populated
 if [ -z "$JAVA_HOME" ]; then
     log "ERROR: JAVA_HOME not set"
-    exit 1
+    
+    log "Java not found, attempting to download"
+    if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update -y
+        sudo apt-get install openjdk-11-jdk -y
+        export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which javac))))"
+        log "Java installed and JAVA_HOME set: $JAVA_HOME"
+    else
+        log "ERROR: Could not detect package manager. Please set JAVA_HOME manually."
+        exit 1
+    fi
 fi
 
 
