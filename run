@@ -5,6 +5,7 @@
 
 set -e
 
+LOG_PREFIX="[RUN]"
 log() {
     echo "$LOG_PREFIX $1" >&2
 }
@@ -15,30 +16,13 @@ log "Timestamp: $(date)"
 echo "=== Twitch Chat Reader Deployment ==="
 echo "Timestamp: $(date)"
 
-# FIX 1: Use direct Java path instead of complex detection
-log "Setting up Java environment..."
-if [ -d "/nix/store" ]; then
-    # Use direct Nix store path pattern - much faster than complex searches
-    JAVA_HOME=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
-    if [ -n "$JAVA_HOME" ] && [ -f "$JAVA_HOME/bin/java" ]; then
-        export JAVA_HOME
-        export PATH="$JAVA_HOME/bin:$PATH"
-        log "✓ Java found at: $JAVA_HOME"
-    else
-        log "ERROR: No Java installation found in Nix store"
-        exit 1
-    fi
-else
-    # Fallback for non-Nix environments
-    if command -v java >/dev/null 2>&1; then
-        JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
-        export JAVA_HOME
-        log "✓ Using system Java: $JAVA_HOME"
-    else
-        log "ERROR: No Java installation found"
-        exit 1
-    fi
+
+# Check if JAVA_HOME is populated
+if [ -z "$JAVA_HOME" ]; then
+    log "ERROR: JAVA_HOME not set"
+    exit 1
 fi
+
 
 echo "✓ Java environment set: $JAVA_HOME"
 
