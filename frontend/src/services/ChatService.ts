@@ -1,11 +1,11 @@
 import SockJS from 'sockjs-client';
-import { Stomp, StompSubscription, Client } from '@stomp/stompjs';
+import { Stomp } from '@stomp/stompjs';
 import { ChatMessage } from '../types';
 
 export class ChatService {
-  private stompClient: Client | null = null;
+  private stompClient: any = null;
   private connected: boolean = false;
-  private subscription: StompSubscription | null = null;
+  private subscription: any = null;
 
   connect(
     onMessage: (message: ChatMessage) => void, 
@@ -20,7 +20,7 @@ export class ChatService {
       onConnect && onConnect();
 
       if (this.stompClient) {
-        this.subscription = this.stompClient.subscribe('/topic/messages', (message) => {
+        this.subscription = this.stompClient.subscribe('/topic/messages', (message: any) => {
           if (onMessage && message.body) {
             try {
               const chatMessage: ChatMessage = JSON.parse(message.body);

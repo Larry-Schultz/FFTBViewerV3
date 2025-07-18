@@ -42,27 +42,28 @@ function ChatView() {
       </div>
       
       <div className="chat-messages">
-        {messages.map((message, index) => (
-          <div key={index} className="chat-message">
-            <span className="message-time">
-              {formatTimestamp(message.timestamp)}
-            </span>
-            <span className="message-username" style={{ color: message.userColor || '#ffffff' }}>
-              {message.username}:
-            </span>
-            <span className="message-text">
-              {message.message}
-            </span>
+        {messages.length === 0 ? (
+          <div className="no-messages">
+            {connected ? 'Waiting for messages...' : 'Connecting to chat...'}
           </div>
-        ))}
+        ) : (
+          messages.map((message, index) => (
+            <div key={index} className="chat-message">
+              <span className="message-time">
+                {formatTimestamp(message.timestamp)}
+              </span>
+              <span className="message-username" style={{ color: message.userColor || '#9146ff' }}>
+                {message.username}
+              </span>
+              <span className="message-separator">:</span>
+              <span className="message-text">
+                {message.message}
+              </span>
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
-      
-      {messages.length === 0 && (
-        <div className="no-messages">
-          {connected ? 'Waiting for messages...' : 'Connecting to chat...'}
-        </div>
-      )}
     </div>
   );
 }
