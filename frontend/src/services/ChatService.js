@@ -15,16 +15,18 @@ export class ChatService {
       this.connected = true;
       onConnect && onConnect();
 
-      this.stompClient.subscribe('/topic/messages', (message) => {
-        if (onMessage) {
-          try {
-            const chatMessage = JSON.parse(message.body);
-            onMessage(chatMessage);
-          } catch (error) {
-            console.error('Error parsing chat message:', error);
+      if (this.stompClient) {
+        this.stompClient.subscribe('/topic/messages', (message) => {
+          if (onMessage && message.body) {
+            try {
+              const chatMessage = JSON.parse(message.body);
+              onMessage(chatMessage);
+            } catch (error) {
+              console.error('Error parsing chat message:', error);
+            }
           }
-        }
-      });
+        });
+      }
     }, (error) => {
       this.connected = false;
       console.error('WebSocket connection error:', error);

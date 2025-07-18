@@ -8,15 +8,24 @@ module.exports = {
     filename: 'bundle.js',
     clean: true,
   },
+  mode: 'production',
   module: {
     rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: 'ts-loader',
+      },
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+            presets: [
+              ['@babel/preset-env', { targets: { browsers: ['last 2 versions'] } }],
+              ['@babel/preset-react', { runtime: 'automatic' }]
+            ],
           },
         },
       },
@@ -33,7 +42,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
   devServer: {
     contentBase: path.join(__dirname, 'src/main/resources/static'),
