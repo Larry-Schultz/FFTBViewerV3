@@ -88,6 +88,11 @@ public class PlaylistService {
      */
     public Page<Song> fetchSongsPaginated(int page, int size, String sortBy, String sortDirection) {
         try {
+            // Special handling for updatedAt to show songs with timestamps first
+            if ("updatedAt".equals(sortBy)) {
+                return fetchSongsWithUpdatedAtSort(page, size, sortDirection);
+            }
+            
             Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
             Sort sort = Sort.by(direction, sortBy);
             Pageable pageable = PageRequest.of(page, size, sort);
@@ -103,6 +108,32 @@ public class PlaylistService {
     }
 
     /**
+     * Special method for sorting by updatedAt with proper NULL handling
+     */
+    private Page<Song> fetchSongsWithUpdatedAtSort(int page, int size, String sortDirection) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            boolean descending = "desc".equalsIgnoreCase(sortDirection);
+            
+            Page<Song> songs;
+            if (descending) {
+                // For DESC: Show songs with updatedAt first (NULLS LAST)
+                songs = songRepository.findAllOrderByUpdatedAtDescNullsLast(pageable);
+            } else {
+                // For ASC: Show songs with updatedAt first (NULLS LAST)  
+                songs = songRepository.findAllOrderByUpdatedAtAscNullsLast(pageable);
+            }
+            
+            logger.info("Retrieved page {} of {} songs sorted by updatedAt {} (NULLS LAST)", 
+                       page + 1, songs.getTotalPages(), sortDirection);
+            return songs;
+        } catch (Exception e) {
+            logger.error("Error retrieving songs sorted by updatedAt", e);
+            return Page.empty();
+        }
+    }
+
+    /**
      * Search songs with pagination
      */
     public Page<Song> searchSongsPaginated(String searchTerm, int page, int size, String sortBy, String sortDirection) {
@@ -111,6 +142,11 @@ public class PlaylistService {
         }
         
         try {
+            // Special handling for updatedAt to show songs with timestamps first
+            if ("updatedAt".equals(sortBy)) {
+                return searchSongsWithUpdatedAtSort(searchTerm, page, size, sortDirection);
+            }
+            
             Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection) ? Sort.Direction.DESC : Sort.Direction.ASC;
             Sort sort = Sort.by(direction, sortBy);
             Pageable pageable = PageRequest.of(page, size, sort);
@@ -121,6 +157,30 @@ public class PlaylistService {
             return songs;
         } catch (Exception e) {
             logger.error("Error searching songs with term: '{}'", searchTerm, e);
+            return Page.empty();
+        }
+    }
+
+    /**
+     * Search songs with updatedAt sorting and proper NULL handling
+     */
+    private Page<Song> searchSongsWithUpdatedAtSort(String searchTerm, int page, int size, String sortDirection) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            boolean descending = "desc".equalsIgnoreCase(sortDirection);
+            
+            Page<Song> songs;
+            if (descending) {
+                songs = songRepository.findByTitleContainingIgnoreCaseOrderByUpdatedAtDescNullsLast(searchTerm.trim(), pageable);
+            } else {
+                songs = songRepository.findByTitleContainingIgnoreCaseOrderByUpdatedAtAscNullsLast(searchTerm.trim(), pageable);
+            }
+            
+            logger.info("Found page {} of {} songs matching search term: '{}' sorted by updatedAt {} (NULLS LAST)", 
+                       page + 1, songs.getTotalPages(), searchTerm, sortDirection);
+            return songs;
+        } catch (Exception e) {
+            logger.error("Error searching songs with term: '{}' sorted by updatedAt", searchTerm, e);
             return Page.empty();
         }
     }

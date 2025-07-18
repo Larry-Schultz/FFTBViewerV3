@@ -99,4 +99,28 @@ public interface SongRepository extends JpaRepository<Song, Long> {
      */
     @Query("SELECT MAX(s.createdAt) FROM Song s")
     java.time.LocalDateTime findLatestSongAddedTime();
+    
+    /**
+     * Find all songs ordered by updatedAt DESC with NULL values last
+     */
+    @Query("SELECT s FROM Song s ORDER BY s.updatedAt DESC NULLS LAST")
+    Page<Song> findAllOrderByUpdatedAtDescNullsLast(Pageable pageable);
+    
+    /**
+     * Find all songs ordered by updatedAt ASC with NULL values last
+     */
+    @Query("SELECT s FROM Song s ORDER BY s.updatedAt ASC NULLS LAST")
+    Page<Song> findAllOrderByUpdatedAtAscNullsLast(Pageable pageable);
+    
+    /**
+     * Search songs by title containing search term, ordered by updatedAt DESC with NULL values last
+     */
+    @Query("SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY s.updatedAt DESC NULLS LAST")
+    Page<Song> findByTitleContainingIgnoreCaseOrderByUpdatedAtDescNullsLast(@Param("searchTerm") String searchTerm, Pageable pageable);
+    
+    /**
+     * Search songs by title containing search term, ordered by updatedAt ASC with NULL values last
+     */
+    @Query("SELECT s FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ORDER BY s.updatedAt ASC NULLS LAST")
+    Page<Song> findByTitleContainingIgnoreCaseOrderByUpdatedAtAscNullsLast(@Param("searchTerm") String searchTerm, Pageable pageable);
 }
