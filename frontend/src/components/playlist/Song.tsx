@@ -16,10 +16,11 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
     return count > 0 ? count.toString() : 'Never';
   };
 
-  const formatDate = (dateString: string | null): string => {
+  const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return 'Unknown';
     try {
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Unknown';
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -30,7 +31,7 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
     }
   };
 
-  const formatLastPlayed = (count: number, lastPlayed?: string): string => {
+  const formatLastPlayed = (count: number, lastPlayed?: string | null): string => {
     if (count === 0) return 'Never';
     if (lastPlayed) {
       return formatDate(lastPlayed);
