@@ -54,7 +54,11 @@ function ChatView() {
         ) : (
           messages.map((message, index) => (
             <div key={index} className="chat-message">
-              {formatTimestamp(message.timestamp)}{message.username}: {message.message}
+              <span className="message-time">{formatTimestamp(message.timestamp)}</span>
+              <span className="message-space"> </span>
+              <span className="message-username">{message.username}</span>
+              <span className="message-separator"> : </span>
+              <span className="message-text">{message.message}</span>
             </div>
           ))
         )}

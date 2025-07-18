@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Courier New', monospace;
-    background: #000000;
+    background: #2d2d42;
     color: #ffffff;
     min-height: 100vh;
     line-height: 1.2;
@@ -15,34 +15,72 @@ body {
 }
 
 .app {
-    background: #000000;
+    background: #2d2d42;
     min-height: 100vh;
 }
 
 .main-content {
-    background: #000000;
+    background: #2d2d42;
     min-height: 100vh;
 }
 
 .container {
-    background: #000000;
+    background: #2d2d42;
     margin: 0;
     padding: 0;
     max-width: none;
 }
 
-/* Hide header completely */
+/* Show header with proper styling */
 .header {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #2d2d42;
+    border-bottom: 1px solid #4a4a5e;
+}
+
+.header h1 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 0;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-button {
+    background: #9146ff;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+    background: #7c3aed;
+}
+
+.nav-button.active {
+    background: #7c3aed;
+    font-weight: bold;
 }
 
 /* Chat styles - Terminal Style */
 .chat-view {
-    background: #000000;
+    background: #1e1e2e;
     border: none;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: none;
+    border-radius: 8px;
+    margin: 20px;
+    height: calc(100vh - 120px);
+    overflow: hidden;
     font-family: 'Courier New', monospace;
     font-size: 14px;
     line-height: 1.2;
@@ -53,14 +91,14 @@ body {
 }
 
 .chat-messages {
-    height: 100vh;
+    height: 100%;
     overflow-y: auto;
-    padding: 10px;
-    background: #000000;
+    padding: 15px;
+    background: #1e1e2e;
     border: none;
-    border-radius: 0;
+    border-radius: 8px;
     scrollbar-width: thin;
-    scrollbar-color: #333 #000;
+    scrollbar-color: #9146ff #1e1e2e;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -68,12 +106,12 @@ body {
 }
 
 .chat-messages::-webkit-scrollbar-track {
-    background: #000;
+    background: #1e1e2e;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 0;
+    background: #9146ff;
+    border-radius: 4px;
 }
 
 .chat-message {
@@ -88,25 +126,31 @@ body {
 }
 
 .message-time {
-    color: #ffffff;
+    color: #00ff00;
     font-size: 14px;
-    margin-right: 0;
+    margin: 0;
     font-weight: normal;
+}
+
+.message-space {
+    color: #ffffff;
+    margin: 0;
 }
 
 .message-username {
     font-weight: normal;
-    margin-right: 0;
-    color: #ffffff;
+    margin: 0;
+    color: #9146ff;
 }
 
 .message-separator {
     color: #ffffff;
-    margin-right: 0;
+    margin: 0;
 }
 
 .message-text {
     color: #ffffff;
+    margin: 0;
 }
 
 .no-messages {
