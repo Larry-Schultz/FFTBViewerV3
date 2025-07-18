@@ -4,7 +4,7 @@ import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.twitchchat.event.TrackPlayEvent;
 import com.twitchchat.event.detector.TrackPlayDetector;
 import com.twitchchat.model.ChatMessage;
-import com.twitchchat.service.ChatMessageService;
+
 import com.twitchchat.service.SongPlayTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +22,6 @@ import java.time.format.DateTimeFormatter;
 public class ChatEventHandler {
     private static final Logger logger = LoggerFactory.getLogger(ChatEventHandler.class);
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-    @Autowired
-    private ChatMessageService chatMessageService;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -47,9 +44,6 @@ public class ChatEventHandler {
 
             // Create chat message object
             ChatMessage chatMessage = new ChatMessage(username, message, channel);
-            
-            // Store message in service
-            chatMessageService.addMessage(chatMessage);
             
             // Detect track play events
             TrackPlayEvent trackPlayEvent = trackPlayDetector.detect(chatMessage);

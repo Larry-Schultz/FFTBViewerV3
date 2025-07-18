@@ -32,6 +32,14 @@ Preferred communication style: Simple, everyday language.
 - **REAL-TIME STATS**: Dynamic statistics display with formatted timestamps in user's local timezone
 - **REMOVED LEGACY CODE**: Deleted WebController, old templates, and static assets in favor of React frontend
 
+**July 18, 2025 - Frontend Message Limiting & Backend Optimization:**
+- **REMOVED BACKEND MESSAGE CACHING**: Eliminated ChatMessageService to remove server-side 50-message storage
+- **FRONTEND-ONLY MESSAGE LIMITING**: Implemented 50-message limit in browser to prevent memory overload
+- **OPTIMIZED WEBSOCKET STREAMING**: Backend now streams all messages directly without caching
+- **IMPROVED PERFORMANCE**: Reduced server memory usage by removing message storage service
+- **BROWSER MEMORY PROTECTION**: Frontend automatically maintains only last 50 messages in memory
+- **STREAMLINED ARCHITECTURE**: Simplified backend chat handling with direct WebSocket broadcasting
+
 **July 17, 2025 - UI Improvements & URL Changes:**
 - **CHANGED PLAYLIST URL**: Updated route from `/playlist` to `/music` for better semantic naming
 - **UPDATED ALL REFERENCES**: Modified controller mapping, template links, and navigation to use new URL
@@ -128,7 +136,7 @@ Preferred communication style: Simple, everyday language.
 - `ChatEventHandler.java` - Spring component handling incoming chat events and WebSocket broadcasting
 - `TwitchProperties.java` - Spring Boot configuration properties class for Twitch settings
 - `ChatMessage.java` - Model class for chat message data
-- `ChatMessageService.java` - Service managing the last 50 chat messages
+
 - `WebSocketConfig.java` - WebSocket configuration for real-time communication
 - `WebController.java` - Web controller serving the chat viewer interface
 - `application.properties` - Spring Boot configuration file
@@ -137,7 +145,7 @@ Preferred communication style: Simple, everyday language.
 - Real-time chat message display with timestamps (console + web)
 - Modern web interface with Twitch-inspired design
 - WebSocket-powered live message streaming
-- Last 50 messages storage and display
+- Frontend-managed 50 messages display limit
 - Auto-reconnection on connection loss
 - Graceful shutdown with 'q' command
 - Flexible configuration via environment variables or properties file

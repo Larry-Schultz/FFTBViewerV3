@@ -17,7 +17,6 @@ com/twitchchat/model/ChatMessage.class
 com/twitchchat/util/DurationSyncUtil.class
 com/twitchchat/controller/SimpleTestController.class
 com/twitchchat/service/SimplifiedPlaylistSyncService.class
-com/twitchchat/service/ChatMessageService.class
 com/twitchchat/repository/SongRepository.class
 com/twitchchat/service/PlaylistService.class
 com/twitchchat/model/Song.class

@@ -2,7 +2,6 @@
 /home/runner/workspace/src/main/java/com/twitchchat/TwitchChatReader.java
 /home/runner/workspace/src/main/java/com/twitchchat/TwitchChatReaderApplication.java
 /home/runner/workspace/src/main/java/com/twitchchat/event/detector/TrackPlayDetector.java
-/home/runner/workspace/src/main/java/com/twitchchat/service/ChatMessageService.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/WebConfig.java
 /home/runner/workspace/src/main/java/com/twitchchat/event/EventDetector.java
 /home/runner/workspace/src/main/java/com/twitchchat/model/Playlist.java
