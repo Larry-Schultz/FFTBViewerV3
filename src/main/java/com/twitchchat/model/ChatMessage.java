@@ -1,6 +1,7 @@
 package com.twitchchat.model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -18,7 +19,8 @@ public class ChatMessage {
         this.username = username;
         this.message = message;
         this.channel = channel;
-        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        // Use ISO instant format for proper JavaScript Date parsing
+        this.timestamp = LocalDateTime.now().atZone(ZoneOffset.UTC).toInstant().toString();
     }
 
     // Getters and Setters
