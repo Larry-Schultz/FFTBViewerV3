@@ -18,7 +18,6 @@
 /home/runner/workspace/src/main/java/com/twitchchat/event/BattleGroundEvent.java
 /home/runner/workspace/src/main/java/com/twitchchat/repository/SongRepository.java
 /home/runner/workspace/src/main/java/com/twitchchat/controller/ApiController.java
-/home/runner/workspace/src/main/java/com/twitchchat/controller/WebController.java
 /home/runner/workspace/src/main/java/com/twitchchat/model/ChatMessage.java
 /home/runner/workspace/src/main/java/com/twitchchat/model/Song.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TrackPlayProperties.java
