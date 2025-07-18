@@ -4,9 +4,7 @@ import App from './App';
 import './styles/main.css';
 
 const container = document.getElementById('root');
-if (!container) {
-  throw new Error('Failed to find the root element');
+if (container) {
+  const root = createRoot(container);
+  root.render(<App />);
 }
-
-const root = createRoot(container);
-root.render(<App />);
