@@ -163,6 +163,7 @@
         .search-input:focus {
             outline: none;
             border-color: #9146ff;
+            box-shadow: 0 0 0 2px rgba(145, 70, 255, 0.2);
         }
 
         .search-input::placeholder {
@@ -171,38 +172,37 @@
 
         .song-table {
             width: 100%;
-            background: #2f2f35;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
             overflow: hidden;
-            border: 2px solid #4b4b55;
         }
 
         .song-table th {
-            background: #1f1f35;
+            background: #9146ff;
             color: #efeff1;
             padding: 1rem;
             text-align: left;
             font-weight: 600;
-            border-bottom: 2px solid #4b4b55;
+            border-bottom: 2px solid #9146ff;
             cursor: pointer;
             user-select: none;
         }
 
         .song-table th:hover {
-            background: #2a2a40;
+            background: rgba(145, 70, 255, 0.8);
         }
 
         .song-table td {
             padding: 0.75rem 1rem;
-            border-bottom: 1px solid #4b4b55;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .song-row:hover {
-            background: #3a3a45;
+            background: rgba(255,255,255,0.05);
         }
 
         .song-title {
-            color: #00f593;
+            color: #efeff1;
             font-weight: 500;
         }
 
@@ -243,12 +243,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: none;
-            background: #4b4b55;
+            background: #9146ff;
             color: #efeff1;
         }
 
         .btn:hover:not(:disabled) {
-            background: #5b5b65;
+            background: #772ce8;
+            transform: translateY(-2px);
         }
 
         .btn:disabled {
@@ -260,7 +261,7 @@
             padding: 0.5rem;
             background: #2f2f35;
             color: #efeff1;
-            border: 2px solid #4b4b55;
+            border: 2px solid #9146ff;
             border-radius: 6px;
         }
 
