@@ -8,6 +8,7 @@
 /home/runner/workspace/src/main/java/com/twitchchat/model/Playlist.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/TwitchConfig.java
 /home/runner/workspace/src/main/java/com/twitchchat/config/WebSocketConfig.java
+/home/runner/workspace/src/main/java/com/twitchchat/controller/SimpleTestController.java
 /home/runner/workspace/src/main/java/com/twitchchat/event/TrackPlayEvent.java
 /home/runner/workspace/src/main/java/com/twitchchat/service/SimplifiedPlaylistSyncService.java
 /home/runner/workspace/src/main/java/com/twitchchat/controller/DurationFixController.java

@@ -23,8 +23,12 @@ import java.util.stream.Collectors;
 public class PlaylistService {
     private static final Logger logger = LoggerFactory.getLogger(PlaylistService.class);
     
-    @Autowired
-    private SongRepository songRepository;
+    private final SongRepository songRepository;
+    
+    // Constructor injection
+    public PlaylistService(SongRepository songRepository) {
+        this.songRepository = songRepository;
+    }
 
     /**
      * Get all songs from the database, ordered by title

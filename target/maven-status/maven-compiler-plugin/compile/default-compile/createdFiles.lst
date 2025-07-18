@@ -15,14 +15,15 @@ com/twitchchat/TwitchChatReader.class
 META-INF/spring-configuration-metadata.json
 com/twitchchat/model/ChatMessage.class
 com/twitchchat/util/DurationSyncUtil.class
+com/twitchchat/controller/SimpleTestController.class
 com/twitchchat/service/SimplifiedPlaylistSyncService.class
 com/twitchchat/service/ChatMessageService.class
 com/twitchchat/repository/SongRepository.class
 com/twitchchat/service/PlaylistService.class
 com/twitchchat/model/Song.class
 com/twitchchat/controller/ReactController.class
-com/twitchchat/controller/ApiController.class
 com/twitchchat/TwitchChatReaderApplication.class
+com/twitchchat/controller/ApiController.class
 com/twitchchat/config/TwitchProperties.class
 com/twitchchat/controller/DurationFixController.class
 com/twitchchat/controller/ConfigController.class

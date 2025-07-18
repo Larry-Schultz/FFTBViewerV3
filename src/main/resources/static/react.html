@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFT Battleground Music Playlist - React</title>
+    <title id="page-title">FFT Battleground</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -646,35 +646,27 @@
         // Main App Component
         function App() {
             const [currentView, setCurrentView] = useState(() => {
-                // Determine initial view based on URL path
-                const path = window.location.pathname;
-                console.log('App initializing with path:', path);
-                if (path === '/music' || path === '/playlist') return 'playlist';
-                if (path === '/chat') return 'chat';
-                if (path === '/') return 'chat';
-                return 'chat'; // default to chat for home
+                // Determine initial view based on URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const pageParam = urlParams.get('page');
+                console.log('App initializing with page param:', pageParam);
+                if (pageParam === 'music' || pageParam === 'playlist') return 'playlist';
+                if (pageParam === 'chat') return 'chat';
+                return 'chat'; // default to chat
             });
 
             const handleViewChange = (view) => {
                 setCurrentView(view);
                 // Update URL without page reload
-                const newPath = view === 'playlist' ? '/music' : (view === 'chat' ? '/' : `/${view}`);
-                window.history.pushState({}, '', newPath);
+                const newUrl = view === 'playlist' ? '/music' : '/';
+                window.history.pushState({}, '', newUrl);
             };
 
-            // Handle browser back/forward buttons
+            // Update page title based on current view
             React.useEffect(() => {
-                const handlePopState = () => {
-                    const path = window.location.pathname;
-                    if (path === '/music' || path === '/playlist') setCurrentView('playlist');
-                    else if (path === '/chat') setCurrentView('chat');
-                    else if (path === '/') setCurrentView('chat');
-                    else setCurrentView('chat');
-                };
-
-                window.addEventListener('popstate', handlePopState);
-                return () => window.removeEventListener('popstate', handlePopState);
-            }, []);
+                const title = currentView === 'playlist' ? 'FFT Battleground - Music Playlist' : 'FFT Battleground - Live Chat';
+                document.getElementById('page-title').textContent = title;
+            }, [currentView]);
 
             return (
                 <div className="app">
