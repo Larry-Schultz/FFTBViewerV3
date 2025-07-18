@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './components/Header';
-import ChatView from './components/ChatView';
+import { ChatView } from './components/chat';
 import PlaylistView from './components/PlaylistView';
 import { ViewType } from './types';
 import './styles/main.css';
