@@ -388,7 +388,13 @@
             };
 
             const formatTimestamp = (timestamp) => {
-                return new Date(timestamp).toLocaleTimeString();
+                try {
+                    // Handle both string timestamps and Date objects
+                    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+                    return date.toLocaleTimeString();
+                } catch (error) {
+                    return timestamp || 'Unknown';
+                }
             };
 
             if (error) {
@@ -410,14 +416,20 @@
                             color: connected ? '#4CAF50' : '#ff4444',
                             fontWeight: 'bold'
                         }}>
-                            {connected ? '🟢 Connected' : '🔴 Disconnected'}
+                            {connected ? '🟢 Connected to Live Chat' : '🔴 Disconnected'}
                         </span>
+                        <p style={{ color: '#9ca3af', marginTop: '0.5rem' }}>
+                            {messages.length} messages received
+                        </p>
                     </div>
                     
                     <div className="chat-container">
                         {messages.length === 0 ? (
                             <div className="loading">
-                                Waiting for chat messages...
+                                <p>Waiting for chat messages...</p>
+                                <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
+                                    Live messages from fftbattleground will appear here
+                                </p>
                             </div>
                         ) : (
                             messages.map((message, index) => (

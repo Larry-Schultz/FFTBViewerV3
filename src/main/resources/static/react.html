@@ -281,6 +281,42 @@
             text-align: center;
         }
 
+        .chat-container {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 2px solid #9146ff;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .chat-username {
+            font-weight: bold;
+            color: #9146ff;
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-text {
+            color: #efeff1;
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-timestamp {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
         @media (max-width: 768px) {
             .header-container {
                 flex-direction: column;
@@ -635,11 +671,118 @@
 
         // Chat View Component
         function ChatView() {
+            const [messages, setMessages] = useState([]);
+            const [connected, setConnected] = useState(false);
+            const [error, setError] = useState(null);
+            const messagesEndRef = React.useRef(null);
+            const stompClient = React.useRef(null);
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            React.useEffect(() => {
+                scrollToBottom();
+            }, [messages]);
+
+            React.useEffect(() => {
+                connectWebSocket();
+                return () => {
+                    if (stompClient.current) {
+                        stompClient.current.disconnect();
+                    }
+                };
+            }, []);
+
+            const connectWebSocket = () => {
+                try {
+                    const socket = new SockJS('/ws');
+                    stompClient.current = new StompJs.Client({
+                        webSocketFactory: () => socket,
+                        onConnect: () => {
+                            console.log('Connected to WebSocket');
+                            setConnected(true);
+                            setError(null);
+                            
+                            stompClient.current.subscribe('/topic/messages', (message) => {
+                                const chatMessage = JSON.parse(message.body);
+                                setMessages(prev => [...prev.slice(-49), chatMessage]);
+                            });
+                        },
+                        onStompError: (frame) => {
+                            console.error('STOMP error:', frame);
+                            setError('WebSocket connection failed');
+                            setConnected(false);
+                        },
+                        onDisconnect: () => {
+                            console.log('Disconnected from WebSocket');
+                            setConnected(false);
+                        }
+                    });
+
+                    stompClient.current.activate();
+                } catch (error) {
+                    console.error('Error connecting to WebSocket:', error);
+                    setError('Failed to connect to chat');
+                }
+            };
+
+            const formatTimestamp = (timestamp) => {
+                try {
+                    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+                    return date.toLocaleTimeString();
+                } catch (error) {
+                    return timestamp || 'Unknown';
+                }
+            };
+
+            if (error) {
+                return (
+                    <div className="error-message">
+                        <h3>Connection Error</h3>
+                        <p>{error}</p>
+                        <button className="btn" onClick={connectWebSocket}>
+                            Reconnect
+                        </button>
+                    </div>
+                );
+            }
+
             return (
-                <div className="loading">
-                    <h2>Live Chat</h2>
-                    <p>Chat functionality coming soon...</p>
-                    <p style={{ marginTop: '1rem' }}>The chat reader is active in the background and processing live messages from the FFT Battleground Twitch channel.</p>
+                <div>
+                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <span style={{ 
+                            color: connected ? '#4CAF50' : '#ff4444',
+                            fontWeight: 'bold'
+                        }}>
+                            {connected ? '🟢 Connected to Live Chat' : '🔴 Disconnected'}
+                        </span>
+                        <p style={{ color: '#9ca3af', marginTop: '0.5rem' }}>
+                            {messages.length} messages received
+                        </p>
+                    </div>
+                    
+                    <div className="chat-container">
+                        {messages.length === 0 ? (
+                            <div className="loading">
+                                <p>Waiting for chat messages...</p>
+                                <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
+                                    Live messages from fftbattleground will appear here
+                                </p>
+                            </div>
+                        ) : (
+                            messages.map((message, index) => (
+                                <div key={index} className="chat-message">
+                                    <span className="chat-username">{message.username}</span>
+                                    <span className="chat-text">{message.message}</span>
+                                    <span className="chat-timestamp">
+                                        {formatTimestamp(message.timestamp)}
+                                    </span>
+                                </div>
+                            ))
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
                 </div>
             );
         }
