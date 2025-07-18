@@ -205,6 +205,25 @@ Preferred communication style: Simple, everyday language.
 - `TWITCH_ACCESS_TOKEN` environment variable or `twitch.access-token` in application.properties (for authentication)
 - `TWITCH_USERNAME` environment variable or `twitch.username` in application.properties (for bot identification)
 
+## Frontend Development Guide
+
+**Making CSS/Styling Changes:**
+1. Edit CSS files in `frontend/src/styles/main.css`
+2. Build the frontend: `cd /home/runner/workspace && npx webpack --mode production`
+3. Restart the backend server: Use the "Server" workflow restart button or `restart_workflow` tool
+4. **CRITICAL**: Ensure CSS paths in `src/main/resources/static/react/index.html` use absolute paths (e.g., `/dist/styles.css` not `../dist/styles.css`)
+
+**Frontend Architecture:**
+- TypeScript source: `frontend/src/`
+- Built output: `src/main/resources/static/dist/`
+- Served from: Java Spring Boot static resources at `/dist/`
+- Entry point: `src/main/resources/static/react/index.html`
+
+**Common Issues:**
+- CSS not loading: Check paths in index.html are absolute (`/dist/`) not relative (`../dist/`)
+- Changes not visible: Ensure webpack build completed and server restarted
+- TypeScript errors: Run `npx webpack` to see compilation errors
+
 ## Deployment Strategy
 
 **Local Development:**
