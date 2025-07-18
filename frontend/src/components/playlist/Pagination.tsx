@@ -1,6 +1,16 @@
 import React from 'react';
 
-function Pagination({ 
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+const Pagination: React.FC<PaginationProps> = ({ 
   currentPage, 
   totalPages, 
   pageSize, 
@@ -8,20 +18,20 @@ function Pagination({
   onPageSizeChange, 
   hasNext, 
   hasPrevious 
-}) {
+}) => {
   const pageSizeOptions = [10, 25, 50, 100, 250, 500];
 
   return (
-    <div className="pagination">
+    <div className="pagination-container">
       <div className="pagination-info">
-        <span>Page {currentPage + 1} of {totalPages}</span>
+        <span>Page <strong>{currentPage + 1}</strong> of <strong>{totalPages}</strong></span>
       </div>
       
       <div className="pagination-controls">
         <button 
           onClick={() => onPageChange(currentPage - 1)}
           disabled={!hasPrevious}
-          className="btn btn-secondary"
+          className="pagination-button"
         >
           Previous
         </button>
@@ -29,18 +39,18 @@ function Pagination({
         <button 
           onClick={() => onPageChange(currentPage + 1)}
           disabled={!hasNext}
-          className="btn btn-secondary"
+          className="pagination-button"
         >
           Next
         </button>
       </div>
 
-      <div className="page-size-selector">
-        <label htmlFor="page-size">Page Size:</label>
+      <div className="page-size-container">
+        <span className="page-size-label">Page Size:</span>
         <select 
-          id="page-size"
           value={pageSize} 
           onChange={(e) => onPageSizeChange(parseInt(e.target.value))}
+          className="page-size-select"
         >
           {pageSizeOptions.map(size => (
             <option key={size} value={size}>{size}</option>
@@ -49,6 +59,6 @@ function Pagination({
       </div>
     </div>
   );
-}
+};
 
 export default Pagination;
