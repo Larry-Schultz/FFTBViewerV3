@@ -29,7 +29,12 @@ function ChatView() {
 
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString();
+    return date.toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
   };
 
   return (
@@ -49,16 +54,7 @@ function ChatView() {
         ) : (
           messages.map((message, index) => (
             <div key={index} className="chat-message">
-              <span className="message-time">
-                {formatTimestamp(message.timestamp)}
-              </span>
-              <span className="message-username" style={{ color: message.userColor || '#9146ff' }}>
-                {message.username}
-              </span>
-              <span className="message-separator">:</span>
-              <span className="message-text">
-                {message.message}
-              </span>
+              {formatTimestamp(message.timestamp)}{message.username}: {message.message}
             </div>
           ))
         )}
