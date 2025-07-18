@@ -62,7 +62,9 @@ const PlaylistView: React.FC = () => {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(field);
-      setSortDirection('asc');
+      // Default to descending for fields where users expect newest/highest first
+      const defaultDescFields = ['updatedAt', 'createdAt', 'occurrence'];
+      setSortDirection(defaultDescFields.includes(field) ? 'desc' : 'asc');
     }
     setCurrentPage(0);
   };
