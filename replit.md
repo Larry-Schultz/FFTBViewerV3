@@ -16,7 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **TIMESTAMP FEATURE**: Added latest song timestamp display with automatic timezone conversion
 - **CDN-BASED REACT**: Implemented React app using CDN libraries for simplified deployment
 - **CLEANED UP OLD FILES**: Removed legacy HTML templates, CSS, and JavaScript files from Java project
-- **MAINTAINED THYMELEAF ROUTES**: React app uses original routes `/music` and `/chat` for seamless transition
+- **UPDATED ROUTING STRUCTURE**: Root `/` serves chat page, `/music` serves playlist page for intuitive navigation
 - **CROSS-ORIGIN SUPPORT**: Added CORS configuration for frontend/backend communication
 - **RESPONSIVE DESIGN**: Mobile-friendly interface with Twitch-inspired styling
 - **REAL-TIME STATS**: Dynamic statistics display with formatted timestamps in user's local timezone

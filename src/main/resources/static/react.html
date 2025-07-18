@@ -638,13 +638,14 @@
                 const path = window.location.pathname;
                 if (path === '/music' || path === '/playlist') return 'playlist';
                 if (path === '/chat') return 'chat';
-                return 'playlist'; // default
+                if (path === '/') return 'chat';
+                return 'chat'; // default to chat for home
             });
 
             const handleViewChange = (view) => {
                 setCurrentView(view);
                 // Update URL without page reload
-                const newPath = view === 'playlist' ? '/music' : `/${view}`;
+                const newPath = view === 'playlist' ? '/music' : (view === 'chat' ? '/' : `/${view}`);
                 window.history.pushState({}, '', newPath);
             };
 
@@ -654,7 +655,8 @@
                     const path = window.location.pathname;
                     if (path === '/music' || path === '/playlist') setCurrentView('playlist');
                     else if (path === '/chat') setCurrentView('chat');
-                    else setCurrentView('playlist');
+                    else if (path === '/') setCurrentView('chat');
+                    else setCurrentView('chat');
                 };
 
                 window.addEventListener('popstate', handlePopState);
