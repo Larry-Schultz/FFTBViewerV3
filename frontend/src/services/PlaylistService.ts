@@ -1,5 +1,13 @@
+import { PlaylistData, PlaylistStats, LatestSongResponse } from '../types';
+
 export class PlaylistService {
-  static async getSongs(page = 0, size = 50, sortBy = 'title', sortDirection = 'asc', search = '') {
+  static async getSongs(
+    page: number = 0, 
+    size: number = 50, 
+    sortBy: string = 'title', 
+    sortDirection: 'asc' | 'desc' = 'asc', 
+    search: string = ''
+  ): Promise<PlaylistData> {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
@@ -18,7 +26,7 @@ export class PlaylistService {
     return await response.json();
   }
 
-  static async getStats() {
+  static async getStats(): Promise<PlaylistStats> {
     const response = await fetch('/api/stats');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,7 +34,7 @@ export class PlaylistService {
     return await response.json();
   }
 
-  static async getLatestSongTime() {
+  static async getLatestSongTime(): Promise<LatestSongResponse> {
     const response = await fetch('/api/latest-song-time');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

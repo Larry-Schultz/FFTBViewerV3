@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatService } from '../services/ChatService';
+import { ChatMessage } from '../types';
 
 function ChatView() {
-  const [messages, setMessages] = useState([]);
-  const [connected, setConnected] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [connected, setConnected] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const chatService = new ChatService();
@@ -26,7 +27,7 @@ function ChatView() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const formatTimestamp = (timestamp) => {
+  const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString();
   };

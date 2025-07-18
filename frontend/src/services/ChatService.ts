@@ -1,13 +1,17 @@
 import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import { Stomp, StompSubscription, Client } from '@stomp/stompjs';
+import { ChatMessage } from '../types';
 
 export class ChatService {
-  constructor() {
-    this.stompClient = null;
-    this.connected = false;
-  }
+  private stompClient: Client | null = null;
+  private connected: boolean = false;
+  private subscription: StompSubscription | null = null;
 
-  connect(onMessage, onConnect, onDisconnect) {
+  connect(
+    onMessage: (message: ChatMessage) => void, 
+    onConnect?: () => void, 
+    onDisconnect?: () => void
+  ): void {
     const socket = new SockJS('/ws');
     this.stompClient = Stomp.over(socket);
 
@@ -16,10 +20,10 @@ export class ChatService {
       onConnect && onConnect();
 
       if (this.stompClient) {
-        this.stompClient.subscribe('/topic/messages', (message) => {
+        this.subscription = this.stompClient.subscribe('/topic/messages', (message) => {
           if (onMessage && message.body) {
             try {
-              const chatMessage = JSON.parse(message.body);
+              const chatMessage: ChatMessage = JSON.parse(message.body);
               onMessage(chatMessage);
             } catch (error) {
               console.error('Error parsing chat message:', error);
@@ -27,14 +31,18 @@ export class ChatService {
           }
         });
       }
-    }, (error) => {
+    }, (error: any) => {
       this.connected = false;
       console.error('WebSocket connection error:', error);
       onDisconnect && onDisconnect();
     });
   }
 
-  disconnect() {
+  disconnect(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = null;
+    }
     if (this.stompClient && this.connected) {
       this.stompClient.disconnect();
       this.connected = false;

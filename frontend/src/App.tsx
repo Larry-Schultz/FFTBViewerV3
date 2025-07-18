@@ -2,10 +2,11 @@ import React from 'react';
 import Header from './components/Header';
 import ChatView from './components/ChatView';
 import PlaylistView from './components/PlaylistView';
+import { ViewType } from './types';
 import './styles/main.css';
 
 function App() {
-  const [currentView, setCurrentView] = React.useState('chat');
+  const [currentView, setCurrentView] = React.useState<ViewType>('chat');
 
   return (
     <div className="app">

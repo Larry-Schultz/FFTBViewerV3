@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { PlaylistService } from '../services/PlaylistService';
+import { PlaylistData } from '../types';
 
 function PlaylistView() {
-  const [playlistData, setPlaylistData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(50);
-  const [sortBy, setSortBy] = useState('title');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [latestSongTime, setLatestSongTime] = useState(null);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [sortBy, setSortBy] = useState<string>('title');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [latestSongTime, setLatestSongTime] = useState<string | null>(null);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
 
   // Debounce search term
   useEffect(() => {
@@ -52,7 +53,7 @@ function PlaylistView() {
     loadData();
   }, [currentPage, pageSize, sortBy, sortDirection, debouncedSearchTerm]);
 
-  const handleSort = (field) => {
+  const handleSort = (field: string) => {
     if (sortBy === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -62,13 +63,13 @@ function PlaylistView() {
     setCurrentPage(0);
   };
 
-  const formatDuration = (duration) => {
+  const formatDuration = (duration: string): string => {
     if (!duration) return '0:00';
     const [minutes, seconds] = duration.split(':').map(Number);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const formatLatestSongTime = (timestamp) => {
+  const formatLatestSongTime = (timestamp: string | null): string => {
     if (!timestamp) return 'Never';
     try {
       const date = new Date(timestamp);

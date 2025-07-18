@@ -1,6 +1,12 @@
 import React from 'react';
+import { ViewType } from '../types';
 
-function Header({ currentView, onViewChange }) {
+interface HeaderProps {
+  currentView: ViewType;
+  onViewChange: (view: ViewType) => void;
+}
+
+function Header({ currentView, onViewChange }: HeaderProps) {
   return (
     <div className="header">
       <h1>FFT Battleground</h1>
