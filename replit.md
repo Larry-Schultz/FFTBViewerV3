@@ -1,5 +1,19 @@
 # Twitch Chat Reader - Java Application
 
+## ⚠️ CRITICAL DEVELOPMENT NOTES - READ FIRST! ⚠️
+
+**FRONTEND BUILD PROCESS - ALWAYS FOLLOW THIS ORDER:**
+1. Make frontend changes in `frontend/src/`
+2. Build frontend: `npx webpack --mode production`
+3. **CRITICAL**: Rebuild Java: `export JAVA_HOME=/nix/store/023zqb5jvvjhv5l1b0fzdaqxy8c7ilcl-adoptopenjdk-openj9-bin-11.0.11 && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile -q`
+4. Restart server: Use workflow restart button
+
+**WHY THIS MATTERS:**
+- Webpack builds to `src/main/resources/static/dist/`
+- Server runs from `target/classes/static/dist/`
+- Java build copies resources from src → target
+- **Frontend changes will NOT work without Java rebuild!**
+
 ## Overview
 
 A modern Spring Boot-powered Twitch chat reader application that monitors real-time chat messages from specific Twitch channels. Features both console output and a web interface with WebSocket support to display the last 50 chat messages in real-time. Built with Maven and designed for robust, authenticated Twitch integration with the 'fftbattleground' channel.
@@ -44,6 +58,14 @@ Preferred communication style: Simple, everyday language.
 - **ORGANIZED CHAT COMPONENTS**: Created dedicated chat folder structure with ChatView, ChatDisplay, and ChatMessage components
 - **IMPROVED COMPONENT ARCHITECTURE**: Refactored monolithic chat component into focused, reusable components with proper separation of concerns
 - **ADDED COMPONENT INDEX**: Created index.ts for clean imports and better project organization
+
+**July 18, 2025 - TypeScript Error Resolution & Build Process Documentation:**
+- **FIXED JAVASCRIPT TOLOCALESTRING ERROR**: Resolved "Cannot read properties of undefined (reading 'toLocaleString')" error in PlaylistStats component
+- **IMPLEMENTED NULL SAFETY**: Added nullish coalescing operator (??) to totalSongs parameter for defensive programming
+- **DOCUMENTED CRITICAL BUILD PROCESS**: Created comprehensive frontend development guide with proper Java rebuild requirements
+- **FIXED BUILD PIPELINE**: Identified and resolved issue where webpack builds to src/main/resources but server runs from target/classes
+- **ENHANCED DEVELOPMENT WORKFLOW**: Frontend changes now require: 1) webpack build, 2) Java rebuild, 3) server restart
+- **IMPROVED ERROR HANDLING**: All date formatting methods now have proper null checks and error handling
 
 **July 18, 2025 - Frontend Message Limiting & Backend Optimization:**
 - **REMOVED BACKEND MESSAGE CACHING**: Eliminated ChatMessageService to remove server-side 50-message storage
@@ -219,19 +241,27 @@ Preferred communication style: Simple, everyday language.
 **Making CSS/Styling Changes:**
 1. Edit CSS files in `frontend/src/styles/main.css`
 2. Build the frontend: `cd /home/runner/workspace && npx webpack --mode production`
-3. Restart the backend server: Use the "Server" workflow restart button or `restart_workflow` tool
-4. **CRITICAL**: Ensure CSS paths in `src/main/resources/static/react/index.html` use absolute paths (e.g., `/dist/styles.css` not `../dist/styles.css`)
+3. **CRITICAL**: Rebuild Java application: `export JAVA_HOME=/nix/store/023zqb5jvvjhv5l1b0fzdaqxy8c7ilcl-adoptopenjdk-openj9-bin-11.0.11 && export PATH=$JAVA_HOME/bin:$PWD/maven/bin:$PATH && mvn clean compile -q`
+4. Restart the backend server: Use the "Server" workflow restart button or `restart_workflow` tool
+5. **CRITICAL**: Ensure CSS paths in `src/main/resources/static/react/index.html` use absolute paths (e.g., `/dist/styles.css` not `../dist/styles.css`)
 
 **Frontend Architecture:**
 - TypeScript source: `frontend/src/`
 - Built output: `src/main/resources/static/dist/`
-- Served from: Java Spring Boot static resources at `/dist/`
+- Served from: Java Spring Boot copies to `target/classes/static/dist/` during compilation
 - Entry point: `src/main/resources/static/react/index.html`
+
+**CRITICAL BUILD PROCESS:**
+- Webpack builds frontend to `src/main/resources/static/dist/`
+- Java compilation copies resources from `src/main/resources/` to `target/classes/`
+- Server serves files from `target/classes/static/dist/`
+- **ALWAYS rebuild Java after frontend changes** - webpack alone is not sufficient!
 
 **Common Issues:**
 - CSS not loading: Check paths in index.html are absolute (`/dist/`) not relative (`../dist/`)
-- Changes not visible: Ensure webpack build completed and server restarted
+- Changes not visible: Ensure webpack build completed AND Java rebuilt AND server restarted
 - TypeScript errors: Run `npx webpack` to see compilation errors
+- JavaScript errors persist: Check if Java rebuild copied updated bundle.js to target/classes
 
 ## Deployment Strategy
 
