@@ -109,7 +109,7 @@ const PlaylistView: React.FC = () => {
       <SearchBar onSearch={handleSearch} searchTerm={searchTerm} />
       
       <SongTable 
-        songs={playlistData?.content || playlistData?.songs || []}
+        songs={playlistData?.songs || []}
         sortBy={sortBy}
         sortDirection={sortDirection}
         onSort={handleSort}
@@ -118,8 +118,8 @@ const PlaylistView: React.FC = () => {
       <div className="playlist-footer">
         {playlistData && (
           <PlaylistStats 
-            totalSongs={playlistData.totalElements || playlistData.totalSongs || 0}
-            showingSongs={playlistData.content?.length || playlistData.songs?.length || 0}
+            totalSongs={playlistData.totalSongs || 0}
+            showingSongs={playlistData.songs?.length || 0}
             latestSongTime={latestSongTime}
           />
         )}
@@ -130,8 +130,8 @@ const PlaylistView: React.FC = () => {
           pageSize={pageSize}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
-          hasNext={playlistData?.hasNext || !(playlistData?.last ?? true)}
-          hasPrevious={playlistData?.hasPrevious || !(playlistData?.first ?? true)}
+          hasNext={playlistData?.hasNext ?? false}
+          hasPrevious={playlistData?.hasPrevious ?? false}
         />
       </div>
     </div>
