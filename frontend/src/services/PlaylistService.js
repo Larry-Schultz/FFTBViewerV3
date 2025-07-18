@@ -1,38 +1,36 @@
-import axios from 'axios';
-
-const API_BASE = '/api/playlist';
-
-export const PlaylistService = {
-  async getSongs(page = 0, size = 50, sortBy = 'title', sortDirection = 'asc', search = '') {
-    try {
-      const params = { page, size, sortBy, sortDirection };
-      if (search) params.search = search;
-      
-      const response = await axios.get(`${API_BASE}/songs`, { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching songs:', error);
-      throw error;
+export class PlaylistService {
+  static async getSongs(page = 0, size = 50, sortBy = 'title', sortDirection = 'asc', search = '') {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      sortBy,
+      sortDirection
+    });
+    
+    if (search.trim()) {
+      params.append('search', search.trim());
     }
-  },
 
-  async getLatestSongTime() {
-    try {
-      const response = await axios.get(`${API_BASE}/latest-song-time`);
-      return response.data.timestamp;
-    } catch (error) {
-      console.error('Error fetching latest song time:', error);
-      return null;
+    const response = await fetch(`/api/songs?${params}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  },
-
-  async getSongStats() {
-    try {
-      const response = await axios.get(`${API_BASE}/stats`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching song stats:', error);
-      throw error;
-    }
+    return await response.json();
   }
-};
+
+  static async getStats() {
+    const response = await fetch('/api/stats');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+
+  static async getLatestSongTime() {
+    const response = await fetch('/api/latest-song-time');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  }
+}

@@ -66,7 +66,7 @@ body {
 }
 
 /* Chat styles */
-.chat-container {
+.chat-view {
     background: rgba(30, 30, 50, 0.8);
     border-radius: 15px;
     padding: 1.5rem;
@@ -74,27 +74,30 @@ body {
     backdrop-filter: blur(10px);
 }
 
+.chat-header {
+    margin-bottom: 1.5rem;
+}
+
+.chat-header h2 {
+    color: #9146ff;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
 .connection-status {
-    text-align: center;
-    padding: 1rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
 }
 
 .connection-status.connected {
-    background: rgba(0, 255, 0, 0.1);
     color: #4CAF50;
-    border: 1px solid rgba(0, 255, 0, 0.3);
 }
 
 .connection-status.disconnected {
-    background: rgba(255, 0, 0, 0.1);
     color: #f44336;
-    border: 1px solid rgba(255, 0, 0, 0.3);
 }
 
-.messages-container {
+.chat-messages {
     height: 500px;
     overflow-y: auto;
     border: 2px solid rgba(145, 70, 255, 0.3);
@@ -105,48 +108,49 @@ body {
     scrollbar-color: #9146ff #1e1e32;
 }
 
-.messages-container::-webkit-scrollbar {
+.chat-messages::-webkit-scrollbar {
     width: 8px;
 }
 
-.messages-container::-webkit-scrollbar-track {
+.chat-messages::-webkit-scrollbar-track {
     background: #1e1e32;
     border-radius: 4px;
 }
 
-.messages-container::-webkit-scrollbar-thumb {
+.chat-messages::-webkit-scrollbar-thumb {
     background: #9146ff;
     border-radius: 4px;
 }
 
-.message {
+.chat-message {
     margin-bottom: 0.8rem;
     padding: 0.5rem;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
     border-left: 3px solid #9146ff;
+    line-height: 1.4;
 }
 
-.message-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.3rem;
-}
-
-.username {
-    font-weight: bold;
-    color: #9146ff;
-}
-
-.timestamp {
+.message-time {
     font-size: 0.8rem;
     color: #888;
+    margin-right: 0.5rem;
 }
 
-.message-content {
+.message-username {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.message-text {
     color: #efeff1;
-    line-height: 1.4;
+}
+
+.no-messages {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
 }
 
 .loading {
@@ -154,6 +158,180 @@ body {
     padding: 2rem;
     font-size: 1.2rem;
     color: #9146ff;
+}
+
+/* Playlist styles */
+.playlist-container {
+    background: rgba(30, 30, 50, 0.8);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+.playlist-header {
+    margin-bottom: 2rem;
+}
+
+.playlist-header h2 {
+    color: #9146ff;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.playlist-stats {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.playlist-stats span {
+    margin: 0 0.5rem;
+}
+
+.playlist-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid rgba(145, 70, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(15, 15, 35, 0.6);
+    color: #efeff1;
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #9146ff;
+}
+
+.page-size-selector label {
+    color: #efeff1;
+    font-size: 0.9rem;
+}
+
+.page-size-selector select {
+    margin: 0 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid rgba(145, 70, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(15, 15, 35, 0.6);
+    color: #efeff1;
+}
+
+.songs-table-container {
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+
+.songs-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(15, 15, 35, 0.6);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.songs-table th {
+    background: rgba(145, 70, 255, 0.2);
+    color: #efeff1;
+    padding: 1rem;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(145, 70, 255, 0.3);
+}
+
+.songs-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.songs-table th.sortable:hover {
+    background: rgba(145, 70, 255, 0.3);
+}
+
+.songs-table th.active {
+    background: rgba(145, 70, 255, 0.4);
+}
+
+.songs-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #efeff1;
+}
+
+.songs-table tr:hover {
+    background: rgba(145, 70, 255, 0.1);
+}
+
+.song-title {
+    font-weight: 500;
+}
+
+.song-duration, .song-occurrence {
+    text-align: center;
+    width: 100px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.pagination-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid rgba(145, 70, 255, 0.3);
+    border-radius: 6px;
+    background: transparent;
+    color: #efeff1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: rgba(145, 70, 255, 0.2);
+    border-color: #9146ff;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-size: 1.1rem;
+}
+
+.error {
+    background: rgba(255, 0, 0, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
 }
 
 /* Responsive design */
