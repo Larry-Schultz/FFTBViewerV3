@@ -39,11 +39,11 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
     <div className="playlist-stats">
       <div className="stat-item">
         <div className="stat-label">Total Tracks</div>
-        <div className="stat-value">{totalSongs.toLocaleString()}</div>
+        <div className="stat-value">{(totalSongs || 0).toLocaleString()}</div>
       </div>
       <div className="stat-item">
         <div className="stat-label">Showing</div>
-        <div className="stat-value">{showingSongs}</div>
+        <div className="stat-value">{showingSongs || 0}</div>
       </div>
       {latestSongTime && (
         <div className="stat-item">
