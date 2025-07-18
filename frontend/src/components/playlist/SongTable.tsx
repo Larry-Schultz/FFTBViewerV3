@@ -47,8 +47,11 @@ const SongTable: React.FC<SongTableProps> = ({ songs, sortBy, sortDirection, onS
             >
               Added Date {getSortIcon('createdAt')}
             </th>
-            <th className="last-played-header">
-              Last Played
+            <th 
+              className="sortable last-played-header" 
+              onClick={() => onSort('lastPlayed')}
+            >
+              Last Played {getSortIcon('lastPlayed')}
             </th>
           </tr>
         </thead>
