@@ -297,7 +297,14 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); color: #efeff1; font-family: Arial, sans-serif;">
+            <div style="text-align: center;">
+                <h2>Loading React App...</h2>
+                <p>If this message persists, please check the browser console for errors.</p>
+            </div>
+        </div>
+    </div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
@@ -636,6 +643,7 @@
             const [currentView, setCurrentView] = useState(() => {
                 // Determine initial view based on URL path
                 const path = window.location.pathname;
+                console.log('App initializing with path:', path);
                 if (path === '/music' || path === '/playlist') return 'playlist';
                 if (path === '/chat') return 'chat';
                 if (path === '/') return 'chat';
@@ -675,7 +683,16 @@
         }
 
         // Render the app
-        ReactDOM.render(<App />, document.getElementById('root'));
+        console.log('React app starting...');
+        console.log('Current URL:', window.location.pathname);
+        
+        try {
+            ReactDOM.render(<App />, document.getElementById('root'));
+            console.log('React app rendered successfully');
+        } catch (error) {
+            console.error('Error rendering React app:', error);
+            document.getElementById('root').innerHTML = '<div style="color: red; padding: 2rem;">Error loading React app: ' + error.message + '</div>';
+        }
     </script>
 </body>
 </html>

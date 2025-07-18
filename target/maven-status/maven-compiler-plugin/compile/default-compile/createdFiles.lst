@@ -1,3 +1,4 @@
+com/twitchchat/config/WebConfig.class
 com/twitchchat/model/Playlist.class
 com/twitchchat/event/EventDetector.class
 com/twitchchat/ChatEventHandler.class
