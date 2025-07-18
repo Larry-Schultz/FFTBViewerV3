@@ -28,4 +28,3 @@ com/twitchchat/config/TwitchProperties.class
 com/twitchchat/controller/DurationFixController.class
 com/twitchchat/controller/ConfigController.class
 com/twitchchat/config/TrackPlayProperties.class
-com/twitchchat/controller/PlaylistApiController.class

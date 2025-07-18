@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * Spring Boot main application class for Twitch Chat Reader
@@ -13,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableScheduling
 @EnableAsync
 @EnableConfigurationProperties
+@EnableJpaRepositories
 public class TwitchChatReaderApplication {
 
     public static void main(String[] args) {
