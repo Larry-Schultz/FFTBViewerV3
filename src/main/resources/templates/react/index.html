@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFT Battleground Music Playlist - React</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://unpkg.com/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* React Application Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #efeff1;
+            min-height: 100vh;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #1f1f35;
+            border-bottom: 2px solid #9146ff;
+            padding: 1rem 0;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            padding: 0.75rem 1.5rem;
+            background: #2f2f35;
+            color: #efeff1;
+            border: 2px solid #4b4b55;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #3f3f45;
+            border-color: #9146ff;
+        }
+
+        .nav-button.active {
+            background: #9146ff;
+            border-color: #9146ff;
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.1rem;
+            color: #9ca3af;
+        }
+
+        .playlist-stats {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #2f2f35;
+            border: 2px solid #4b4b55;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            display: block;
+        }
+
+        .stat-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .search-bar {
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem;
+            background: #2f2f35;
+            border: 2px solid #4b4b55;
+            border-radius: 8px;
+            color: #efeff1;
+            font-size: 1rem;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #9146ff;
+        }
+
+        .song-table {
+            width: 100%;
+            background: #2f2f35;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #4b4b55;
+        }
+
+        .song-table th {
+            background: #1f1f35;
+            color: #efeff1;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #4b4b55;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .song-table th:hover {
+            background: #2a2a40;
+        }
+
+        .song-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #4b4b55;
+        }
+
+        .song-row:hover {
+            background: #3a3a45;
+        }
+
+        .song-title {
+            color: #00f593;
+            font-weight: 500;
+        }
+
+        .song-duration {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #efeff1;
+            text-align: center;
+        }
+
+        .song-plays {
+            font-family: 'Monaco', 'Menlo', monospace;
+            color: #ffd700;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .song-added {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1rem 0;
+            border-top: 1px solid #4b4b55;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: #4b4b55;
+            color: #efeff1;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #5b5b65;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-size-select {
+            padding: 0.5rem;
+            background: #2f2f35;
+            color: #efeff1;
+            border: 2px solid #4b4b55;
+            border-radius: 6px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .playlist-stats {
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                min-width: 120px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Header Component
+        function Header({ currentView, onViewChange }) {
+            return (
+                <header className="header">
+                    <div className="header-container">
+                        <h1 className="header-title">
+                            <span>🎵</span>
+                            FFT Battleground
+                        </h1>
+                        <nav className="header-nav">
+                            <button 
+                                className={`nav-button ${currentView === 'playlist' ? 'active' : ''}`}
+                                onClick={() => onViewChange('playlist')}
+                            >
+                                Music Playlist
+                            </button>
+                            <button 
+                                className={`nav-button ${currentView === 'chat' ? 'active' : ''}`}
+                                onClick={() => onViewChange('chat')}
+                            >
+                                Live Chat
+                            </button>
+                        </nav>
+                    </div>
+                </header>
+            );
+        }
+
+        // Playlist Stats Component
+        function PlaylistStats({ totalSongs, showingSongs, latestSongTime }) {
+            const [formattedTime, setFormattedTime] = useState('Loading...');
+
+            useEffect(() => {
+                if (latestSongTime) {
+                    try {
+                        const date = new Date(latestSongTime);
+                        const dateOptions = {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        };
+                        const timeOptions = {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        };
+                        const formattedDate = date.toLocaleDateString('en-US', dateOptions);
+                        const formattedTimeStr = date.toLocaleTimeString('en-US', timeOptions);
+                        setFormattedTime(`${formattedDate} ${formattedTimeStr}`);
+                    } catch (error) {
+                        console.error('Error formatting timestamp:', error);
+                        setFormattedTime('Unknown');
+                    }
+                }
+            }, [latestSongTime]);
+
+            return (
+                <div className="playlist-stats">
+                    <div className="stat-card">
+                        <h3>Total Tracks</h3>
+                        <span className="stat-number">{totalSongs}</span>
+                    </div>
+                    <div className="stat-card">
+                        <h3>Showing</h3>
+                        <span className="stat-number">{showingSongs}</span>
+                    </div>
+                    {latestSongTime && (
+                        <div className="stat-card">
+                            <h3>Last Updated</h3>
+                            <span className="stat-text">{formattedTime}</span>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Song Table Component
+        function SongTable({ songs, sortBy, sortDirection, onSort }) {
+            const getSortIcon = (field) => {
+                if (sortBy !== field) return '↕';
+                return sortDirection === 'asc' ? '↑' : '↓';
+            };
+
+            const formatDuration = (duration) => {
+                if (!duration || duration === '0:00') return '0:00';
+                return duration;
+            };
+
+            const formatPlayCount = (count) => {
+                return count > 0 ? count : 'Never';
+            };
+
+            return (
+                <div>
+                    <table className="song-table">
+                        <thead>
+                            <tr>
+                                <th onClick={() => onSort('title')}>
+                                    Song Title {getSortIcon('title')}
+                                </th>
+                                <th onClick={() => onSort('duration')}>
+                                    Duration {getSortIcon('duration')}
+                                </th>
+                                <th onClick={() => onSort('occurrence')}>
+                                    Plays {getSortIcon('occurrence')}
+                                </th>
+                                <th onClick={() => onSort('createdAt')}>
+                                    Added {getSortIcon('createdAt')}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {songs.map((song, index) => (
+                                <tr key={song.id || index} className="song-row">
+                                    <td className="song-title">{song.title}</td>
+                                    <td className="song-duration">{formatDuration(song.duration)}</td>
+                                    <td className="song-plays">{formatPlayCount(song.occurrence)}</td>
+                                    <td className="song-added">
+                                        {song.createdAt ? new Date(song.createdAt).toLocaleDateString() : 'Unknown'}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {songs.length === 0 && (
+                        <div className="no-results">
+                            No songs found. Try adjusting your search terms.
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Pagination Component
+        function Pagination({ currentPage, totalPages, pageSize, onPageChange, onPageSizeChange, hasNext, hasPrevious }) {
+            const pageSizeOptions = [10, 25, 50, 100, 250, 500];
+
+            return (
+                <div className="pagination">
+                    <div>
+                        <span>Page {currentPage + 1} of {totalPages}</span>
+                    </div>
+                    
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button 
+                            onClick={() => onPageChange(currentPage - 1)}
+                            disabled={!hasPrevious}
+                            className="btn"
+                        >
+                            Previous
+                        </button>
+                        
+                        <button 
+                            onClick={() => onPageChange(currentPage + 1)}
+                            disabled={!hasNext}
+                            className="btn"
+                        >
+                            Next
+                        </button>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <label htmlFor="page-size">Page Size:</label>
+                        <select 
+                            id="page-size"
+                            value={pageSize} 
+                            onChange={(e) => onPageSizeChange(parseInt(e.target.value))}
+                            className="page-size-select"
+                        >
+                            {pageSizeOptions.map(size => (
+                                <option key={size} value={size}>{size}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            );
+        }
+
+        // Playlist View Component
+        function PlaylistView() {
+            const [data, setData] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [currentPage, setCurrentPage] = useState(0);
+            const [pageSize, setPageSize] = useState(50);
+            const [sortBy, setSortBy] = useState('title');
+            const [sortDirection, setSortDirection] = useState('asc');
+            const [loading, setLoading] = useState(false);
+            const [latestSongTime, setLatestSongTime] = useState(null);
+
+            const loadData = async () => {
+                try {
+                    setLoading(true);
+                    const params = new URLSearchParams({
+                        page: currentPage.toString(),
+                        size: pageSize.toString(),
+                        sortBy,
+                        sortDirection
+                    });
+                    
+                    if (searchTerm) {
+                        params.append('search', searchTerm);
+                    }
+
+                    const response = await axios.get(`/api/playlist/songs?${params}`);
+                    setData(response.data);
+                } catch (error) {
+                    console.error('Error loading playlist data:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const loadLatestSongTime = async () => {
+                try {
+                    const response = await axios.get('/api/playlist/latest-song-time');
+                    setLatestSongTime(response.data.timestamp);
+                } catch (error) {
+                    console.error('Error loading latest song time:', error);
+                }
+            };
+
+            useEffect(() => {
+                loadData();
+                loadLatestSongTime();
+            }, [searchTerm, currentPage, pageSize, sortBy, sortDirection]);
+
+            const handleSearch = (e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(0);
+            };
+
+            const handleSort = (field) => {
+                if (sortBy === field) {
+                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                } else {
+                    setSortBy(field);
+                    setSortDirection('asc');
+                }
+                setCurrentPage(0);
+            };
+
+            const handlePageChange = (page) => {
+                setCurrentPage(page);
+            };
+
+            const handlePageSizeChange = (size) => {
+                setPageSize(size);
+                setCurrentPage(0);
+            };
+
+            if (!data) {
+                return <div className="loading">Loading playlist...</div>;
+            }
+
+            return (
+                <div className="playlist-view">
+                    <PlaylistStats 
+                        totalSongs={data.totalSongs} 
+                        showingSongs={data.songs?.length || 0}
+                        latestSongTime={latestSongTime}
+                    />
+
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            placeholder="Search songs..."
+                            className="search-input"
+                        />
+                    </div>
+
+                    <div className="playlist-content">
+                        {loading ? (
+                            <div className="loading">Loading...</div>
+                        ) : (
+                            <>
+                                <SongTable 
+                                    songs={data.songs || []}
+                                    sortBy={sortBy}
+                                    sortDirection={sortDirection}
+                                    onSort={handleSort}
+                                />
+                                <Pagination 
+                                    currentPage={currentPage}
+                                    totalPages={data.totalPages || 0}
+                                    pageSize={pageSize}
+                                    onPageChange={handlePageChange}
+                                    onPageSizeChange={handlePageSizeChange}
+                                    hasNext={data.hasNext}
+                                    hasPrevious={data.hasPrevious}
+                                />
+                            </>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Chat View Component
+        function ChatView() {
+            return (
+                <div className="loading">
+                    Chat functionality coming soon...
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [currentView, setCurrentView] = useState('playlist');
+
+            return (
+                <div className="app">
+                    <Header currentView={currentView} onViewChange={setCurrentView} />
+                    <main className="main-content">
+                        {currentView === 'playlist' && <PlaylistView />}
+                        {currentView === 'chat' && <ChatView />}
+                    </main>
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

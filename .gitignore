@@ -44,3 +44,16 @@ openjdk*.tar.gz
 
 # Build scripts temp files
 build-temp/
+
+# Node.js and npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Webpack build outputs
+/src/main/resources/static/dist/
+/src/main/resources/react/

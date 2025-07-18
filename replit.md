@@ -10,6 +10,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 18, 2025 - React Frontend Implementation:**
+- **ADDED REACT FRONTEND**: Created complete React-based user interface with modern component architecture
+- **API ENDPOINTS**: Built REST API controllers for playlist data and song statistics
+- **TIMESTAMP FEATURE**: Added latest song timestamp display with automatic timezone conversion
+- **CDN-BASED REACT**: Implemented React app using CDN libraries for simplified deployment
+- **MAINTAINED COMPATIBILITY**: Original `/music` Thymeleaf interface still available alongside new `/react` route
+- **CROSS-ORIGIN SUPPORT**: Added CORS configuration for frontend/backend communication
+- **RESPONSIVE DESIGN**: Mobile-friendly interface with Twitch-inspired styling
+- **REAL-TIME STATS**: Dynamic statistics display with formatted timestamps in user's local timezone
+
 **July 17, 2025 - UI Improvements & URL Changes:**
 - **CHANGED PLAYLIST URL**: Updated route from `/playlist` to `/music` for better semantic naming
 - **UPDATED ALL REFERENCES**: Modified controller mapping, template links, and navigation to use new URL
