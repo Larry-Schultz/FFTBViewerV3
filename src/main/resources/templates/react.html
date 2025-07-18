@@ -485,7 +485,7 @@
                         params.append('search', debouncedSearchTerm);
                     }
                     
-                    const response = await axios.get(`/api/playlist/songs?${params}`);
+                    const response = await axios.get(`/api/songs?${params}`);
                     setPlaylistData(response.data);
                     setLoading(false);
                 } catch (error) {
@@ -497,7 +497,7 @@
 
             const fetchLatestSongTime = async () => {
                 try {
-                    const response = await axios.get('/api/playlist/latest-song-time');
+                    const response = await axios.get('/api/latest-song-time');
                     setLatestSongTime(response.data.timestamp);
                 } catch (error) {
                     console.error('Error loading latest song time:', error);
