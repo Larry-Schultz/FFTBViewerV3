@@ -116,11 +116,13 @@ const PlaylistView: React.FC = () => {
       />
       
       <div className="playlist-footer">
-        <PlaylistStats 
-          totalSongs={playlistData?.totalElements || playlistData?.totalSongs || 0}
-          showingSongs={playlistData?.content?.length || playlistData?.songs?.length || 0}
-          latestSongTime={latestSongTime}
-        />
+        {playlistData && (
+          <PlaylistStats 
+            totalSongs={playlistData.totalElements || playlistData.totalSongs || 0}
+            showingSongs={playlistData.content?.length || playlistData.songs?.length || 0}
+            latestSongTime={latestSongTime}
+          />
+        )}
         
         <Pagination
           currentPage={currentPage}
