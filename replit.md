@@ -53,6 +53,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 19, 2025 - Timezone Conversion Fix & Jest Testing Setup:**
+- **FIXED TIMEZONE CONVERSION ISSUE**: Resolved frontend displaying UTC time instead of user's local timezone
+- **ROOT CAUSE IDENTIFIED**: Auto-detect timezone wasn't working properly, always returned UTC in components
+- **SOLUTION IMPLEMENTED**: Updated formatDate functions to explicitly use Intl.DateTimeFormat().resolvedOptions().timeZone
+- **COMPREHENSIVE TESTING**: Created timezone conversion tests that verify proper conversion for different timezones
+- **JEST CONFIGURATION FIXED**: Resolved moduleNameMapping typo and JSX configuration issues for proper test execution
+- **FRONTEND TESTS INFRASTRUCTURE**: Set up complete Jest testing framework with timezone conversion validation
+- **CONFIRMED WORKING**: User verified timezone conversion is now displaying correctly in their local timezone
+- **NO BACKEND CONVERSION**: Confirmed backend stores UTC timestamps without conversion (preventing double-conversion)
+
 **July 19, 2025 - Database View Architecture & UTC Timezone Fix:**
 - **IMPLEMENTED DATABASE VIEW ARCHITECTURE**: Created SongPlayCountView entity and repository for efficient track play counting
 - **REPLACED OCCURRENCE FIELD**: Transitioned from songs.occurrence to real-time track play counts from database view

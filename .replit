@@ -58,7 +58,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace && npm run test"
+args = "cd /home/runner/workspace && npx jest frontend/tests/ --verbose"
 
 [[ports]]
 localPort = 5000
