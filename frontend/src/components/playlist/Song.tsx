@@ -22,11 +22,19 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Unknown';
-      return date.toLocaleDateString('en-US', {
+      
+      // Format with full timestamp and timezone
+      const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
-      });
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short'
+      };
+      
+      return date.toLocaleString('en-US', dateOptions);
     } catch (error) {
       return 'Unknown';
     }

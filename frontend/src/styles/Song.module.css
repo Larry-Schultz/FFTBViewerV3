@@ -53,11 +53,15 @@
 .songAdded {
     color: #9a9a9a;
     text-align: center;
+    white-space: nowrap;
+    font-size: 12px;
 }
 
 .songLastPlayed {
     color: #9a9a9a;
     text-align: center;
+    white-space: nowrap;
+    font-size: 12px;
 }
 
 /* Mobile Responsive Styles */

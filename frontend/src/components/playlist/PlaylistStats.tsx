@@ -13,19 +13,16 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
     if (latestSongTime) {
       try {
         const date = new Date(latestSongTime);
-        const dateOptions: Intl.DateTimeFormatOptions = {
+        const fullOptions: Intl.DateTimeFormatOptions = {
           year: 'numeric',
           month: 'short',
-          day: 'numeric'
-        };
-        const timeOptions: Intl.DateTimeFormatOptions = {
+          day: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-          hour12: false
+          second: '2-digit',
+          timeZoneName: 'short'
         };
-        const formattedDate = date.toLocaleDateString('en-US', dateOptions);
-        const formattedTimeStr = date.toLocaleTimeString('en-US', timeOptions);
-        setFormattedTime(`${formattedDate} ${formattedTimeStr}`);
+        setFormattedTime(date.toLocaleString('en-US', fullOptions));
       } catch (error) {
         console.error('Error formatting timestamp:', error);
         setFormattedTime('Unknown');
