@@ -20,6 +20,9 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
         }
         
         const date = new Date(isoString);
+        // Get user's actual timezone instead of relying on auto-detect
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
         const fullOptions: Intl.DateTimeFormatOptions = {
           year: 'numeric',
           month: 'short',
@@ -27,7 +30,7 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
-          timeZone: 'America/Chicago'  // Force Central Time for testing
+          timeZone: userTimeZone // Use detected timezone explicitly
         };
         setFormattedTime(date.toLocaleString('en-US', fullOptions));
       } catch (error) {

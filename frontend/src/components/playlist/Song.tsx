@@ -30,7 +30,9 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
       const date = new Date(isoString);
       if (isNaN(date.getTime())) return 'Unknown';
       
-      // Explicitly convert to Central Time for debugging
+      // Get user's actual timezone instead of relying on auto-detect
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      
       const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
@@ -38,7 +40,7 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        timeZone: 'America/Chicago'  // Force Central Time for testing
+        timeZone: userTimeZone // Use detected timezone explicitly
       };
       
       return date.toLocaleString('en-US', dateOptions);
