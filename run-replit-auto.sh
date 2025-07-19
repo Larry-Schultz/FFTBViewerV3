@@ -121,9 +121,9 @@ export SERVER_PORT=${PORT:-5000}
 log "Starting application on port $SERVER_PORT..."
 
 if [ -f "$JAR_FILE" ]; then
-    log "Using existing JAR: $JAR_FILE"
-    exec java -jar "$JAR_FILE" --server.port=$SERVER_PORT
+    log "Using existing JAR: $JAR_FILE (Production Mode)"
+    exec java -jar "$JAR_FILE" --server.port=$SERVER_PORT --spring.profiles.active=prod
 else
-    log "Building and running with Maven..."
-    exec mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=$SERVER_PORT
+    log "Building and running with Maven... (Production Mode)"
+    exec mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=$SERVER_PORT --spring.profiles.active=prod"
 fi

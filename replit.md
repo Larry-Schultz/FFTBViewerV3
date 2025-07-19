@@ -53,15 +53,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 19, 2025 - URL Routing Implementation & Deployment Optimization:**
+**July 19, 2025 - Production Deployment Configuration & Track Play Updates:**
+- **PRODUCTION MODE DEPLOYMENT**: Updated run-replit-auto.sh to use production profile by default for deployment
+- **TRACK PLAY UPDATES ENABLED**: Production mode now properly records song plays to database with all tracking features active
+- **DEPLOYMENT SCRIPT OPTIMIZATION**: Modified run-replit-auto.sh to explicitly use --spring.profiles.active=prod
+- **ENVIRONMENT SEPARATION**: Clear distinction between development (disabled tracking) and production (enabled tracking) modes
 - **IMPLEMENTED URL ROUTING**: Added support for /music URL path to directly access music playlist page
 - **BACKEND ROUTING**: Java Spring Boot controller already handled /music endpoint with proper page detection
 - **FRONTEND URL DETECTION**: Updated React app to detect current URL path and display correct page on load
 - **NAVIGATION INTEGRATION**: Modified header buttons to use proper URL navigation instead of state changes
 - **FIXED STATIC PATHS**: Corrected CSS/JS paths in index.html from relative to absolute paths for proper loading
 - **SPRING RETRY**: Added resilient XML endpoint fetching with exponential backoff for playlist.xml (3 attempts, 2s delays)
-- **DEPLOYMENT OPTIMIZATION**: Disabled track play tracking and sync jobs in development mode for clean deployment
-- **PRODUCTION READY**: Application optimized for deployment with reduced logging and disabled development features
 
 **July 19, 2025 - Timezone Conversion Fix & Jest Testing Setup:**
 - **FIXED TIMEZONE CONVERSION ISSUE**: Resolved frontend displaying UTC time instead of user's local timezone

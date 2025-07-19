@@ -167,6 +167,6 @@ if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
     echo "[RUN] Using profile: $SPRING_PROFILES_ACTIVE"
     java -jar "$JAR_FILE" --server.port=5000 --spring.profiles.active="$SPRING_PROFILES_ACTIVE"
 else
-    echo "[RUN] Using default profile"
-    java -jar "$JAR_FILE" --server.port=5000
+    echo "[RUN] Using production profile for deployment"
+    java -jar "$JAR_FILE" --server.port=5000 --spring.profiles.active=prod
 fi
