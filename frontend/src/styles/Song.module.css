@@ -1,11 +1,15 @@
 /* Song Row Styles */
 .songRow {
     transition: background-color 0.2s ease;
-    border-bottom: 1px solid rgba(66, 68, 75, 0.5);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.songRow:nth-child(even) {
+    background: #f8f9fa;
 }
 
 .songRow:hover {
-    background: rgba(145, 70, 255, 0.05);
+    background: #e2e6ea;
 }
 
 .songRow:last-child {
@@ -13,36 +17,46 @@
 }
 
 .songRow td {
-    padding: 14px 16px;
-    color: #dcddde;
+    padding: 12px 16px;
+    color: #212529;
+    font-size: 14px;
 }
 
 .songNumber {
-    color: #72767d;
-    font-weight: 500;
+    color: #6c757d;
+    font-weight: normal;
     text-align: center;
 }
 
 .songTitle {
-    color: #9146ff;
-    font-weight: 500;
+    color: #0066cc;
+    font-weight: normal;
+}
+
+.songTitle:hover {
+    color: #0052a3;
+    text-decoration: underline;
 }
 
 .songDuration {
     text-align: center;
+    color: #495057;
 }
 
 .songPlays {
     text-align: center;
     font-weight: 500;
+    color: #495057;
 }
 
 .songAdded {
-    color: #bbb;
+    color: #6c757d;
+    text-align: center;
 }
 
 .songLastPlayed {
-    color: #bbb;
+    color: #6c757d;
+    text-align: center;
 }
 
 /* Mobile Responsive Styles */
@@ -54,10 +68,11 @@
     .songRow {
         display: block;
         margin-bottom: 8px;
-        background: rgba(20, 20, 40, 0.9);
-        border: 1px solid rgba(145, 70, 255, 0.2);
+        background: #fff;
+        border: 1px solid #dee2e6;
         border-radius: 6px;
-        padding: 8px;
+        padding: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .songRow td {
@@ -68,22 +83,23 @@
     }
 
     .songTitle {
-        font-weight: 600;
-        font-size: 13px;
-        color: #9146ff;
+        font-weight: 500;
+        font-size: 14px;
+        color: #0066cc;
         margin-bottom: 4px;
         word-break: break-word;
         white-space: normal;
     }
 
     .songDuration {
-        color: #bbb;
+        color: #495057;
         text-align: left;
+        font-size: 13px;
     }
 
     .songDuration::before {
         content: "Duration: ";
-        color: #888;
+        color: #6c757d;
         font-weight: normal;
     }
 }

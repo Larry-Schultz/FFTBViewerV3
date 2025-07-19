@@ -1,10 +1,11 @@
 /* Song Table Styles */
 .songTableContainer {
-    background: rgba(20, 20, 40, 0.9);
-    border: 1px solid #40444b;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .songTable {
@@ -14,59 +15,68 @@
 }
 
 .songTable thead {
-    background: rgba(145, 70, 255, 0.1);
-    border-bottom: 2px solid #40444b;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
 }
 
 .songTable th {
-    padding: 14px 16px;
+    padding: 12px 16px;
     text-align: left;
     font-weight: 600;
-    color: #b9bbbe;
+    color: #212529;
     position: sticky;
     top: 0;
-    background: rgba(145, 70, 255, 0.1);
+    background: #f8f9fa;
     z-index: 10;
+    white-space: nowrap;
 }
 
 .sortable {
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
 .sortable:hover {
-    color: #9146ff;
+    color: #5865f2;
+    background: #e9ecef;
 }
 
 .songNumberHeader {
-    width: 50px;
+    width: 60px;
+    text-align: center;
 }
 
 .songTitleHeader {
-    min-width: 250px;
+    min-width: 300px;
 }
 
 .durationHeader {
     width: 100px;
+    text-align: center;
 }
 
 .playsHeader {
     width: 80px;
+    text-align: center;
 }
 
 .dateHeader {
     width: 140px;
+    text-align: center;
 }
 
 .lastPlayedHeader {
     width: 140px;
+    text-align: center;
 }
 
 .noSongs {
     text-align: center;
     padding: 3rem;
-    color: #888;
+    color: #6c757d;
     font-size: 1.1rem;
+    background: #f8f9fa;
 }
 
 /* Mobile Responsive Design */
@@ -94,10 +104,11 @@
     .songTable tr {
         display: block;
         margin-bottom: 8px;
-        background: rgba(20, 20, 40, 0.9);
-        border: 1px solid rgba(145, 70, 255, 0.2);
+        background: #fff;
+        border: 1px solid #dee2e6;
         border-radius: 6px;
-        padding: 8px;
+        padding: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .songTable td {
@@ -113,21 +124,22 @@
 
     /* Mobile card layout styling */
     .songTable tr td:nth-child(2) {
-        font-weight: 600;
-        font-size: 13px;
-        color: #9146ff;
+        font-weight: 500;
+        font-size: 14px;
+        color: #0066cc;
         margin-bottom: 4px;
         word-break: break-word;
         white-space: normal;
     }
 
     .songTable tr td:nth-child(3) {
-        color: #bbb;
+        color: #495057;
+        font-size: 13px;
     }
 
     .songTable tr td:nth-child(3)::before {
         content: "Duration: ";
-        color: #888;
+        color: #6c757d;
         font-weight: normal;
     }
 }
