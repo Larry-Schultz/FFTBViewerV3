@@ -1,0 +1,59 @@
+# Build artifacts
+target/
+*.jar
+*.war
+*.class
+
+# Portable runtime environments (downloaded during build)
+maven/
+portable-java/
+portable-jre/
+java/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+
+# Maven wrapper (if present)
+.mvn/wrapper/maven-wrapper.jar
+
+# Downloaded build dependencies
+apache-maven-*.tar.gz
+openjdk*.tar.gz
+*.tar.gz
+
+# Build scripts temp files
+build-temp/
+
+# Node.js and npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Webpack build outputs
+/src/main/resources/static/dist/
+/src/main/resources/react/

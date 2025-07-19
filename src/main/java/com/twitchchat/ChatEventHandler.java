@@ -1,8 +1,10 @@
 package com.twitchchat;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.twitchchat.event.TrackPlayEvent;
+import com.twitchchat.event.detector.TrackPlayDetector;
 import com.twitchchat.model.ChatMessage;
-import com.twitchchat.service.ChatMessageService;
+
 import com.twitchchat.service.SongPlayTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +24,13 @@ public class ChatEventHandler {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Autowired
-    private ChatMessageService chatMessageService;
-
-    @Autowired
     private SimpMessagingTemplate messagingTemplate;
     
     @Autowired
     private SongPlayTracker songPlayTracker;
+    
+    @Autowired
+    private TrackPlayDetector trackPlayDetector;
 
     /**
      * Handle incoming chat messages
@@ -43,13 +45,20 @@ public class ChatEventHandler {
             // Create chat message object
             ChatMessage chatMessage = new ChatMessage(username, message, channel);
             
-            // Store message in service
-            chatMessageService.addMessage(chatMessage);
-            
-            // Track song plays from bot messages
-            boolean trackDetected = songPlayTracker.processMessage(username, message);
-            if (trackDetected) {
-                logger.info("Song play tracked from message: {}", message);
+            // Detect track play events
+            TrackPlayEvent trackPlayEvent = trackPlayDetector.detect(chatMessage);
+            if (trackPlayEvent != null) {
+                logger.info("Track play event detected: {}", trackPlayEvent);
+                
+                // Asynchronously update the database
+                songPlayTracker.trackSongPlayAsync(trackPlayEvent)
+                    .thenAccept(success -> {
+                        if (success) {
+                            logger.info("Song play tracked from message: {}", message);
+                        } else {
+                            logger.warn("Failed to track song play for: {}", trackPlayEvent.getSongTitle());
+                        }
+                    });
             }
             
             // Broadcast message via WebSocket

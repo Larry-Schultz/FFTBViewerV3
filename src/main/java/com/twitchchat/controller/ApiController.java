@@ -1,15 +1,19 @@
 package com.twitchchat.controller;
 
 import com.twitchchat.model.Song;
+import com.twitchchat.model.SongPlayCountView;
 import com.twitchchat.repository.SongRepository;
 import com.twitchchat.service.PlaylistSyncService;
 import com.twitchchat.service.PlaylistService;
 import com.twitchchat.service.SongPlayTracker;
+import com.twitchchat.service.SongPlayCountViewService;
+import com.twitchchat.dto.SongWithTrackPlayCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -34,6 +38,9 @@ public class ApiController {
     
     @Autowired
     private SongRepository songRepository;
+    
+    @Autowired
+    private SongPlayCountViewService songPlayCountViewService;
 
     /**
      * Get playlist status and statistics
@@ -54,6 +61,131 @@ public class ApiController {
         status.put("playedSongs", playedSongs);
         
         return ResponseEntity.ok(status);
+    }
+
+    /**
+     * Get songs with pagination, search, and sorting
+     */
+    @GetMapping("/songs")
+    public ResponseEntity<Map<String, Object>> getSongs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String search) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            org.springframework.data.domain.Page<Song> songsPage;
+            
+            if (search != null && !search.trim().isEmpty()) {
+                songsPage = playlistService.searchSongsPaginated(search, page, size, sortBy, sortDirection);
+            } else {
+                songsPage = playlistService.fetchSongsPaginated(page, size, sortBy, sortDirection);
+            }
+
+            response.put("songs", songsPage.getContent());
+            response.put("totalSongs", songsPage.getTotalElements());
+            response.put("currentPage", page);
+            response.put("totalPages", songsPage.getTotalPages());
+            response.put("hasNext", songsPage.hasNext());
+            response.put("hasPrevious", songsPage.hasPrevious());
+            response.put("showingSongs", songsPage.getContent().size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Database access failed");
+            response.put("message", e.getMessage());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * Get songs with track play counts from database view (EFFICIENT)
+     */
+    @GetMapping("/songs-with-track-plays")
+    public ResponseEntity<Map<String, Object>> getSongsWithTrackPlays(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String search) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            org.springframework.data.domain.Page<SongPlayCountView> songsPage;
+            
+            if (search != null && !search.trim().isEmpty()) {
+                songsPage = songPlayCountViewService.searchSongs(search, page, size, sortBy, sortDirection);
+            } else {
+                songsPage = songPlayCountViewService.fetchSongs(page, size, sortBy, sortDirection);
+            }
+
+            response.put("songs", songsPage.getContent());
+            response.put("totalSongs", songsPage.getTotalElements());
+            response.put("currentPage", page);
+            response.put("totalPages", songsPage.getTotalPages());
+            response.put("hasNext", songsPage.hasNext());
+            response.put("hasPrevious", songsPage.hasPrevious());
+            response.put("showingSongs", songsPage.getContent().size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Database view access failed");
+            response.put("message", e.getMessage());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * Get playlist statistics
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getStats() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            long totalSongs = playlistService.getTotalSongCount();
+            java.time.LocalDateTime latestTime = playlistService.getLatestSongAddedTime();
+            
+            response.put("totalSongs", totalSongs);
+            response.put("latestSongTime", latestTime != null ? latestTime.toString() : null);
+            response.put("timestamp", System.currentTimeMillis());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("error", "Stats retrieval failed");
+            response.put("message", e.getMessage());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * Get latest song timestamp
+     */
+    @GetMapping("/latest-song-time")
+    public ResponseEntity<Map<String, Object>> getLatestSongTime() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            java.time.LocalDateTime latestTime = playlistService.getLatestSongAddedTime();
+            response.put("timestamp", latestTime != null ? latestTime.toString() : null);
+            response.put("message", "Latest song time retrieved successfully");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("error", "Failed to retrieve latest song time");
+            response.put("message", e.getMessage());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(500).body(response);
+        }
     }
 
     /**

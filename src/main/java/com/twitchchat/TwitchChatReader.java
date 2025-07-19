@@ -7,10 +7,10 @@ import com.twitchchat.config.TwitchProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * Main Spring Boot component for reading Twitch chat messages in real-time
  */
 @Component
-public class TwitchChatReader implements CommandLineRunner {
+public class TwitchChatReader {
     private static final Logger logger = LoggerFactory.getLogger(TwitchChatReader.class);
     
     @Autowired
@@ -37,9 +37,20 @@ public class TwitchChatReader implements CommandLineRunner {
         this.reconnectService = Executors.newScheduledThreadPool(1);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        start();
+    @PostConstruct
+    public void initialize() {
+        // Start Twitch connection in background thread to avoid blocking server startup
+        Thread twitchThread = new Thread(() -> {
+            try {
+                Thread.sleep(2000); // Wait for server to fully start
+                start();
+            } catch (Exception e) {
+                logger.error("Failed to start Twitch connection", e);
+            }
+        });
+        twitchThread.setName("TwitchChatReader");
+        twitchThread.start();
+        logger.info("Twitch Chat Reader initialized - connection starting in background");
     }
 
     /**

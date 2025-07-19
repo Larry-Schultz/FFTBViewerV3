@@ -1,0 +1,5 @@
+# Replit dependencies for deployment
+# These will be automatically installed in the deployment environment
+
+openjdk-11-jdk
+maven

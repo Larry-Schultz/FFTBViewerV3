@@ -5,96 +5,111 @@ set -e  # Exit on any error
 
 echo "=== Spring Boot Twitch Chat Reader - Enhanced Startup ==="
 
-# Set up Java environment with error handling
-echo "Setting up Java environment..."
-export JAVA_HOME=$(ls -d /nix/store/*jdk* | head -1 2>/dev/null || echo "/usr/lib/jvm/java-11-openjdk")
-export PATH=$JAVA_HOME/bin:$PATH
+# Set up Java environment (runtime detection)
+echo "Setting up Java runtime environment..."
 
-# Verify Java installation
-echo "Verifying Java installation..."
-if [ ! -d "$JAVA_HOME" ]; then
-    echo "ERROR: JAVA_HOME directory not found: $JAVA_HOME"
-    echo "Available Java installations:"
-    ls -la /nix/store/*jdk* 2>/dev/null || echo "No Java installations found in /nix/store"
-    exit 1
+# Check if java command is already available
+if command -v java &> /dev/null; then
+    JAVA_COMMAND_PATH=$(command -v java)
+    JAVA_HOME=$(dirname $(dirname "$JAVA_COMMAND_PATH"))
+    echo "✓ Found Java command in PATH: $JAVA_COMMAND_PATH"
+else
+    # Comprehensive Java detection
+    JAVA_HOME=""
+    echo "Searching for Java installations..."
+    
+    # Check Nix store (Replit environment)
+    if [ -d "/nix/store" ]; then
+        echo "Checking Nix store for Java installations..."
+        NIX_JDK_PATHS=$(find /nix/store -maxdepth 1 -name "*jdk*" -o -name "*adoptopenjdk*" -o -name "*openjdk*" 2>/dev/null | sort -V | tail -5)
+        if [ -n "$NIX_JDK_PATHS" ]; then
+            echo "Found potential Java installations:"
+            for path in $NIX_JDK_PATHS; do
+                echo "  Checking: $path"
+                if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
+                    JAVA_HOME="$path"
+                    echo "✓ Selected Java at: $JAVA_HOME"
+                    break
+                elif [ -d "$path" ]; then
+                    echo "  Directory exists, checking contents..."
+                    if [ -d "$path/bin" ]; then
+                        echo "  Bin directory found, looking for java executable..."
+                        ls -la "$path/bin/java*" 2>/dev/null | head -3
+                    else
+                        echo "  No bin directory found"
+                    fi
+                fi
+            done
+        else
+            echo "No JDK directories found in Nix store"
+        fi
+    fi
+    
+    # Check standard locations
+    if [ -z "$JAVA_HOME" ]; then
+        STANDARD_PATHS="/usr/lib/jvm/java-11-openjdk /usr/lib/jvm/default-java /opt/java/openjdk"
+        for path in $STANDARD_PATHS; do
+            if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
+                JAVA_HOME="$path"
+                echo "✓ Found Java at: $JAVA_HOME"
+                break
+            fi
+        done
+    fi
+    
+    # Check portable Java from build script
+    if [ -z "$JAVA_HOME" ] && [ -d "$PWD/java" ] && [ -f "$PWD/java/bin/java" ]; then
+        JAVA_HOME="$PWD/java"
+        echo "✓ Found portable Java at: $JAVA_HOME"
+    fi
+    
+    if [ -z "$JAVA_HOME" ]; then
+        echo "ERROR: Java runtime not found."
+        echo "Please ensure Java is installed or run the build script first."
+        exit 1
+    fi
+    
+    export JAVA_HOME
+    export PATH=$JAVA_HOME/bin:$PATH
 fi
 
+# Verify Java runtime
 if ! command -v java &> /dev/null; then
-    echo "ERROR: Java command not found in PATH"
+    echo "ERROR: Java command not available after setup"
     echo "JAVA_HOME: $JAVA_HOME"
     echo "PATH: $PATH"
     exit 1
 fi
 
-echo "✓ Java found at: $JAVA_HOME"
-echo "Java version:"
-java -version 2>&1
-echo ""
-
-# Set up Maven with error handling
-echo "Setting up Maven environment..."
-export PATH=$PWD/maven/bin:$PATH
-
-# Verify Maven installation
-if [ ! -d "$PWD/maven" ]; then
-    echo "ERROR: Maven directory not found at $PWD/maven"
-    echo "Creating maven directory and downloading Maven..."
-    mkdir -p maven
-    # Download and extract Maven if not present
-    MAVEN_VERSION=3.9.4
-    wget -q "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-    tar -xzf "apache-maven-${MAVEN_VERSION}-bin.tar.gz" --strip-components=1 -C maven
-    rm "apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-fi
-
-if ! command -v mvn &> /dev/null; then
-    echo "ERROR: Maven command not found in PATH"
-    echo "Maven directory: $PWD/maven"
-    echo "PATH: $PATH"
-    exit 1
-fi
-
-echo "✓ Maven found"
-echo "Maven version:"
-mvn -version
+JAVA_VERSION=$(java -version 2>&1 | head -1)
+echo "✓ Java runtime verified: $JAVA_VERSION"
 echo ""
 
 # Set deployment environment variables
 export SERVER_PORT=${PORT:-5000}
 export SPRING_PROFILES_ACTIVE=production
 
-echo "Deployment Configuration:"
+echo "Runtime Configuration:"
 echo "- Java Home: $JAVA_HOME"
-echo "- Maven Path: $PWD/maven/bin"
 echo "- Server Port: $SERVER_PORT"
 echo "- Spring Profile: $SPRING_PROFILES_ACTIVE"
 echo ""
 
-# Build the application with enhanced error handling
-echo "Building Spring Boot application..."
-if ! mvn clean package -DskipTests -Dmaven.test.skip=true -q; then
-    echo "ERROR: Maven build failed"
-    echo "Attempting to diagnose the issue..."
-    echo "Maven version:"
-    mvn --version
-    echo "Java version:"
-    java -version
-    echo "Project directory contents:"
-    ls -la
-    echo "pom.xml exists:"
-    [ -f pom.xml ] && echo "✓ Yes" || echo "✗ No"
-    exit 1
-fi
+# Check for pre-built JAR (build should be done separately)
+echo "Checking for pre-built JAR file..."
 
-echo "✓ Maven build completed successfully"
-
-# Check if JAR was built successfully
+# Check if JAR was built successfully - try both possible filenames
 JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ ! -f "$JAR_FILE" ]; then
+    # Try alternative JAR filename that might be created by Maven
+    JAR_FILE="target/twitch-chat-reader-1.0.jar"
+fi
 if [ ! -f "$JAR_FILE" ]; then
     echo "ERROR: JAR file not found at $JAR_FILE"
     echo "Target directory contents:"
     ls -la target/ 2>/dev/null || echo "Target directory does not exist"
-    echo "Build may have failed. Check Maven output above."
+    echo "This suggests the build step was not completed."
+    echo "Please ensure the build script has been run first."
     exit 1
 fi
 

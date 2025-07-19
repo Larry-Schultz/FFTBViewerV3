@@ -1,311 +1,172 @@
 #!/bin/bash
 
-# Portable deployment script for all shell environments
-# This version avoids bash-specific syntax that may not work in dash/sh
+# Simple run script for Replit deployment
+# This is the entry point for the application
 
 set -e
 
-LOG_PREFIX="[DEPLOYMENT]"
-echo "$LOG_PREFIX === Universal Spring Boot Startup ==="
-echo "$LOG_PREFIX Timestamp: $(date)"
-echo "$LOG_PREFIX Process ID: $$"
-echo "$LOG_PREFIX User: $(whoami)"
-echo "$LOG_PREFIX Environment variables:"
-echo "$LOG_PREFIX   PATH: $PATH"
-echo "$LOG_PREFIX   HOME: $HOME"
-echo "$LOG_PREFIX   PWD: $PWD"
-echo "$LOG_PREFIX   PORT: ${PORT:-not set}"
-echo "$LOG_PREFIX   JAVA_HOME: ${JAVA_HOME:-not set}"
-
-# Detect how we were called and from where
-SCRIPT_NAME=$(basename "$0")
-SCRIPT_DIR=$(dirname "$0")
-CURRENT_DIR=$(pwd)
-
-echo "$LOG_PREFIX Script execution details:"
-echo "$LOG_PREFIX   Script name: $SCRIPT_NAME"
-echo "$LOG_PREFIX   Called from: $CURRENT_DIR"
-echo "$LOG_PREFIX   Script location: $SCRIPT_DIR"
-echo "$LOG_PREFIX   Command line args: $*"
-
-# Function to find project directory (using portable syntax)
-find_project_directory() {
-    echo "$LOG_PREFIX Searching for project directory with pom.xml..." >&2
-    
-    # Check each path individually (more portable than arrays)
-    if [ -f "/home/runner/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: /home/runner/workspace" >&2
-        echo "/home/runner/workspace"
-        return 0
-    fi
-    
-    if [ -f "$CURRENT_DIR/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $CURRENT_DIR" >&2
-        echo "$CURRENT_DIR"
-        return 0
-    fi
-    
-    if [ -f "$SCRIPT_DIR/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $SCRIPT_DIR" >&2
-        echo "$SCRIPT_DIR"
-        return 0
-    fi
-    
-    if [ -f "/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: /workspace" >&2
-        echo "/workspace"
-        return 0
-    fi
-    
-    if [ -f "$HOME/workspace/pom.xml" ]; then
-        echo "$LOG_PREFIX   ✓ Found pom.xml at: $HOME/workspace" >&2
-        echo "$HOME/workspace"
-        return 0
-    fi
-    
-    echo "$LOG_PREFIX ERROR: Cannot locate project directory with pom.xml" >&2
-    echo "$LOG_PREFIX Searched paths:" >&2
-    echo "$LOG_PREFIX   - /home/runner/workspace" >&2
-    echo "$LOG_PREFIX   - $CURRENT_DIR" >&2
-    echo "$LOG_PREFIX   - $SCRIPT_DIR" >&2
-    echo "$LOG_PREFIX   - /workspace" >&2
-    echo "$LOG_PREFIX   - $HOME/workspace" >&2
-    return 1
+LOG_PREFIX="[RUN]"
+log() {
+    echo "$LOG_PREFIX $1" >&2
 }
 
-# Find and change to project directory
-echo "$LOG_PREFIX Starting project directory search..."
-PROJECT_DIR=$(find_project_directory)
-if [ $? -ne 0 ]; then
-    echo "$LOG_PREFIX FATAL: Project directory search failed" >&2
+log "=== Spring Boot Deployment Build ==="
+log "Timestamp: $(date)"
+
+echo "=== Twitch Chat Reader Deployment ==="
+echo "Timestamp: $(date)"
+
+log "Setting up Java environment..."
+
+# Function to download and install Java
+download_java() {
+    log "Downloading Java JDK 11..."
+    JAVA_DIR="$PWD/java"
+    
+    # Create java directory if it doesn't exist
+    mkdir -p "$JAVA_DIR"
+    
+    # Download OpenJDK 11 (Temurin distribution)
+    if command -v curl >/dev/null 2>&1; then
+        log "Using curl to download Java..."
+        curl -L -o "$JAVA_DIR/openjdk-11.tar.gz" \
+            "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    elif command -v wget >/dev/null 2>&1; then
+        log "Using wget to download Java..."
+        wget -O "$JAVA_DIR/openjdk-11.tar.gz" \
+            "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.21%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.21_9.tar.gz"
+    else
+        log "ERROR: Neither curl nor wget available for downloading Java"
+        return 1
+    fi
+    
+    # Extract the downloaded archive
+    log "Extracting Java archive..."
+    cd "$JAVA_DIR"
+    tar -xzf openjdk-11.tar.gz --strip-components=1
+    rm -f openjdk-11.tar.gz
+    cd "$PWD"
+    
+    # Verify extraction
+    if [ -f "$JAVA_DIR/bin/java" ]; then
+        log "✓ Java downloaded and extracted successfully"
+        return 0
+    else
+        log "ERROR: Java extraction failed"
+        return 1
+    fi
+}
+
+# Find Java installation
+JAVA_HOME=""
+NIX_JAVA=$(ls -d /nix/store/*jdk* 2>/dev/null | head -1)
+if [ -n "$NIX_JAVA" ] && [ -d "$NIX_JAVA" ]; then
+    JAVA_HOME="$NIX_JAVA"
+    log "Found Java in Nix store: $JAVA_HOME"
+elif [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
+    JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
+    log "Found Java in system: $JAVA_HOME"
+elif [ -d "/usr/lib/jvm/default-java" ]; then
+    JAVA_HOME="/usr/lib/jvm/default-java"
+    log "Found Java in system: $JAVA_HOME"
+elif [ -d "$PWD/java" ] && [ -f "$PWD/java/bin/java" ]; then
+    JAVA_HOME="$PWD/java"
+    log "Found downloaded Java: $JAVA_HOME"
+else
+    log "No Java installation found. Attempting to download..."
+    if download_java; then
+        JAVA_HOME="$PWD/java"
+        log "Using downloaded Java: $JAVA_HOME"
+    else
+        log "Download failed. Trying system package manager..."
+        # Try to install Java using system package manager
+        if command -v apt-get >/dev/null 2>&1; then
+            log "Installing Java using apt-get..."
+            sudo apt-get update && sudo apt-get install -y openjdk-11-jdk
+            if [ -d "/usr/lib/jvm/java-11-openjdk-amd64" ]; then
+                JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+                log "Java installed via apt-get: $JAVA_HOME"
+            fi
+        elif command -v yum >/dev/null 2>&1; then
+            log "Installing Java using yum..."
+            sudo yum install -y java-11-openjdk-devel
+            if [ -d "/usr/lib/jvm/java-11-openjdk" ]; then
+                JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
+                log "Java installed via yum: $JAVA_HOME"
+            fi
+        else
+            log "Trying Replit Nix package manager..."
+            # Try to install Java using Replit's Nix package manager
+            if command -v nix-env >/dev/null 2>&1; then
+                log "Installing Java using nix-env..."
+                nix-env -iA nixpkgs.openjdk11
+                # Check common Nix Java locations
+                for nix_path in ~/.nix-profile/lib/openjdk /nix/store/*openjdk*; do
+                    if [ -d "$nix_path" ] && [ -f "$nix_path/bin/java" ]; then
+                        JAVA_HOME="$nix_path"
+                        log "Java installed via nix-env: $JAVA_HOME"
+                        break
+                    fi
+                done
+            else
+                log "ERROR: No package manager available. Please install Java manually."
+                log "You can download Java from: https://adoptium.net/temurin/releases/"
+                exit 1
+            fi
+        fi
+        
+        # Final check after package manager installation
+        if [ -z "$JAVA_HOME" ] || [ ! -f "$JAVA_HOME/bin/java" ]; then
+            log "ERROR: Java installation via package manager failed."
+            exit 1
+        fi
+    fi
+fi
+
+export JAVA_HOME
+export PATH="$JAVA_HOME/bin:$PWD/maven/bin:$PATH"
+echo "✓ Java environment set: $JAVA_HOME"
+
+
+# Verify Java is working
+if ! command -v java >/dev/null 2>&1; then
+    echo "ERROR: Java command not available after setup"
     exit 1
 fi
 
-echo "$LOG_PREFIX Project directory found: $PROJECT_DIR"
-echo "$LOG_PREFIX Changing to project directory..."
-cd "$PROJECT_DIR"
-echo "$LOG_PREFIX Current working directory: $(pwd)"
-echo "$LOG_PREFIX Project directory contents:"
-ls -la | head -10
+echo "✓ Java version: $(java -version 2>&1 | head -1)"
 
-# Set up Java environment
-echo "$LOG_PREFIX Setting up Java environment..."
+# Find the JAR file
+JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
+if [ ! -f "$JAR_FILE" ]; then
+    JAR_FILE="target/twitch-chat-reader-1.0.jar"
+fi
 
-# Enhanced Java detection with comprehensive logging
-echo "$LOG_PREFIX Searching for Java installations..." >&2
-
-# Check if java command is already available in PATH
-if command -v java >/dev/null 2>&1; then
-    JAVA_COMMAND_PATH=$(command -v java)
-    JAVA_HOME=$(dirname $(dirname "$JAVA_COMMAND_PATH"))
-    echo "$LOG_PREFIX   ✓ Found Java command in PATH: $JAVA_COMMAND_PATH" >&2
-    echo "$LOG_PREFIX   ✓ Derived JAVA_HOME: $JAVA_HOME" >&2
-else
-    echo "$LOG_PREFIX   ✗ Java command not found in PATH" >&2
-    
-    # Comprehensive Java location search
-    JAVA_HOME=""
-    
-    # Check Nix store
-    echo "$LOG_PREFIX   Checking Nix store..." >&2
-    if [ -d "/nix/store" ]; then
-        echo "$LOG_PREFIX     /nix/store directory exists" >&2
-        NIX_JDK_PATHS=$(ls -d /nix/store/*jdk* /nix/store/*adoptopenjdk* /nix/store/*openjdk* 2>/dev/null || echo "")
-        if [ -n "$NIX_JDK_PATHS" ]; then
-            echo "$LOG_PREFIX     Found JDK paths in Nix store:" >&2
-            for path in $NIX_JDK_PATHS; do
-                echo "$LOG_PREFIX       - $path" >&2
-            done
-            # Select the first available JDK
-            for path in $NIX_JDK_PATHS; do
-                if [ -d "$path" ] && [ -f "$path/bin/java" ]; then
-                    JAVA_HOME="$path"
-                    echo "$LOG_PREFIX     ✓ Selected Java at: $JAVA_HOME" >&2
-                    break
-                elif [ -d "$path" ] && [ -d "$path/bin" ]; then
-                    JAVA_HOME="$path"
-                    echo "$LOG_PREFIX     ✓ Selected Java at: $JAVA_HOME (assuming valid)" >&2
-                    break
-                fi
-            done
-        else
-            echo "$LOG_PREFIX     ✗ No JDK directories found in Nix store" >&2
+if [ ! -f "$JAR_FILE" ]; then
+    echo "[RUN] ERROR: JAR file not found. Building first..."
+    if [ -d "maven" ]; then
+        export PATH="$PWD/maven/bin:$PATH"
+        mvn clean package -DskipTests -q
+        if [ ! -f "$JAR_FILE" ]; then
+            echo "[RUN] ERROR: Build failed"
+            exit 1
         fi
     else
-        echo "$LOG_PREFIX     ✗ /nix/store directory does not exist" >&2
-    fi
-    
-    # Check standard locations if Nix didn't work
-    if [ -z "$JAVA_HOME" ]; then
-        echo "$LOG_PREFIX   Checking standard Java locations..." >&2
-        STANDARD_PATHS="/usr/lib/jvm/java-11-openjdk /usr/lib/jvm/default-java /opt/java/openjdk /usr/lib/jvm/java-8-openjdk /usr/lib/jvm/java-17-openjdk"
-        
-        for path in $STANDARD_PATHS; do
-            echo "$LOG_PREFIX     Checking: $path" >&2
-            if [ -d "$path" ]; then
-                JAVA_HOME="$path"
-                echo "$LOG_PREFIX     ✓ Found Java at: $JAVA_HOME" >&2
-                break
-            else
-                echo "$LOG_PREFIX     ✗ Not found: $path" >&2
-            fi
-        done
-    fi
-    
-    # Check JAVA_HOME environment variable as fallback
-    if [ -z "$JAVA_HOME" ] && [ -n "$JAVA_HOME_ENV" ] && [ -d "$JAVA_HOME_ENV" ]; then
-        JAVA_HOME="$JAVA_HOME_ENV"
-        echo "$LOG_PREFIX   ✓ Using existing JAVA_HOME: $JAVA_HOME" >&2
-    fi
-fi
-
-# Final Java validation - if no Java found, download portable JDK
-if [ -z "$JAVA_HOME" ] || [ ! -d "$JAVA_HOME" ]; then
-    echo "$LOG_PREFIX No Java installation found - downloading portable OpenJDK..." >&2
-    
-    # Create Java directory
-    PORTABLE_JAVA_DIR="$PWD/java"
-    mkdir -p "$PORTABLE_JAVA_DIR"
-    
-    # Download portable OpenJDK 11
-    OPENJDK_URL="https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz"
-    echo "$LOG_PREFIX Downloading OpenJDK 11 from: $OPENJDK_URL" >&2
-    
-    if command -v wget >/dev/null 2>&1; then
-        echo "$LOG_PREFIX Using wget to download OpenJDK..." >&2
-        wget -q "$OPENJDK_URL" -O openjdk.tar.gz
-    elif command -v curl >/dev/null 2>&1; then
-        echo "$LOG_PREFIX Using curl to download OpenJDK..." >&2
-        curl -sL "$OPENJDK_URL" -o openjdk.tar.gz
-    else
-        echo "$LOG_PREFIX ERROR: Neither wget nor curl available for Java download" >&2
-        echo "$LOG_PREFIX System information for debugging:" >&2
-        echo "$LOG_PREFIX   Current PATH: $PATH" >&2
-        echo "$LOG_PREFIX   Available commands:" >&2
-        echo "$LOG_PREFIX     which java: $(which java 2>/dev/null || echo 'not found')" >&2
-        echo "$LOG_PREFIX     whereis java: $(whereis java 2>/dev/null || echo 'not found')" >&2
-        echo "$LOG_PREFIX   Directory listings:" >&2
-        echo "$LOG_PREFIX     /usr/lib/jvm/: $(ls -la /usr/lib/jvm/ 2>/dev/null || echo 'directory not found')" >&2
-        echo "$LOG_PREFIX     /nix/store/*jdk*: $(ls -d /nix/store/*jdk* 2>/dev/null || echo 'no jdk directories')" >&2
+        echo "[RUN] ERROR: No Maven found and no JAR file present"
         exit 1
     fi
-    
-    echo "$LOG_PREFIX Extracting OpenJDK..." >&2
-    tar -xzf openjdk.tar.gz --strip-components=1 -C "$PORTABLE_JAVA_DIR"
-    rm openjdk.tar.gz
-    
-    # Set JAVA_HOME to portable installation
-    JAVA_HOME="$PORTABLE_JAVA_DIR"
-    echo "$LOG_PREFIX ✓ Portable Java installed at: $JAVA_HOME" >&2
 fi
 
-echo "$LOG_PREFIX Setting JAVA_HOME to: $JAVA_HOME" >&2
-export JAVA_HOME
-export PATH="$JAVA_HOME/bin:$PATH"
-echo "$LOG_PREFIX Updated PATH: $PATH" >&2
+echo "[RUN] ✓ JAR file found: $JAR_FILE"
 
-# Verify Java installation
-echo "$LOG_PREFIX Verifying Java installation..." >&2
-echo "$LOG_PREFIX   JAVA_HOME contents:" >&2
-ls -la "$JAVA_HOME" | head -5 >&2 || echo "$LOG_PREFIX   Cannot list JAVA_HOME directory" >&2
-echo "$LOG_PREFIX   JAVA_HOME/bin contents:" >&2
-ls -la "$JAVA_HOME/bin/" | head -5 >&2 || echo "$LOG_PREFIX   Cannot list JAVA_HOME/bin directory" >&2
+# Start the application
+echo "[RUN] Starting Spring Boot application..."
 
-if ! command -v java >/dev/null 2>&1; then
-    echo "$LOG_PREFIX ERROR: Java command not available after PATH update" >&2
-    echo "$LOG_PREFIX Debugging information:" >&2
-    echo "$LOG_PREFIX   command -v java: $(command -v java 2>&1 || echo 'failed')" >&2
-    echo "$LOG_PREFIX   which java: $(which java 2>&1 || echo 'failed')" >&2
-    echo "$LOG_PREFIX   Current PATH: $PATH" >&2
-    exit 1
-fi
-
-JAVA_VERSION=$(java -version 2>&1 | head -1)
-echo "$LOG_PREFIX ✓ Java verified: $JAVA_VERSION" >&2
-
-# Set up Maven
-echo "$LOG_PREFIX Setting up Maven..."
-MAVEN_HOME="$PWD/maven"
-echo "$LOG_PREFIX Maven home set to: $MAVEN_HOME"
-export PATH="$MAVEN_HOME/bin:$PATH"
-
-# Download Maven if not present
-if [ ! -d "$MAVEN_HOME" ]; then
-    echo "$LOG_PREFIX Maven directory not found, downloading Maven 3.9.4..."
-    mkdir -p "$MAVEN_HOME"
-    MAVEN_URL="https://archive.apache.org/dist/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
-    
-    if command -v wget >/dev/null 2>&1; then
-        echo "$LOG_PREFIX Using wget to download Maven..."
-        wget -q "$MAVEN_URL" -O maven.tar.gz
-    elif command -v curl >/dev/null 2>&1; then
-        echo "$LOG_PREFIX Using curl to download Maven..."
-        curl -sL "$MAVEN_URL" -o maven.tar.gz
-    else
-        echo "$LOG_PREFIX ERROR: Neither wget nor curl available for Maven download" >&2
-        exit 1
-    fi
-    
-    echo "$LOG_PREFIX Extracting Maven archive..."
-    tar -xzf maven.tar.gz --strip-components=1 -C "$MAVEN_HOME"
-    rm maven.tar.gz
-    echo "$LOG_PREFIX Maven download and extraction completed"
+# Check for SPRING_PROFILES_ACTIVE environment variable
+if [ -n "$SPRING_PROFILES_ACTIVE" ]; then
+    echo "[RUN] Using profile: $SPRING_PROFILES_ACTIVE"
+    java -jar "$JAR_FILE" --server.port=5000 --spring.profiles.active="$SPRING_PROFILES_ACTIVE"
 else
-    echo "$LOG_PREFIX Maven directory already exists: $MAVEN_HOME"
+    echo "[RUN] Using production profile for deployment"
+    java -jar "$JAR_FILE" --server.port=5000 --spring.profiles.active=prod
 fi
-
-# Verify Maven
-echo "$LOG_PREFIX Verifying Maven installation..."
-if ! command -v mvn >/dev/null 2>&1; then
-    echo "$LOG_PREFIX ERROR: Maven command not available" >&2
-    exit 1
-fi
-
-MAVEN_VERSION=$(mvn -version | head -1)
-echo "$LOG_PREFIX ✓ Maven verified: $MAVEN_VERSION"
-
-# Set deployment variables
-export SERVER_PORT="${PORT:-5000}"
-export SPRING_PROFILES_ACTIVE="production"
-
-echo "$LOG_PREFIX Application configuration:"
-echo "$LOG_PREFIX   - Server Port: $SERVER_PORT"
-echo "$LOG_PREFIX   - Spring Profile: $SPRING_PROFILES_ACTIVE"
-echo "$LOG_PREFIX   - Project Directory: $PROJECT_DIR"
-echo "$LOG_PREFIX   - Java Home: $JAVA_HOME"
-echo "$LOG_PREFIX   - Maven Home: $MAVEN_HOME"
-
-# Build the application
-echo "$LOG_PREFIX Building application with Maven..."
-echo "$LOG_PREFIX Maven command: mvn clean package -DskipTests -Dmaven.test.skip=true"
-if ! mvn clean package -DskipTests -Dmaven.test.skip=true -q; then
-    echo "$LOG_PREFIX ERROR: Maven build failed" >&2
-    exit 1
-fi
-echo "$LOG_PREFIX Maven build completed successfully"
-
-# Verify JAR
-JAR_FILE="target/twitch-chat-reader-1.0.0.jar"
-echo "$LOG_PREFIX Verifying JAR file: $JAR_FILE"
-if [ ! -f "$JAR_FILE" ]; then
-    echo "$LOG_PREFIX ERROR: JAR file not found: $JAR_FILE" >&2
-    exit 1
-fi
-
-JAR_SIZE=$(ls -lh "$JAR_FILE" | awk '{print $5}')
-echo "$LOG_PREFIX ✓ JAR built successfully: $JAR_FILE ($JAR_SIZE)"
-echo "$LOG_PREFIX Starting Spring Boot application..."
-
-# Start with optimized settings
-echo "$LOG_PREFIX Executing Java application with optimized JVM settings..."
-exec java \
-    -Xmx512m \
-    -Xms256m \
-    -XX:+UseG1GC \
-    -XX:MaxGCPauseMillis=200 \
-    -XX:+ExitOnOutOfMemoryError \
-    -Dserver.port="$SERVER_PORT" \
-    -Dspring.profiles.active="$SPRING_PROFILES_ACTIVE" \
-    -Djava.security.egd=file:/dev/./urandom \
-    -Dfile.encoding=UTF-8 \
-    -jar "$JAR_FILE"
