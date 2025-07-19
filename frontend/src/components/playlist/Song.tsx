@@ -1,9 +1,9 @@
 import React from 'react';
-import { Song as SongType } from '../../types';
+import { Song as SongType, SongWithTrackPlayCount, SongPlayCountView } from '../../types';
 const styles = require('../../styles/Song.module.css');
 
 interface SongProps {
-  song: SongType;
+  song: SongType | SongWithTrackPlayCount | SongPlayCountView;
   index: number;
 }
 
@@ -47,14 +47,42 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
     return 'Never';
   };
 
+  // Helper functions to get play count and last played time
+  const getPlayCount = (): number => {
+    if ('trackPlayCount' in song) {
+      return song.trackPlayCount;
+    }
+    if ('occurrence' in song) {
+      return song.occurrence;
+    }
+    return 0;
+  };
+
+  const getLastPlayedTime = (): string | null | undefined => {
+    if ('lastPlayedAt' in song) {
+      return song.lastPlayedAt;
+    }
+    if ('updatedAt' in song) {
+      return song.updatedAt;
+    }
+    return null;
+  };
+
+  const getSongId = (): number => {
+    if ('songId' in song) {
+      return song.songId;
+    }
+    return song.id;
+  };
+
   return (
     <tr className={styles.songRow}>
       <td className={`${styles.songNumber} ${styles.hideOnMobile}`}>{index + 1}</td>
       <td className={styles.songTitle}>{song.title}</td>
       <td className={styles.songDuration}>{formatDuration(song.duration)}</td>
-      <td className={`${styles.songPlays} ${styles.hideOnMobile}`}>{formatPlayCount(song.occurrence)}</td>
+      <td className={`${styles.songPlays} ${styles.hideOnMobile}`}>{formatPlayCount(getPlayCount())}</td>
       <td className={`${styles.songAdded} ${styles.hideOnTablet}`}>{formatDate(song.createdAt)}</td>
-      <td className={`${styles.songLastPlayed} ${styles.hideOnMobile}`}>{formatLastPlayed(song.occurrence, song.updatedAt)}</td>
+      <td className={`${styles.songLastPlayed} ${styles.hideOnMobile}`}>{formatLastPlayed(getPlayCount(), getLastPlayedTime())}</td>
     </tr>
   );
 };

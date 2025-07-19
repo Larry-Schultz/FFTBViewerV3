@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PlaylistService } from '../../services/PlaylistService';
-import { PlaylistData } from '../../types';
+import { PlaylistData, PlaylistDataWithView } from '../../types';
 import SearchBar from './SearchBar';
 import SongTable from './SongTable';
 import Pagination from './Pagination';
@@ -8,7 +8,7 @@ import PlaylistStats from './PlaylistStats';
 const styles = require('../../styles/PlaylistView.module.css');
 
 const PlaylistView: React.FC = () => {
-  const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
+  const [playlistData, setPlaylistData] = useState<PlaylistDataWithView | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -40,7 +40,7 @@ const PlaylistView: React.FC = () => {
         setError(null);
         
         const [data, statsResponse, latestTimeResponse] = await Promise.all([
-          PlaylistService.getSongs(currentPage, pageSize, sortBy, sortDirection, debouncedSearchTerm),
+          PlaylistService.getSongsWithTrackPlays(currentPage, pageSize, sortBy, sortDirection, debouncedSearchTerm),
           PlaylistService.getStats(),
           PlaylistService.getLatestSongTime()
         ]);
@@ -64,7 +64,7 @@ const PlaylistView: React.FC = () => {
     } else {
       setSortBy(field);
       // Default to descending for fields where users expect newest/highest first
-      const defaultDescFields = ['updatedAt', 'createdAt', 'occurrence'];
+      const defaultDescFields = ['updatedAt', 'createdAt', 'occurrence', 'trackPlayCount'];
       setSortDirection(defaultDescFields.includes(field) ? 'desc' : 'asc');
     }
     setCurrentPage(0);

@@ -1,10 +1,13 @@
 package com.twitchchat.controller;
 
 import com.twitchchat.model.Song;
+import com.twitchchat.model.SongPlayCountView;
 import com.twitchchat.repository.SongRepository;
 import com.twitchchat.service.PlaylistSyncService;
 import com.twitchchat.service.PlaylistService;
 import com.twitchchat.service.SongPlayTracker;
+import com.twitchchat.service.SongPlayCountViewService;
+import com.twitchchat.dto.SongWithTrackPlayCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +38,9 @@ public class ApiController {
     
     @Autowired
     private SongRepository songRepository;
+    
+    @Autowired
+    private SongPlayCountViewService songPlayCountViewService;
 
     /**
      * Get playlist status and statistics
@@ -91,6 +97,46 @@ public class ApiController {
 
         } catch (Exception e) {
             response.put("error", "Database access failed");
+            response.put("message", e.getMessage());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * Get songs with track play counts from database view (EFFICIENT)
+     */
+    @GetMapping("/songs-with-track-plays")
+    public ResponseEntity<Map<String, Object>> getSongsWithTrackPlays(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String search) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            org.springframework.data.domain.Page<SongPlayCountView> songsPage;
+            
+            if (search != null && !search.trim().isEmpty()) {
+                songsPage = songPlayCountViewService.searchSongs(search, page, size, sortBy, sortDirection);
+            } else {
+                songsPage = songPlayCountViewService.fetchSongs(page, size, sortBy, sortDirection);
+            }
+
+            response.put("songs", songsPage.getContent());
+            response.put("totalSongs", songsPage.getTotalElements());
+            response.put("currentPage", page);
+            response.put("totalPages", songsPage.getTotalPages());
+            response.put("hasNext", songsPage.hasNext());
+            response.put("hasPrevious", songsPage.hasPrevious());
+            response.put("showingSongs", songsPage.getContent().size());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Database view access failed");
             response.put("message", e.getMessage());
             response.put("timestamp", System.currentTimeMillis());
             return ResponseEntity.status(500).body(response);

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Song as SongType } from '../../types';
+import { SongPlayCountView } from '../../types';
 import Song from './Song';
 const styles = require('../../styles/SongTable.module.css');
 
 interface SongTableProps {
-  songs: SongType[];
+  songs: SongPlayCountView[];
   sortBy: string;
   sortDirection: 'asc' | 'desc';
   onSort: (field: string) => void;
@@ -38,9 +38,9 @@ const SongTable: React.FC<SongTableProps> = ({ songs, sortBy, sortDirection, onS
             </th>
             <th 
               className={`${styles.sortable} ${styles.playsHeader} ${styles.hideOnMobile}`} 
-              onClick={() => onSort('occurrence')}
+              onClick={() => onSort('trackPlayCount')}
             >
-              Plays {getSortIcon('occurrence')}
+              Track Plays {getSortIcon('trackPlayCount')}
             </th>
             <th 
               className={`${styles.sortable} ${styles.dateHeader} ${styles.hideOnTablet}`} 
@@ -50,15 +50,15 @@ const SongTable: React.FC<SongTableProps> = ({ songs, sortBy, sortDirection, onS
             </th>
             <th 
               className={`${styles.sortable} ${styles.lastPlayedHeader} ${styles.hideOnMobile}`} 
-              onClick={() => onSort('updatedAt')}
+              onClick={() => onSort('lastPlayedAt')}
             >
-              Last Played {getSortIcon('updatedAt')}
+              Last Played {getSortIcon('lastPlayedAt')}
             </th>
           </tr>
         </thead>
         <tbody>
           {songs.map((song, index) => (
-            <Song key={song.id || index} song={song} index={index} />
+            <Song key={song.songId || index} song={song} index={index} />
           ))}
         </tbody>
       </table>

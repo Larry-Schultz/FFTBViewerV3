@@ -18,6 +18,34 @@ export interface Song {
   lastPlayed?: string;
 }
 
+export interface SongWithTrackPlayCount {
+  id: number;
+  title: string;
+  creator?: string | null;
+  album?: string | null;
+  duration: string;
+  location?: string | null;
+  createdAt?: string;
+  updatedAt?: string | null;
+  trackPlayCount: number;
+  lastPlayedAt?: string | null;
+  song: Song;
+}
+
+export interface SongPlayCountView {
+  songId: number;
+  title: string;
+  creator?: string | null;
+  album?: string | null;
+  duration: string;
+  location?: string | null;
+  createdAt?: string;
+  updatedAt?: string | null;
+  occurrence: number;
+  trackPlayCount: number;
+  lastPlayedAt?: string | null;
+}
+
 export interface PlaylistData {
   totalSongs?: number;
   songs?: Song[];
@@ -28,6 +56,38 @@ export interface PlaylistData {
   currentPage?: number;
   // Legacy Spring Boot pagination format
   content?: Song[];
+  number?: number;
+  totalElements?: number;
+  first?: boolean;
+  last?: boolean;
+}
+
+export interface PlaylistDataWithTrackPlays {
+  totalSongs?: number;
+  songs?: SongWithTrackPlayCount[];
+  showingSongs?: number;
+  totalPages: number;
+  hasPrevious?: boolean;
+  hasNext?: boolean;
+  currentPage?: number;
+  // Legacy Spring Boot pagination format
+  content?: SongWithTrackPlayCount[];
+  number?: number;
+  totalElements?: number;
+  first?: boolean;
+  last?: boolean;
+}
+
+export interface PlaylistDataWithView {
+  totalSongs?: number;
+  songs?: SongPlayCountView[];
+  showingSongs?: number;
+  totalPages: number;
+  hasPrevious?: boolean;
+  hasNext?: boolean;
+  currentPage?: number;
+  // Legacy Spring Boot pagination format
+  content?: SongPlayCountView[];
   number?: number;
   totalElements?: number;
   first?: boolean;
