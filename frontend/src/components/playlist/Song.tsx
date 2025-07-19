@@ -23,15 +23,14 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'Unknown';
       
-      // Format with full timestamp and timezone
+      // Format with full timestamp in user's timezone (no timezone display)
       const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
-        timeZoneName: 'short'
+        second: '2-digit'
       };
       
       return date.toLocaleString('en-US', dateOptions);
