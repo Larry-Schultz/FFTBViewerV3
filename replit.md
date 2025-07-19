@@ -53,7 +53,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 19, 2025 - Workflow Optimization & CSS Modules:**
+**July 19, 2025 - Dark Theme Implementation & CSS Modules:**
 - **CREATED SEPARATE BUILD AND RUN WORKFLOWS**: Split building and running into two workflows per user request
 - **Build Project Workflow**: Handles Maven clean install with frontend webpack build
 - **Run Server Workflow**: Starts the Spring Boot server on port 5000 in dev profile
@@ -63,6 +63,8 @@ Preferred communication style: Simple, everyday language.
 - **RESPONSIVE DESIGN NOW WORKING**: All CSS module styles including media queries are properly extracted to styles.css (15.4KB with 14 media queries)
 - **CSS MODULE GLOBAL SELECTORS**: When targeting non-CSS-module classes from within a CSS module, use :global() wrapper
 - **RESPONSIVE DESIGN CHALLENGES**: Mobile card layout requires :global() selectors for components using regular class names
+- **DARK THEME SUCCESSFULLY IMPLEMENTED**: Both music page and chat view now use consistent dark theme with #1a1f36/#1e2337 backgrounds
+- **BROWSER CACHING RESOLUTION**: Added cache-busting parameters to index.html to force CSS reload when changes don't appear
 
 **July 19, 2025 - CSS Modules Implementation & Responsive Design:**
 - **IMPLEMENTED CSS MODULES**: Successfully converted CSS architecture to modern CSS modules approach 
