@@ -2,6 +2,7 @@ package com.twitchchat.service;
 
 import com.twitchchat.model.Song;
 import com.twitchchat.repository.SongRepository;
+import com.twitchchat.repository.TrackPlayRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,10 +24,12 @@ public class PlaylistService {
     private static final Logger logger = LoggerFactory.getLogger(PlaylistService.class);
     
     private final SongRepository songRepository;
+    private final TrackPlayRepository trackPlayRepository;
     
     // Constructor injection
-    public PlaylistService(SongRepository songRepository) {
+    public PlaylistService(SongRepository songRepository, TrackPlayRepository trackPlayRepository) {
         this.songRepository = songRepository;
+        this.trackPlayRepository = trackPlayRepository;
     }
 
     /**
