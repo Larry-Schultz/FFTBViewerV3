@@ -13,8 +13,8 @@ const PlaylistView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(50);
-  const [sortBy, setSortBy] = useState<string>('title');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<string>('updatedAt');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [latestSongTime, setLatestSongTime] = useState<string | null>(null);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
 

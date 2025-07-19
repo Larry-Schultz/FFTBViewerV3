@@ -36,7 +36,7 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
     if (lastPlayed) {
       return formatDate(lastPlayed);
     }
-    return 'Unknown';
+    return 'Never';
   };
 
   return (
@@ -46,7 +46,7 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
       <td className="song-duration">{formatDuration(song.duration)}</td>
       <td className="song-plays">{formatPlayCount(song.occurrence)}</td>
       <td className="song-added">{formatDate(song.createdAt)}</td>
-      <td className="song-last-played">{formatLastPlayed(song.occurrence, song.lastPlayed)}</td>
+      <td className="song-last-played">{formatLastPlayed(song.occurrence, song.updatedAt)}</td>
     </tr>
   );
 };
