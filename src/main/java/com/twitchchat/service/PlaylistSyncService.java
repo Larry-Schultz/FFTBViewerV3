@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.annotation.Profile;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -205,17 +208,46 @@ public class PlaylistSyncService {
     }
 
     /**
+     * Fetch XML document from playlist endpoint with retry logic
+     */
+    @Retryable(
+        value = {Exception.class}, 
+        maxAttempts = 3, 
+        backoff = @Backoff(delay = 2000, multiplier = 2)
+    )
+    private Document fetchXmlDocument() throws Exception {
+        logger.info("Fetching playlist from: {}", PLAYLIST_URL);
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(new URL(PLAYLIST_URL).openStream());
+    }
+
+    /**
+     * Recovery method when all retry attempts fail
+     */
+    @Recover
+    private Document recoverFromXmlFetchFailure(Exception ex) {
+        logger.error("Failed to fetch XML after all retry attempts. Using empty playlist.", ex);
+        // Return a minimal empty XML document
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            return builder.newDocument();
+        } catch (Exception e) {
+            logger.error("Failed to create empty document", e);
+            throw new RuntimeException("Complete XML fetch failure", ex);
+        }
+    }
+
+    /**
      * Fetch songs from XML feed and parse them
      */
     private List<Song> fetchSongsFromXml() {
         List<Song> songs = new ArrayList<>();
 
         try {
-            logger.info("Fetching playlist from: {}", PLAYLIST_URL);
-            
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new URL(PLAYLIST_URL).openStream());
+            Document document = fetchXmlDocument();
 
             NodeList leafNodes = document.getElementsByTagName("leaf");
             logger.info("Found {} songs in XML feed", leafNodes.getLength());
