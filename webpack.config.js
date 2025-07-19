@@ -44,7 +44,8 @@ module.exports = {
             options: {
               modules: {
                 localIdentName: '[name]__[local]--[hash:base64:5]',
-                exportGlobals: true,
+                exportLocalsConvention: 'camelCase',
+                namedExport: false,
               },
             },
           },

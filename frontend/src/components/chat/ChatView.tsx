@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ChatDisplay from './ChatDisplay';
 import { ChatService } from '../../services/ChatService';
 import { ChatMessage } from '../../types';
-import styles from '../../styles/ChatView.module.css';
+import '../../styles/main.css';
 
 function ChatView() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -25,10 +25,10 @@ function ChatView() {
   }, []);
 
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.chatHeader}>
+    <div className="chat-container">
+      <div className="chat-header">
         <h2>Live Chat from FFT Battleground</h2>
-        <div className={styles.chatSubtitle}>
+        <div className="chat-subtitle">
           {connected ? '🟢 Connected' : '🔴 Disconnected'}
         </div>
       </div>

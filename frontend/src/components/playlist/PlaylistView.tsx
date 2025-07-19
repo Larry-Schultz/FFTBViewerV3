@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import SongTable from './SongTable';
 import Pagination from './Pagination';
 import PlaylistStats from './PlaylistStats';
-import styles from '../../styles/PlaylistView.module.css';
+import '../../styles/main.css';
 
 const PlaylistView: React.FC = () => {
   const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
@@ -85,7 +85,7 @@ const PlaylistView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.playlistContainer}>
+      <div className="playlist-container">
         <div className="loading">Loading playlist...</div>
       </div>
     );
@@ -93,7 +93,7 @@ const PlaylistView: React.FC = () => {
 
   if (error) {
     return (
-      <div className={styles.playlistContainer}>
+      <div className="playlist-container">
         <div className="error">{error}</div>
       </div>
     );
@@ -101,14 +101,14 @@ const PlaylistView: React.FC = () => {
 
   if (!playlistData) {
     return (
-      <div className={styles.playlistContainer}>
+      <div className="playlist-container">
         <div className="error">No playlist data available</div>
       </div>
     );
   }
 
   return (
-    <div className={styles.playlistContainer}>
+    <div className="playlist-container">
       <SearchBar onSearch={handleSearch} searchTerm={searchTerm} />
       
       <SongTable 
@@ -118,7 +118,7 @@ const PlaylistView: React.FC = () => {
         onSort={handleSort}
       />
       
-      <div className={styles.playlistFooter}>
+      <div className="playlist-footer">
         {playlistData && (
           <PlaylistStats 
             totalSongs={playlistData.totalSongs || 0}
