@@ -3,7 +3,9 @@ package com.twitchchat.service;
 import com.twitchchat.config.TrackPlayProperties;
 import com.twitchchat.event.TrackPlayEvent;
 import com.twitchchat.model.Song;
+import com.twitchchat.model.TrackPlay;
 import com.twitchchat.repository.SongRepository;
+import com.twitchchat.repository.TrackPlayRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class SongPlayTracker {
     
     @Autowired
     private SongRepository songRepository;
+    
+    @Autowired
+    private TrackPlayRepository trackPlayRepository;
     
     @Autowired
     private TrackPlayProperties trackPlayProperties;
@@ -49,7 +54,7 @@ public class SongPlayTracker {
             }
             
             // Full database update mode
-            boolean result = trackSongPlay(event.getSongTitle(), event.getDurationSeconds());
+            boolean result = trackSongPlay(event.getSongTitle());
             return CompletableFuture.completedFuture(result);
         } catch (Exception e) {
             logger.error("Error tracking song play asynchronously: {}", e.getMessage(), e);
@@ -60,20 +65,32 @@ public class SongPlayTracker {
     /**
      * Track a song play and update its occurrence count
      * @param songTitle The title of the song that was played
-     * @param durationSeconds The duration of the song in seconds
      * @return true if the song was found and updated, false otherwise
      */
-    private boolean trackSongPlay(String songTitle, int durationSeconds) {
+    private boolean trackSongPlay(String songTitle) {
         Optional<Song> songOpt = songRepository.findByTitle(songTitle);
         
         if (songOpt.isPresent()) {
             Song song = songOpt.get();
-            song.setOccurrence(song.getOccurrence() + 1);
-            song.setUpdatedAt(LocalDateTime.now());
-            songRepository.save(song);
             
-            logger.info("Tracked play for '{}' ({}s) - occurrence now: {}", 
-                       songTitle, durationSeconds, song.getOccurrence());
+            // Update song occurrence count and timestamp only if enabled
+            if (trackPlayProperties.isUpdateOccurrences()) {
+                song.setOccurrence(song.getOccurrence() + 1);
+                song.setUpdatedAt(LocalDateTime.now());
+                songRepository.save(song);
+                logger.debug("Updated occurrence count for '{}' - occurrence now: {}", songTitle, song.getOccurrence());
+            }
+            
+            // Create and save track play record if enabled
+            TrackPlay trackPlay = null;
+            if (trackPlayProperties.isRecordTrackPlays()) {
+                trackPlay = new TrackPlay(song);
+                trackPlayRepository.save(trackPlay);
+                logger.debug("Created TrackPlay record for '{}' - TrackPlay ID: {}", songTitle, trackPlay.getId());
+            }
+            
+            logger.info("Tracked play for '{}' - occurrence updates: {}, TrackPlay recording: {}", 
+                       songTitle, trackPlayProperties.isUpdateOccurrences(), trackPlayProperties.isRecordTrackPlays());
             return true;
         } else {
             logger.warn("Song '{}' not found in database, cannot track play", songTitle);

@@ -53,6 +53,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 19, 2025 - TrackPlay System Implementation & Environment Configuration:**
+- **IMPLEMENTED TRACKPLAY RECORDING SYSTEM**: Created comprehensive TrackPlay entity and repository for individual song play tracking
+- **ENVIRONMENT-SPECIFIC BEHAVIOR**: TrackPlay recording enabled in both dev/prod, Song occurrence updates only in production
+- **VERIFIED CONFIGURATION**: Development mode correctly records TrackPlays without updating Song occurrence counts
+- **DATABASE INTEGRATION**: Hibernate auto-creates track_plays table with proper indexes and foreign key constraints
+- **REAL-TIME TESTING**: Successfully captured song play "Cloudbuilt - Cloudbuilt (Main Menu)" with TrackPlay ID: 1
+- **CONFIGURATION PROPERTIES**: Added separate flags for recordTrackPlays and updateOccurrences in TrackPlayProperties
+- **PRODUCTION READY**: System ready for deployment with proper environment-specific behavior controls
+
 **July 19, 2025 - Dark Theme Implementation & CSS Modules:**
 - **CREATED SEPARATE BUILD AND RUN WORKFLOWS**: Split building and running into two workflows per user request
 - **Build Project Workflow**: Handles Maven clean install with frontend webpack build
