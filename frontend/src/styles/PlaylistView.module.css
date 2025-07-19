@@ -346,65 +346,7 @@
         font-size: 12px;
     }
 
-    /* Mobile-optimized table layout */
-    .songsTable-container {
-        margin: 0 -8px;
-        border-radius: 0;
-    }
 
-    .songsTable {
-        font-size: 11px;
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .songsTable thead {
-        display: none;
-    }
-
-    .songsTable tbody {
-        display: block;
-    }
-
-    .songsTable tr {
-        display: block;
-        margin-bottom: 8px;
-        background: rgba(20, 20, 40, 0.8);
-        border: 1px solid rgba(145, 70, 255, 0.2);
-        border-radius: 6px;
-        padding: 8px;
-    }
-
-    .songsTable td {
-        display: block;
-        padding: 4px 0;
-        border: none;
-        text-align: left;
-    }
-
-    /* Hide all columns except title and duration on mobile */
-    .songsTable td:nth-child(1),
-    .songsTable td:nth-child(4),
-    .songsTable td:nth-child(5),
-    .songsTable td:nth-child(6) {
-        display: none;
-    }
-
-    /* Style title and duration for mobile */
-    .songsTable td:nth-child(2) {
-        font-weight: 600;
-        font-size: 13px;
-        color: #9146ff;
-        margin-bottom: 4px;
-    }
-
-    .songsTable td:nth-child(3)::before {
-        content: "Duration: ";
-        color: #888;
-        font-weight: normal;
-    }
 
     .songTitle {
         white-space: normal;
@@ -461,27 +403,32 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    .songsTable {
+    :global(.song-table-container) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    :global(.song-table) {
         font-size: 12px;
         min-width: 500px;
     }
 
-    .songsTable th,
-    .songsTable td {
+    :global(.song-table) th,
+    :global(.song-table) td {
         padding: 8px 6px;
     }
 
     /* Hide less important columns on tablets */
-    .songsTable th:nth-child(1),
-    .songsTable td:nth-child(1),
-    .songsTable th:nth-child(5),
-    .songsTable td:nth-child(5) {
+    :global(.song-table) th:nth-child(1),
+    :global(.song-table) td:nth-child(1),
+    :global(.song-table) th:nth-child(5),
+    :global(.song-table) td:nth-child(5) {
         display: none;
     }
 
     /* Make title column wider */
-    .songsTable th:nth-child(2),
-    .songsTable td:nth-child(2) {
+    :global(.song-table) th:nth-child(2),
+    :global(.song-table) td:nth-child(2) {
         width: 50%;
     }
 

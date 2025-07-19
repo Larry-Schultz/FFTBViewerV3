@@ -61,6 +61,8 @@ Preferred communication style: Simple, everyday language.
 - **CSS MODULES IMPLEMENTATION**: Using require() syntax for CSS module imports to work with webpack
 - **FIXED CSS MODULE EXTRACTION**: Changed webpack config to use MiniCssExtractPlugin.loader for CSS modules instead of style-loader
 - **RESPONSIVE DESIGN NOW WORKING**: All CSS module styles including media queries are properly extracted to styles.css (15.4KB with 14 media queries)
+- **CSS MODULE GLOBAL SELECTORS**: When targeting non-CSS-module classes from within a CSS module, use :global() wrapper
+- **RESPONSIVE DESIGN CHALLENGES**: Mobile card layout requires :global() selectors for components using regular class names
 
 **July 19, 2025 - CSS Modules Implementation & Responsive Design:**
 - **IMPLEMENTED CSS MODULES**: Successfully converted CSS architecture to modern CSS modules approach 

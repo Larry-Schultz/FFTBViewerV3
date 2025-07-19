@@ -1,5 +1,6 @@
 import React from 'react';
 import { Song as SongType } from '../../types';
+const styles = require('../../styles/Song.module.css');
 
 interface SongProps {
   song: SongType;
@@ -40,13 +41,13 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
   };
 
   return (
-    <tr className="song-row">
-      <td className="song-number">{index + 1}</td>
-      <td className="song-title">{song.title}</td>
-      <td className="song-duration">{formatDuration(song.duration)}</td>
-      <td className="song-plays">{formatPlayCount(song.occurrence)}</td>
-      <td className="song-added">{formatDate(song.createdAt)}</td>
-      <td className="song-last-played">{formatLastPlayed(song.occurrence, song.updatedAt)}</td>
+    <tr className={styles.songRow}>
+      <td className={`${styles.songNumber} ${styles.hideOnMobile}`}>{index + 1}</td>
+      <td className={styles.songTitle}>{song.title}</td>
+      <td className={styles.songDuration}>{formatDuration(song.duration)}</td>
+      <td className={`${styles.songPlays} ${styles.hideOnMobile}`}>{formatPlayCount(song.occurrence)}</td>
+      <td className={`${styles.songAdded} ${styles.hideOnTablet}`}>{formatDate(song.createdAt)}</td>
+      <td className={`${styles.songLastPlayed} ${styles.hideOnMobile}`}>{formatLastPlayed(song.occurrence, song.updatedAt)}</td>
     </tr>
   );
 };
