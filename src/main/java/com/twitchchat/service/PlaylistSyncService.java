@@ -43,18 +43,19 @@ public class PlaylistSyncService {
 
     /**
      * Initial sync when application starts (async to avoid blocking startup)
+     * DISABLED: Use manual sync or scheduled sync instead of startup sync
      */
-    @PostConstruct
+    // @PostConstruct
     public void initialSync() {
-        logger.info("Starting initial playlist synchronization with URI-based parsing...");
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000); // Wait 5 seconds for app to fully start
-                syncPlaylist();
-            } catch (Exception e) {
-                logger.error("Initial sync failed", e);
-            }
-        }).start();
+        logger.info("Startup sync disabled - use scheduled sync or manual sync endpoint");
+        // new Thread(() -> {
+        //     try {
+        //         Thread.sleep(5000); // Wait 5 seconds for app to fully start
+        //         syncPlaylist();
+        //     } catch (Exception e) {
+        //         logger.error("Initial sync failed", e);
+        //     }
+        // }).start();
     }
 
     /**
