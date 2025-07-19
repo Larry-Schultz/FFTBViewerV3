@@ -271,64 +271,184 @@
 }
 
 /* Playlist Page Responsive Design */
-@media (max-width: 479px) {
+
+/* Ultra small screens (old phones) */
+@media (max-width: 320px) {
     .playlistContainer {
-        padding: 12px;
+        padding: 4px;
     }
 
     .playlistHeader h2 {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    .searchInput {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .pageSizeContainer {
+        font-size: 11px;
+    }
+
+    .songsTable td:nth-child(2) {
+        font-size: 12px;
+    }
+
+    .paginationButton {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+}
+
+/* Mobile Card Layout for very small screens */
+@media (max-width: 479px) {
+    .playlistContainer {
+        padding: 8px;
+    }
+
+    .playlistHeader h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .playlistStats {
+        font-size: 0.8rem;
     }
 
     .playlistControls {
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
         align-items: stretch;
+        margin-bottom: 12px;
     }
 
     .searchContainer {
         max-width: none;
+        margin-bottom: 12px;
     }
 
-    .songsTable {
+    .searchInput {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .pageSizeContainer {
+        justify-content: center;
+    }
+
+    .pageSizeLabel {
         font-size: 12px;
     }
 
-    .songsTable th,
-    .songsTable td {
-        padding: 8px 4px;
+    .pageSizeSelect {
+        padding: 6px 10px;
+        font-size: 12px;
     }
 
-    /* Hide less important columns on small screens */
-    .songsTable .songNumber,
-    .songsTable .songAdded {
+    /* Mobile-optimized table layout */
+    .songsTable-container {
+        margin: 0 -8px;
+        border-radius: 0;
+    }
+
+    .songsTable {
+        font-size: 11px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .songsTable thead {
         display: none;
     }
 
+    .songsTable tbody {
+        display: block;
+    }
+
+    .songsTable tr {
+        display: block;
+        margin-bottom: 8px;
+        background: rgba(20, 20, 40, 0.8);
+        border: 1px solid rgba(145, 70, 255, 0.2);
+        border-radius: 6px;
+        padding: 8px;
+    }
+
+    .songsTable td {
+        display: block;
+        padding: 4px 0;
+        border: none;
+        text-align: left;
+    }
+
+    /* Hide all columns except title and duration on mobile */
+    .songsTable td:nth-child(1),
+    .songsTable td:nth-child(4),
+    .songsTable td:nth-child(5),
+    .songsTable td:nth-child(6) {
+        display: none;
+    }
+
+    /* Style title and duration for mobile */
+    .songsTable td:nth-child(2) {
+        font-weight: 600;
+        font-size: 13px;
+        color: #9146ff;
+        margin-bottom: 4px;
+    }
+
+    .songsTable td:nth-child(3)::before {
+        content: "Duration: ";
+        color: #888;
+        font-weight: normal;
+    }
+
+    .songTitle {
+        white-space: normal;
+        word-break: break-word;
+    }
+
     .pagination {
+        margin-top: 12px;
+    }
+
+    .paginationContainer {
         flex-direction: column;
         gap: 12px;
         align-items: center;
     }
 
-    .paginationControls {
-        order: 2;
+    .paginationInfo {
+        font-size: 12px;
+        text-align: center;
     }
 
-    .paginationInfo {
-        order: 1;
-        text-align: center;
+    .paginationControls {
+        gap: 4px;
+    }
+
+    .paginationButton {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
 
+/* Small Tablet / Large Phone */
 @media (min-width: 480px) and (max-width: 767px) {
     .playlistContainer {
-        padding: 16px;
+        padding: 12px;
+    }
+
+    .playlistHeader h2 {
+        font-size: 1.75rem;
     }
 
     .playlistControls {
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
         align-items: stretch;
     }
 
@@ -336,18 +456,38 @@
         max-width: none;
     }
 
+    .songsTable-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .songsTable {
-        font-size: 13px;
+        font-size: 12px;
+        min-width: 500px;
     }
 
     .songsTable th,
     .songsTable td {
-        padding: 10px 8px;
+        padding: 8px 6px;
     }
 
-    /* Hide song number on mobile */
-    .songsTable .songNumber {
+    /* Hide less important columns on tablets */
+    .songsTable th:nth-child(1),
+    .songsTable td:nth-child(1),
+    .songsTable th:nth-child(5),
+    .songsTable td:nth-child(5) {
         display: none;
+    }
+
+    /* Make title column wider */
+    .songsTable th:nth-child(2),
+    .songsTable td:nth-child(2) {
+        width: 50%;
+    }
+
+    .paginationButton {
+        padding: 8px 14px;
+        font-size: 13px;
     }
 }
 
