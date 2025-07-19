@@ -53,6 +53,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+**July 19, 2025 - Workflow Optimization & CSS Modules:**
+- **CREATED SEPARATE BUILD AND RUN WORKFLOWS**: Split building and running into two workflows per user request
+- **Build Project Workflow**: Handles Maven clean install with frontend webpack build
+- **Run Server Workflow**: Starts the Spring Boot server on port 5000 in dev profile
+- **WORKFLOW BEST PRACTICE**: Always run "Build Project" first, then "Run Server" to avoid JAR file missing errors
+- **CSS MODULES IMPLEMENTATION**: Using require() syntax for CSS module imports to work with webpack
+
 **July 19, 2025 - CSS Modules Implementation & Responsive Design:**
 - **IMPLEMENTED CSS MODULES**: Successfully converted CSS architecture to modern CSS modules approach 
 - **ORGANIZED CSS STRUCTURE**: Split styles into main.css (shared) and component-specific module files

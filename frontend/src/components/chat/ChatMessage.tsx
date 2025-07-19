@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChatMessage as ChatMessageType } from '../../types';
+const styles = require('../../styles/ChatView.module.css');
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -23,12 +24,12 @@ function ChatMessage({ message }: ChatMessageProps) {
   };
 
   return (
-    <div className="chat-message">
-      <span className="message-time">{formatTimestamp(message.timestamp)}</span>
-      <span className="message-space"> </span>
-      <span className="message-username">{message.username}</span>
-      <span className="message-separator"> : </span>
-      <span className="message-text">{message.message}</span>
+    <div className={styles.message}>
+      <div className={styles.messageHeader}>
+        <span className={styles.username}>{message.username}</span>
+        <span className={styles.timestamp}>{formatTimestamp(message.timestamp)}</span>
+      </div>
+      <div className={styles.messageContent}>{message.message}</div>
     </div>
   );
 }
