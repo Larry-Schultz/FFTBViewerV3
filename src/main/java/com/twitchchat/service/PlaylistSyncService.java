@@ -59,14 +59,10 @@ public class PlaylistSyncService {
     }
 
     /**
-     * Scheduled sync every 30 minutes (only in production)
+     * Scheduled sync moved to ProductionSchedulingConfig
+     * This method is no longer used
      */
-    @Scheduled(fixedRate = 30 * 60 * 1000) // 30 minutes in milliseconds
-    @Profile("prod")
-    public void scheduledSync() {
-        logger.info("Starting scheduled playlist synchronization...");
-        syncPlaylist();
-    }
+    // Moved to ProductionSchedulingConfig for proper profile control
 
     /**
      * Synchronize playlist data from XML feed (synchronized to prevent race conditions)
