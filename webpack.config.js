@@ -32,7 +32,23 @@ module.exports = {
       },
       {
         test: /\.css$/i,
+        exclude: /\.module\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.module\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+                exportGlobals: true,
+              },
+            },
+          },
+        ],
       },
     ],
   },

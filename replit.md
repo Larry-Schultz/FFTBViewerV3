@@ -22,7 +22,54 @@ A modern Spring Boot-powered Twitch chat reader application that monitors real-t
 
 Preferred communication style: Simple, everyday language.
 
+## Key Lessons Learned
+
+**Spring Boot Profile Configuration (July 19, 2025):**
+- **@Profile on @Scheduled methods doesn't work reliably** - Spring doesn't properly respect @Profile annotations on individual @Scheduled methods within a service class
+- **Solution**: Create separate @Configuration classes with @Profile("prod") that contain all scheduled tasks
+- **Dependency Injection**: When services are profile-restricted, use @Autowired(required = false) and null checks in controllers
+- **Workflow Configuration**: Always specify profile explicitly in deployment commands: --spring.profiles.active=dev
+
+**Frontend Property Mapping Issues:**
+- **Property Name Mismatches**: Frontend using song.lastPlayed when backend property is song.updatedAt causes sorting failures
+- **Database Reality**: Only 1.3% of songs have Last Played data - this explains why sorting by Last Played shows few results
+- **Frontend Debugging**: Always verify frontend TypeScript interfaces match backend entity properties exactly
+
+**Development Workflow Optimization:**
+- **Sync Jobs in Development**: Running playlist sync jobs during development startup causes unnecessary delays and confusion
+- **Profile Separation**: Development should focus on UI/UX testing, not data synchronization
+- **Manual Sync Available**: Keep sync services available for manual testing via API endpoints
+- **Quick Startup**: Development mode should start servers in under 10 seconds without background operations
+
+**Build Process Dependencies:**
+- **Frontend → Backend Flow**: Always rebuild Java after frontend changes (webpack alone insufficient)
+- **Resource Copying**: Spring Boot copies resources from src/main/resources → target/classes during compilation
+- **Critical Path**: 1) Frontend changes, 2) Webpack build, 3) Java rebuild, 4) Server restart
+
+**Error Handling Patterns:**
+- **Null Safety**: Always implement null checks for optional dependencies
+- **Profile-Aware Services**: Design services to gracefully handle missing dependencies in different environments
+- **Logging Clarity**: Use environment-specific logging to distinguish between development and production behavior
+
 ## Recent Changes
+
+**July 19, 2025 - CSS Modules Implementation & Responsive Design:**
+- **IMPLEMENTED CSS MODULES**: Successfully converted CSS architecture to modern CSS modules approach 
+- **ORGANIZED CSS STRUCTURE**: Split styles into main.css (shared) and component-specific module files
+- **FIXED CSS MODULE IMPORTS**: Corrected className usage from strings to `styles.className` syntax for proper scoping
+- **COMPREHENSIVE RESPONSIVE DESIGN**: Added breakpoints for mobile (479px), tablet (768px), desktop (1024px+) 
+- **WEBPACK CONFIGURATION**: Enhanced webpack config to handle CSS modules with proper loaders and scoped class names
+- **MODERN REACT INTEGRATION**: CSS modules provide scoped styling preventing class name conflicts across components
+
+**July 19, 2025 - Profile Configuration Fix & Last Played Sorting Resolution:**
+- **FIXED PROFILE CONFIGURATION**: Resolved sync jobs running in development mode by creating ProductionSchedulingConfig
+- **SEPARATED SCHEDULED TASKS**: Moved @Scheduled methods from service classes to dedicated configuration class with @Profile("prod")
+- **DEV MODE OPTIMIZATION**: Server now starts quickly in dev profile without automatic sync jobs running
+- **SYNC SERVICES AVAILABLE**: Manual sync still available via API endpoints for testing in development
+- **CONFIRMED LAST PLAYED SORTING**: Verified frontend correctly displays recently played songs with proper date formatting
+- **DATABASE REALITY**: Only 1.3% of songs (428/32,814) have Last Played timestamps, which explains filtered display behavior
+- **PROPER PROFILE DETECTION**: Server workflow now correctly uses --spring.profiles.active=dev parameter
+- **ELIMINATED STARTUP DELAYS**: Removed automatic sync operations that were causing development startup slowdowns
 
 **July 18, 2025 - Spring Boot Bean Injection Fix & React Frontend Implementation:**
 - **FIXED BEAN INJECTION ISSUES**: Resolved Spring Boot @Autowired dependency injection problems in controllers

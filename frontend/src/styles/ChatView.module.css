@@ -1,0 +1,167 @@
+/* Chat Page Specific Styles */
+
+/* Chat Container */
+.chatContainer {
+    background: rgba(30, 30, 50, 0.8);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    max-width: 1000px;
+    margin: 0 auto;
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chatHeader {
+    margin-bottom: 1rem;
+}
+
+.chatHeader h2 {
+    color: #9146ff;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.chatSubtitle {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Messages Container */
+.messagesContainer {
+    flex: 1;
+    overflow-y: auto;
+    background: rgba(15, 15, 35, 0.6);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(145, 70, 255, 0.2);
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.messagesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Individual Message Styles */
+.message {
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: rgba(30, 30, 50, 0.6);
+    border-left: 3px solid #9146ff;
+    transition: background-color 0.2s;
+    animation: slideIn 0.3s ease-out;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+.message:hover {
+    background: rgba(40, 40, 60, 0.8);
+}
+
+.messageHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.username {
+    font-weight: bold;
+    color: #9146ff;
+    font-size: 14px;
+}
+
+.timestamp {
+    color: #72767d;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.messageContent {
+    color: #efeff1;
+    font-size: 14px;
+}
+
+.loading {
+    text-align: center;
+    color: #72767d;
+    font-style: italic;
+    margin-top: 50px;
+    font-size: 14px;
+}
+
+/* Chat Page Responsive Design */
+@media (max-width: 479px) {
+    .chat-container {
+        padding: 12px;
+        height: calc(100vh - 140px);
+        border-radius: 8px;
+    }
+
+    .chatHeader h2 {
+        font-size: 1.5rem;
+    }
+
+    .messagesContainer {
+        height: 350px;
+        padding: 8px;
+    }
+
+    .message {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .username {
+        font-size: 13px;
+    }
+
+    .timestamp {
+        font-size: 11px;
+    }
+
+    .messageContent {
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    .chat-container {
+        padding: 16px;
+        height: calc(100vh - 120px);
+    }
+
+    .messagesContainer {
+        height: 400px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .messagesContainer {
+        height: 500px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .messagesContainer {
+        height: 600px;
+    }
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
