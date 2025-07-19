@@ -2,14 +2,15 @@
 .songRow {
     transition: background-color 0.2s ease;
     border-bottom: 1px solid #e9ecef;
+    background: #fff;
 }
 
 .songRow:nth-child(even) {
-    background: #f8f9fa;
+    background: #fff;
 }
 
 .songRow:hover {
-    background: #e2e6ea;
+    background: #f8f9fa;
 }
 
 .songRow:last-child {
@@ -29,12 +30,12 @@
 }
 
 .songTitle {
-    color: #0066cc;
+    color: #007bff;
     font-weight: normal;
 }
 
 .songTitle:hover {
-    color: #0052a3;
+    color: #0056b3;
     text-decoration: underline;
 }
 
