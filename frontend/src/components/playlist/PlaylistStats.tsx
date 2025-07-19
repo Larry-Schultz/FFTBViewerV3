@@ -26,7 +26,8 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit'
+          second: '2-digit',
+          timeZone: 'America/Chicago'  // Force Central Time for testing
         };
         setFormattedTime(date.toLocaleString('en-US', fullOptions));
       } catch (error) {

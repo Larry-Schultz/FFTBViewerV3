@@ -30,14 +30,15 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
       const date = new Date(isoString);
       if (isNaN(date.getTime())) return 'Unknown';
       
-      // Format in user's local timezone without specifying timeZone (auto-detects)
+      // Explicitly convert to Central Time for debugging
       const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        timeZone: 'America/Chicago'  // Force Central Time for testing
       };
       
       return date.toLocaleString('en-US', dateOptions);
