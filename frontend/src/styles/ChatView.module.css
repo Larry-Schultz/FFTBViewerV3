@@ -1,16 +1,17 @@
-/* Chat Page Specific Styles */
+/* Chat Page Specific Styles - Dark Theme */
 
 /* Chat Container */
 .chatContainer {
-    background: #fff;
+    background: rgba(30, 35, 55, 0.8);
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
     max-width: 1000px;
     margin: 20px auto;
     height: calc(100vh - 120px);
     display: flex;
     flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .chatHeader {
@@ -18,14 +19,14 @@
 }
 
 .chatHeader h2 {
-    color: #212529;
+    color: #ffffff;
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     font-weight: 600;
 }
 
 .chatSubtitle {
-    color: #6c757d;
+    color: #a0aec0;
     font-size: 0.9rem;
 }
 
@@ -33,10 +34,10 @@
 .messagesContainer {
     flex: 1;
     overflow-y: auto;
-    background: #f8f9fa;
+    background: rgba(20, 25, 40, 0.6);
     border-radius: 8px;
     padding: 1rem;
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     height: 500px;
     display: flex;
     flex-direction: column;
@@ -52,17 +53,17 @@
 .message {
     padding: 10px 15px;
     border-radius: 6px;
-    background: #fff;
-    border-left: 3px solid #007bff;
+    background: rgba(37, 42, 62, 0.7);
+    border-left: 3px solid #4299e1;
     transition: background-color 0.2s;
     animation: slideIn 0.3s ease-out;
     word-wrap: break-word;
     line-height: 1.4;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .message:hover {
-    background: #f8f9fa;
+    background: rgba(45, 50, 70, 0.8);
 }
 
 .messageHeader {
@@ -74,24 +75,24 @@
 
 .username {
     font-weight: bold;
-    color: #007bff;
+    color: #63b3ed;
     font-size: 14px;
 }
 
 .timestamp {
-    color: #6c757d;
+    color: #718096;
     font-size: 12px;
     font-family: 'Courier New', monospace;
 }
 
 .messageContent {
-    color: #212529;
+    color: #e2e8f0;
     font-size: 14px;
 }
 
 .loading {
     text-align: center;
-    color: #6c757d;
+    color: #a0aec0;
     font-style: italic;
     margin-top: 50px;
     font-size: 14px;
