@@ -20,17 +20,20 @@ const Song: React.FC<SongProps> = ({ song, index }) => {
   const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return 'Unknown';
     try {
-      const date = new Date(dateString);
+      // Handle UTC timestamps from database - append 'Z' if not present to ensure UTC parsing
+      const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
+      const date = new Date(utcString);
       if (isNaN(date.getTime())) return 'Unknown';
       
-      // Format with full timestamp in user's timezone (no timezone display)
+      // Format with full timestamp in user's local timezone (no timezone display)
       const dateOptions: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
       };
       
       return date.toLocaleString('en-US', dateOptions);

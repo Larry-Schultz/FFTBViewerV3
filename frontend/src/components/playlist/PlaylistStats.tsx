@@ -12,14 +12,17 @@ const PlaylistStats: React.FC<PlaylistStatsProps> = ({ totalSongs, showingSongs,
   useEffect(() => {
     if (latestSongTime) {
       try {
-        const date = new Date(latestSongTime);
+        // Handle UTC timestamps from database - append 'Z' if not present to ensure UTC parsing
+        const utcString = latestSongTime.endsWith('Z') ? latestSongTime : latestSongTime + 'Z';
+        const date = new Date(utcString);
         const fullOptions: Intl.DateTimeFormatOptions = {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit'
+          second: '2-digit',
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
         setFormattedTime(date.toLocaleString('en-US', fullOptions));
       } catch (error) {

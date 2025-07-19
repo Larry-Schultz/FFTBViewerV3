@@ -53,14 +53,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**July 19, 2025 - Enhanced Timestamp Display Implementation:**
-- **IMPLEMENTED ENHANCED TIMESTAMP FORMATTING**: Updated Song and PlaylistStats components to display full date/time information
-- **TIMEZONE CONVERSION**: Timestamps automatically convert to user's local timezone without displaying timezone abbreviation
-- **ENHANCED DISPLAY FORMAT**: Shows complete timestamps like "Jul 19, 2025, 02:56:32 PM" instead of just dates
-- **IMPROVED COLUMN LAYOUT**: Increased timestamp column widths from 140px to 200px to accommodate longer format
-- **CSS MODULE STYLING**: Applied proper styling for timestamp cells with smaller font size (12px) and nowrap formatting
-- **USER EXPERIENCE**: Both "Added Date" and "Last Played" columns now provide comprehensive timestamp information
-- **VERIFIED DEPLOYMENT**: Successfully built, deployed, and tested enhanced timestamp display across all components
+**July 19, 2025 - Database View Architecture & UTC Timezone Fix:**
+- **IMPLEMENTED DATABASE VIEW ARCHITECTURE**: Created SongPlayCountView entity and repository for efficient track play counting
+- **REPLACED OCCURRENCE FIELD**: Transitioned from songs.occurrence to real-time track play counts from database view
+- **EFFICIENT SINGLE QUERY**: Database view combines songs table with aggregated track play counts eliminating multiple joins
+- **UPDATED FRONTEND TYPES**: Modified TypeScript interfaces to work with SongPlayCountView data structure
+- **FIXED UTC TIMEZONE CONVERSION**: Resolved timestamp display showing UTC time instead of user's local timezone
+- **PROPER TIMEZONE HANDLING**: Updated formatDate functions to append 'Z' for UTC parsing and convert to local timezone
+- **VERIFIED REAL-TIME TRACKING**: 231+ track plays recorded and displayed accurately in frontend with correct local times
+- **PERFORMANCE OPTIMIZATION**: Single database view query instead of complex joins for better scalability
 
 **July 19, 2025 - TrackPlay System Implementation & Environment Configuration:**
 - **IMPLEMENTED TRACKPLAY RECORDING SYSTEM**: Created comprehensive TrackPlay entity and repository for individual song play tracking
