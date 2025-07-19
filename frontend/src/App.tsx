@@ -6,7 +6,16 @@ import { ViewType } from './types';
 import './styles/main.css';
 
 function App() {
-  const [currentView, setCurrentView] = React.useState<ViewType>('chat');
+  // Detect initial view based on current URL path
+  const getInitialView = (): ViewType => {
+    const path = window.location.pathname;
+    if (path === '/music' || path === '/playlist') {
+      return 'playlist';
+    }
+    return 'chat'; // Default for '/', '/chat', or any other path
+  };
+
+  const [currentView, setCurrentView] = React.useState<ViewType>(getInitialView());
 
   return (
     <div className="app">

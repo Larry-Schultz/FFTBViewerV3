@@ -13,13 +13,13 @@ function Header({ currentView, onViewChange }: HeaderProps) {
       <div className="nav-buttons">
         <button 
           className={`nav-button ${currentView === 'chat' ? 'active' : ''}`}
-          onClick={() => onViewChange('chat')}
+          onClick={() => window.location.href = '/'}
         >
           Live Chat
         </button>
         <button 
           className={`nav-button ${currentView === 'playlist' ? 'active' : ''}`}
-          onClick={() => onViewChange('playlist')}
+          onClick={() => window.location.href = '/music'}
         >
           Music Playlist
         </button>
